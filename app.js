@@ -99,11 +99,20 @@ function logout() {
 
 function updateHeaderActionsVisibility() {
     const headerActions = document.querySelector('.header-actions');
-    if (!headerActions) return;
-    if (CURRENT_USER && CURRENT_USER.id) {
-        headerActions.classList.add('show');
-    } else {
-        headerActions.classList.remove('show');
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (headerActions) {
+        if (CURRENT_USER && CURRENT_USER.id) {
+            headerActions.classList.add('show');
+        } else {
+            headerActions.classList.remove('show');
+        }
+    }
+    if (bottomNav) {
+        if (CURRENT_USER && CURRENT_USER.id) {
+            bottomNav.classList.remove('hidden');
+        } else {
+            bottomNav.classList.add('hidden');
+        }
     }
 }
 
