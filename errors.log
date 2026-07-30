@@ -1,0 +1,1 @@
+- en creant des formulaires tu dois te referer a la logique presente de l'application : donc tu as oublier le fais qu'en creant un compte on doit s'identifier comme vendeur ou acheteur, et que si on est vendeur on doit remplir les champs de la boutique. Donc tu dois ajouter un select pour choisir le type de compte, et si c'est vendeur alors afficher les champs de la boutique.

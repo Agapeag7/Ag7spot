@@ -28,6 +28,13 @@ function renderAuth(container) {
                         <label>Adresse e-mail</label>
                         <input type="email" id="authEmail" placeholder="exemple@domaine.com" required />
                     </div>
+                    <div class="form-group auth-register-field hidden">
+                        <label>Type de compte</label>
+                        <select id="authAccountType" class="auth-select">
+                            <option value="buyer">Acheteur</option>
+                            <option value="seller">Vendeur</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>Mot de passe</label>
                         <input type="password" id="authPassword" placeholder="••••••••" required />
@@ -35,6 +42,33 @@ function renderAuth(container) {
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
                         <input type="password" id="authConfirmPassword" placeholder="••••••••" />
+                    </div>
+                    <div class="seller-section auth-register-field hidden">
+                        <div class="section-block">
+                            <h4>Informations de boutique</h4>
+                            <div class="form-group">
+                                <label>Nom de la boutique</label>
+                                <input type="text" id="authShopName" placeholder="Ex: Boutique de Kin" />
+                            </div>
+                            <div class="form-group">
+                                <label>Catégorie</label>
+                                <input type="text" id="authShopCategory" placeholder="Ex: mode, food, tech" />
+                            </div>
+                            <div class="form-group">
+                                <label>Adresse de la boutique</label>
+                                <input type="text" id="authShopAddress" placeholder="Ex: Boulevard du 30 Juin" />
+                            </div>
+                            <div class="form-group form-row">
+                                <div>
+                                    <label>Latitude</label>
+                                    <input type="number" id="authShopLat" placeholder="-4.3253" step="0.0001" />
+                                </div>
+                                <div>
+                                    <label>Longitude</label>
+                                    <input type="number" id="authShopLng" placeholder="15.3135" step="0.0001" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group auth-register-field hidden privacy-group">
                         <label class="checkbox-label">
@@ -75,6 +109,18 @@ function renderAuth(container) {
         btn.addEventListener('click', () => setMode(btn.dataset.mode));
     });
 
+    const accountTypeSelect = document.getElementById('authAccountType');
+
+    const updateSellerFields = () => {
+        const isSeller = accountTypeSelect?.value === 'seller';
+        const sellerSection = container.querySelector('.seller-section');
+        if (sellerSection) {
+            sellerSection.classList.toggle('hidden', !isSeller);
+        }
+    };
+
+    accountTypeSelect?.addEventListener('change', updateSellerFields);
+
     setMode('login');
 
     authForm?.addEventListener('submit', function(e) {
@@ -106,6 +152,7 @@ function renderAuth(container) {
 
         const name = document.getElementById('authName').value.trim();
         const confirmPassword = document.getElementById('authConfirmPassword').value;
+        const accountType = document.getElementById('authAccountType').value;
         const privacyAccepted = document.getElementById('authPrivacy').checked;
 
         if (!name) {
@@ -126,16 +173,54 @@ function renderAuth(container) {
             return;
         }
 
+        const newUserId = Date.now();
+        let shopId = null;
+        if (accountType === 'seller') {
+            const shopName = document.getElementById('authShopName').value.trim();
+            const shopCategory = document.getElementById('authShopCategory').value.trim();
+            const shopAddress = document.getElementById('authShopAddress').value.trim();
+            const shopLat = parseFloat(document.getElementById('authShopLat').value);
+            const shopLng = parseFloat(document.getElementById('authShopLng').value);
+
+            if (!shopName || !shopCategory || !shopAddress || Number.isNaN(shopLat) || Number.isNaN(shopLng)) {
+                showToast('Remplis tous les champs de la boutique.', 'warning');
+                return;
+            }
+
+            const newShop = {
+                id: newUserId + 1,
+                ownerId: newUserId,
+                name: shopName,
+                category: shopCategory,
+                lat: shopLat,
+                lng: shopLng,
+                avatar: 'https://picsum.photos/seed/shop' + newUserId + '/100/100',
+                cover: 'https://picsum.photos/seed/shop' + newUserId + '/600/300',
+                followed: false,
+                status: 'open',
+                address: shopAddress
+            };
+            SHOPS.push(newShop);
+            shopId = newShop.id;
+        }
+
         const newUser = {
-            id: Date.now(),
+            id: newUserId,
             username: name,
             email,
             password,
-            role: 'buyer',
+            role: accountType,
             avatar: name.split(' ').map(part => part[0]?.toUpperCase()).join('').slice(0, 2),
             points: 0,
-            shopId: null
+            shopId
         };
+
+        if (shopId) {
+            const shop = SHOPS.find(s => s.id === shopId);
+            if (shop) {
+                shop.ownerId = newUser.id;
+            }
+        }
 
         USERS.push(newUser);
         localStorage.setItem('ag7_current_user', JSON.stringify(newUser));
