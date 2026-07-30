@@ -5,12 +5,20 @@ function renderAuth(container) {
     container.innerHTML = `
         <div class="page active auth-page">
             <div class="auth-card">
-                <h2>Bienvenue sur Ag7Spot</h2>
-                <p>Connecte-toi avec un compte existant pour continuer.</p>
-                <form id="authForm">
+                <div class="auth-header">
+                    <div>
+                        <span class="auth-badge">Ag7Spot</span>
+                        <h2>Bienvenue</h2>
+                        <p>Connecte-toi pour accéder à ton espace marchand et découvrir les boutiques de la RDC.</p>
+                    </div>
+                    <div class="auth-illustration">
+                        <i class="fas fa-map-pin"></i>
+                    </div>
+                </div>
+                <form id="authForm" class="auth-form">
                     <div class="form-group">
-                        <label>Ton email</label>
-                        <input type="email" id="authEmail" placeholder="exemple@mail.com" required />
+                        <label>Adresse e-mail</label>
+                        <input type="email" id="authEmail" placeholder="exemple@domaine.com" required />
                     </div>
                     <div class="form-group">
                         <label>Mot de passe</label>
@@ -19,8 +27,10 @@ function renderAuth(container) {
                     <button type="submit" class="btn-primary w-full">
                         <i class="fas fa-sign-in-alt"></i> Se connecter
                     </button>
+                    <div class="auth-footer">
+                        <p>Tu dois déjà posséder un compte pour te connecter. Aucun nouvel enregistrement n'est possible ici.</p>
+                    </div>
                 </form>
-                <p class="auth-note">Tu dois déjà posséder un compte pour te connecter. Aucun nouvel enregistrement n'est possible ici.</p>
             </div>
         </div>
     `;
@@ -45,6 +55,7 @@ function renderAuth(container) {
         localStorage.setItem('ag7_current_user', JSON.stringify(matchingUser));
         localStorage.removeItem('ag7_onboarding_done');
         applyStoredUser(matchingUser);
+        updateHeaderActionsVisibility();
 
         showToast('Bienvenue, ' + matchingUser.username + ' !', 'success');
         navigateTo('feed');

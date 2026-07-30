@@ -30,9 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (!CURRENT_USER || !CURRENT_USER.id) {
+        updateHeaderActionsVisibility();
         navigateTo('auth');
         return;
     }
+
+    updateHeaderActionsVisibility();
 
     // Vérifier si l'onboarding doit être affiché
     const onboardingDone = localStorage.getItem('onboarding_done');
@@ -69,6 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Charger la page par défaut
     navigateTo('feed');
     appInitialized = true;
+    updateHeaderActionsVisibility();
 
     // Service Worker pour le hors-ligne
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
@@ -79,6 +83,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('SW non enregistré : protocole non sécurisé ou environnement local invalide', location.protocol);
     }
 });
+
+function logout() {
+    localStorage.removeItem('ag7_current_user');
+    localStorage.removeItem('ag7_onboarding_done');
+    CURRENT_USER.id = null;
+    CURRENT_USER.username = '';
+    CURRENT_USER.points = 0;
+    CURRENT_USER.avatar = '';
+    CURRENT_USER.shopId = null;
+    CURRENT_USER.role = 'buyer';
+    updateHeaderActionsVisibility();
+    navigateTo('auth');
+}
+
+function updateHeaderActionsVisibility() {
+    const headerActions = document.querySelector('.header-actions');
+    if (!headerActions) return;
+    if (CURRENT_USER && CURRENT_USER.id) {
+        headerActions.classList.add('show');
+    } else {
+        headerActions.classList.remove('show');
+    }
+}
 
 function navigateTo(page) {
     if (page !== 'auth' && (!CURRENT_USER || !CURRENT_USER.id)) {
@@ -127,6 +154,7 @@ function navigateTo(page) {
 
 // Exposer globalement pour les appels depuis les pages
 window.navigateTo = navigateTo;
+window.logout = logout;
 window.showToast = showToast;
 window.getUserPosition = getUserPosition;
 window.getDistanceBetween = getDistanceBetween;
