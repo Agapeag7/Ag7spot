@@ -76,11 +76,11 @@ function renderAddProduct(container) {
                         </div>
                         <div class="form-group">
                             <label>Latitude</label>
-                            <input type="number" id="shopLat" placeholder="45.7640" step="0.0001" required />
+                            <input type="number" id="shopLat" placeholder="-4.3253" step="0.0001" required />
                         </div>
                         <div class="form-group">
                             <label>Longitude</label>
-                            <input type="number" id="shopLng" placeholder="4.8357" step="0.0001" required />
+                            <input type="number" id="shopLng" placeholder="15.3135" step="0.0001" required />
                         </div>
                         <button type="submit" class="btn-primary w-full">
                             <i class="fas fa-store"></i> Créer ma boutique

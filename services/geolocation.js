@@ -26,9 +26,9 @@ function getUserPosition() {
                 resolve(userPosition);
             },
             (err) => {
-                // Fallback sur Lyon par défaut
-                console.warn('Géolocalisation refusée, fallback sur Lyon', err);
-                userPosition = { lat: 45.7600, lng: 4.8400, accuracy: 1000 };
+                // Fallback sur Kinshasa par défaut
+                console.warn('Géolocalisation refusée, fallback sur Kinshasa', err);
+                userPosition = { lat: -4.325321, lng: 15.313543, accuracy: 1000 };
                 resolve(userPosition);
             },
             { enableHighAccuracy: true, timeout: 10000 }
