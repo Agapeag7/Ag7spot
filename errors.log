@@ -1,3 +1,179 @@
-- concernant ceci : Informations de boutique
-l'utilisateur doit placer le marqueur sur la carte pour indiquer l'emplacement exact de sa boutique. Les champs de latitude et de longitude sont automatiquement remplis en fonction de la position du marqueur.
-donc aulieu d'affocher des champs comme latitude et longitude, il faut afficher une carte avec un marqueur que l'utilisateur peut déplacer pour indiquer l'emplacement exact de sa boutique. Les champs de latitude et de longitude seront mis à jour automatiquement en fonction de la position du marqueur sur la carte.
+la section d'authentification a disparu elle ne s'affiche plus :
+
+auth.js:156 Uncaught SyntaxError: Identifier 'updateSellerFields' has already been declared (at auth.js:156:11)
+07a77608-36a7-4bc1-9e13-f2856aa995cc:669 [Violation] 'DOMContentLoaded' handler took 339ms
+app.js:148 Uncaught (in promise) ReferenceError: renderAuth is not defined
+    at navigateTo (app.js:148:13)
+    at HTMLDocument.<anonymous> (app.js:34:9)
+navigateTo @ app.js:148
+(anonymous) @ app.js:34
+wrapper.<computed> @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:239
+eval @ VM1588:88
+A @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+r @ VM1588:83
+s @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+d @ VM1588:88
+c @ VM1588:88
+eval @ VM1588:88
+A @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+r @ VM1588:83
+s @ VM1588:83
+Promise.then
+r @ VM1588:83
+s @ VM1588:83
+Promise.then
+r @ VM1588:83
+s @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:88
+getScriptList @ VM1588:88
+f @ VM1588:88
+setTimeout
+wrapper.<computed> @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:239
+eval @ VM1588:88
+openPage @ VM1588:88
+eval @ VM1588:88
+Promise.then
+pn.onMessage @ VM1588:88
+eval @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+s.emit @ VM1588:86
+sendMessage @ VM1588:88
+value @ VM1588:88
+eval @ VM1588:88
+eval @ VM1588:88
+Promise.then
+a @ VM1588:88
+148 @ VM1588:88
+n @ VM1588:88
+eval @ VM1588:88
+e.contentScriptIndex @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+eval @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+eval @ VM1588:88
+setTimeout
+wrapper.<computed> @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:239
+eval @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+t @ VM1588:88
+eval @ VM1588:88
+n @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:90
+eval @ VM1588:91
+runCode @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:119
+buildCode @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:620
+run @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:632
+comm.load @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:645
+(anonymous) @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:671
+VM1588:88 TypeError: Failed to fetch
+    at wrapper.<computed> [as fetch] (07a77608-36a7-4bc1-9e13-f2856aa995cc:239:25)
+    at eval (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:88:3015147)
+    at A (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:314160)
+    at Generator.eval (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:315487)
+    at Generator.eval [as next] (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:314570)
+    at r (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:1164)
+    at s (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:1367)
+    at eval (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:1426)
+    at new Promise (<anonymous>)
+    at eval (eval at buildCode (07a77608-36a7-4bc1-9e13-f2856aa995cc:615:33), <anonymous>:83:1307)
+eval @ VM1588:88
+Promise.catch
+eval @ VM1588:88
+A @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+r @ VM1588:83
+s @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+d @ VM1588:88
+c @ VM1588:88
+eval @ VM1588:88
+A @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+r @ VM1588:83
+s @ VM1588:83
+Promise.then
+r @ VM1588:83
+s @ VM1588:83
+Promise.then
+r @ VM1588:83
+s @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:88
+getScriptList @ VM1588:88
+f @ VM1588:88
+setTimeout
+wrapper.<computed> @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:239
+eval @ VM1588:88
+openPage @ VM1588:88
+eval @ VM1588:88
+Promise.then
+pn.onMessage @ VM1588:88
+eval @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+s.emit @ VM1588:86
+sendMessage @ VM1588:88
+value @ VM1588:88
+eval @ VM1588:88
+eval @ VM1588:88
+Promise.then
+a @ VM1588:88
+148 @ VM1588:88
+n @ VM1588:88
+eval @ VM1588:88
+e.contentScriptIndex @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+eval @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+eval @ VM1588:88
+setTimeout
+wrapper.<computed> @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:239
+eval @ VM1588:88
+eval @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+value @ VM1588:88
+t @ VM1588:88
+eval @ VM1588:88
+n @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:83
+eval @ VM1588:90
+eval @ VM1588:91
+runCode @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:119
+buildCode @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:620
+run @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:632
+comm.load @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:645
+(anonymous) @ 07a77608-36a7-4bc1-9e13-f2856aa995cc:671
