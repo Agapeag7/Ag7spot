@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title>Ag7Spot - Trouve près de chez toi</title>
+
+        <!-- Polices & Icônes -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+        <!-- Leaflet CSS (carte) -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+        <!-- Notre CSS -->
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+
+        <div id="app">
+            <!-- ===== HEADER ===== -->
+            <header class="app-header">
+                <div class="logo">
+                    <i class="fas fa-map-pin"></i>
+                    <span>Ag7Spot</span>
+                </div>
+                <div class="header-actions">
+                    <i class="fas fa-search" id="searchIcon" title="Recherche"></i>
+                    <i class="fas fa-bell" id="notifIcon" title="Notifications"></i>
+                </div>
+            </header>
+
+            <!-- ===== CONTENU PRINCIPAL ===== -->
+            <main class="main-content" id="mainContent">
+                <!-- Les pages sont injectées dynamiquement par JavaScript -->
+                <div id="pageContainer"></div>
+            </main>
+
+            <!-- ===== NAVIGATION BASSE ===== -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-page="feed">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Fil</span>
+                </button>
+                <button class="nav-item" data-page="map">
+                    <i class="fas fa-map"></i>
+                    <span>Carte</span>
+                    <span class="badge" id="dealBadge">3</span>
+                </button>
+                <button class="nav-item nav-center" data-page="add">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="nav-item" data-page="favorites">
+                    <i class="fas fa-heart"></i>
+                    <span>Suivis</span>
+                </button>
+                <button class="nav-item" data-page="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profil</span>
+                </button>
+            </nav>
+
+            <!-- ===== CONTENEUR POUR LES TOASTS ===== -->
+            <div id="toastContainer"></div>
+
+            <!-- ===== MODALE POUR LE CHAT ===== -->
+            <div id="chatModal" class="modal hidden">
+                <div class="modal-content">
+                    <div id="chatContainer"></div>
+                </div>
+            </div>
+
+            <!-- ===== MODALE ONBOARDING ===== -->
+            <div id="onboardingModal" class="modal">
+                <div class="modal-content onboarding-modal">
+                    <div id="onboardingContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SCRIPTS ===== -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+        <!-- Services -->
+        <script src="services/storage.js"></script>
+        <script src="services/geolocation.js"></script>
+        <script src="services/api.js"></script>
+        <script src="services/offline.js"></script>
+
+        <!-- Données (mock) -->
+        <script src="data/mock-data.js"></script>
+
+        <!-- Composants -->
+        <script src="components/stock-badge.js"></script>
+        <script src="components/shop-status.js"></script>
+        <script src="components/flash-deal.js"></script>
+        <script src="components/onboarding.js"></script>
+
+        <!-- Pages -->
+        <script src="pages/feed.js"></script>
+        <script src="pages/map.js"></script>
+        <script src="pages/add-product.js"></script>
+        <script src="pages/favorites.js"></script>
+        <script src="pages/profile.js"></script>
+        <script src="pages/parcours.js"></script>
+        <script src="pages/collections.js"></script>
+        <script src="pages/chat.js"></script>
+
+        <!-- App principale -->
+        <script src="app.js"></script>
+    </body>
+</html>
