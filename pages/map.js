@@ -189,9 +189,12 @@ function doCheckIn(shopId) {
         }
 
         // Appel API simulé
-        showToast('✅ Check-in validé ! +10 points', 'success');
+        showToast('Check-in validé ! +10 points', 'success');
         CURRENT_USER.points += 10;
-        document.querySelector('.profile-stats')?.querySelector('strong')?.textContent = CURRENT_USER.points;
+        const profilePointsEl = document.querySelector('.profile-stats strong');
+        if (profilePointsEl) {
+            profilePointsEl.textContent = CURRENT_USER.points;
+        }
     });
 }
 

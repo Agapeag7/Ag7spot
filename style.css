@@ -5,25 +5,38 @@
     box-sizing: border-box;
 }
 :root {
-    --primary: #6C3BFF;
-    --primary-dark: #5428d6;
-    --primary-light: #8B6FFF;
-    --secondary: #FF6B35;
-    --success: #10B981;
-    --warning: #F59E0B;
-    --danger: #EF4444;
-    --bg: #F5F7FB;
-    --card-bg: #FFFFFF;
-    --text-main: #1A1A2E;
-    --text-gray: #6B7280;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    /* Couleurs principales - tons doux et élégants */
+    --primary: #4A6CF7;          /* Bleu vif mais tempéré */
+    --primary-dark: #3651B5;     /* Bleu plus profond pour les hover */
+    --primary-light: #E8EDFD;    /* Fond bleu très clair pour les sélections */
+    --secondary: #F59E0B;        /* Jaune doux pour les accents (badges, deals) */
+    --secondary-light: #FEF3C7;  /* Fond jaune pâle */
+
+    /* Couleurs de statut - pastel */
+    --success: #10B981;          /* Vert doux */
+    --success-bg: #ECFDF5;       /* Fond vert très clair */
+    --warning: #F59E0B;          /* Jaune (identique au secondary) */
+    --warning-bg: #FFFBEB;       /* Fond jaune très clair */
+    --danger: #EF4444;           /* Rouge, utilisé avec parcimonie */
+    --danger-bg: #FEF2F2;        /* Fond rouge très clair */
+
+    /* Neutres - palette grise naturelle */
+    --bg: #F8FAFC;               /* Fond général très clair (presque blanc) */
+    --card-bg: #FFFFFF;          /* Blanc pur pour les cartes */
+    --text-main: #1E293B;        /* Gris foncé (plus doux que le noir) */
+    --text-gray: #64748B;        /* Gris moyen pour les textes secondaires */
+    --border: #E2E8F0;           /* Gris très clair pour les bordures */
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.04); /* Ombre légère */
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.06); /* Ombre un peu plus marquée */
+
+    /* Dimensions et transitions */
     --radius: 16px;
     --radius-lg: 20px;
     --nav-height: 75px;
     --header-height: 65px;
     --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);

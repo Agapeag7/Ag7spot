@@ -2,7 +2,6 @@
 // APPLICATION PRINCIPALE (ROUTAGE, INIT)
 // =========================================
 let currentPage = 'feed';
-let mapInstance = null;
 let appInitialized = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -43,10 +42,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     appInitialized = true;
 
     // Service Worker pour le hors-ligne
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+        navigator.serviceWorker.register('sw.js')
             .then(() => console.log('SW enregistré'))
             .catch(err => console.warn('SW erreur:', err));
+    } else if ('serviceWorker' in navigator) {
+        console.warn('SW non enregistré : protocole non sécurisé ou environnement local invalide', location.protocol);
     }
 });
 

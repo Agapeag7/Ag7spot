@@ -1,0 +1,6 @@
+map.js:194 Uncaught SyntaxError: Invalid left-hand side in assignment
+app.js:49 SW erreur: TypeError: Failed to register a ServiceWorker: The URL protocol of the current origin ('null') is not supported.
+    at HTMLDocument.<anonymous> (app.js:47:33)
+(anonymous) @ app.js:49
+Promise.catch
+(anonymous) @ app.js:49
