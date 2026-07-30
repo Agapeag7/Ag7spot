@@ -1,4 +1,0 @@
-- j'espere que ce bouton prend la localisation de l'utilisateur vers la boutique qu'il veut visiter ?:
-<button class="btn-outline btn-sm" onclick="event.stopPropagation(); getDirections(45.764, 4.8357)">
-                                    <i class="fas fa-map-pin"></i>
-                                </button>

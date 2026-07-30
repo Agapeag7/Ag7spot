@@ -104,6 +104,7 @@
         <script src="pages/parcours.js"></script>
         <script src="pages/collections.js"></script>
         <script src="pages/chat.js"></script>
+        <script src="pages/auth.js"></script>
 
         <!-- App principale -->
         <script src="app.js"></script>

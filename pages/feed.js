@@ -5,7 +5,7 @@ function renderFeed(container) {
     container.innerHTML = `
         <div class="page active">
             <div class="section-title">
-                <span><i class="fas fa-fire"></i> Fil d'actualité</span>
+                <span>Fil d'actualité</span>
                 <a href="#" data-nav="map">Voir la carte</a>
             </div>
             ${renderDistanceFilter()}
@@ -35,17 +35,20 @@ function renderDistanceFilter() {
     `;
 }
 
-function loadFeed(maxDistance) {
+function loadFeed(maxDistance, productQuery = '') {
     const container = document.getElementById('feedContainer');
+    const query = productQuery.trim().toLowerCase();
 
     // Simulation d'appel API
     getUserPosition().then(pos => {
-        // Filtrer les produits par distance
+        // Filtrer les produits par distance et par nom
         const filtered = PRODUCTS.filter(p => {
             const shop = SHOPS.find(s => s.id === p.shopId);
             if (!shop) return false;
             const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
-            return dist <= maxDistance;
+            if (dist > maxDistance) return false;
+            if (!query) return true;
+            return p.name.toLowerCase().includes(query) || shop.name.toLowerCase().includes(query) || shop.category.toLowerCase().includes(query);
         });
 
         if (filtered.length === 0) {

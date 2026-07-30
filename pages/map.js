@@ -5,7 +5,7 @@ function renderMap(container) {
     container.innerHTML = `
         <div class="page active">
             <div class="map-controls">
-                <input type="text" placeholder="Rechercher une boutique..." id="searchMap" />
+                <input type="text" placeholder="Rechercher un produit ou une boutique..." id="searchMap" />
                 <button class="btn-outline" id="routeBtn"><i class="fas fa-route"></i></button>
                 <button class="btn-outline" id="locateBtn"><i class="fas fa-location-arrow"></i></button>
             </div>
@@ -103,7 +103,9 @@ function loadShopsOnMap(pos, query = '') {
     const matchesShopQuery = (shop) => {
         if (!normalizedQuery) return true;
         const text = `${shop.name} ${shop.address} ${shop.category}`.toLowerCase();
-        return text.includes(normalizedQuery);
+        const shopMatches = text.includes(normalizedQuery);
+        const productMatches = PRODUCTS.some(p => p.shopId === shop.id && p.name.toLowerCase().includes(normalizedQuery));
+        return shopMatches || productMatches;
     };
 
     const matchesCollectionQuery = (col) => {
@@ -232,11 +234,7 @@ function loadShopsOnMap(pos, query = '') {
             summaryContainer.innerHTML = `
                 <div class="map-summary-card">
                     <strong>${visibleShops.length} boutiques visibles</strong>
-                    <div class="shop-labels">${visibleShops.slice(0, 5).map(shop => `
-                        <span class="shop-label ${shop.selected ? 'selected' : ''}">
-                            ${shop.name} <small>${shop.dist.toFixed(1)} km</small>
-                        </span>
-                    `).join('')}</div>
+                    
                     ${visibleShops.length > 5 ? `<div class="shop-label-more">+${visibleShops.length - 5} autres</div>` : ''}
                 </div>
             `;

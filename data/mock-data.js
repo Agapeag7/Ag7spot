@@ -25,12 +25,18 @@ const FLASH_DEALS = [
     { id: 2, shopId: 3, productId: 301, discount: 20, endTime: '2026-07-30T16:00:00' }
 ];
 
+const USERS = [
+    { id: 1, username: 'Ag7 Dev', email: 'ag7@dev.com', password: 'password123', role: 'seller', avatar: 'AG', points: 450, shopId: 1 },
+    { id: 2, username: 'Lina Achete', email: 'lina@achete.com', password: 'acheteur123', role: 'buyer', avatar: 'LA', points: 120, shopId: null },
+    { id: 3, username: 'Tech Vendeur', email: 'tech@vendeur.com', password: 'vendeur123', role: 'seller', avatar: 'TV', points: 230, shopId: 3 }
+];
+
 const COLLECTIONS = [
     { id: 1, name: "Mode Vintage à Lyon", description: "Les meilleures adresses pour du vintage", shops: [1, 5], creator: 1 },
     { id: 2, name: "Petit-déjeuner gourmand", description: "Boulangeries et café de quartier", shops: [4], creator: 2 }
 ];
 
-const CURRENT_USER = { id: 1, username: 'Ag7 Dev', points: 450, avatar: 'AG', shopId: 1 };
+const CURRENT_USER = { id: null, username: '', points: 0, avatar: '', shopId: null, role: 'buyer' };
 
 // Distance helper
 function calculateDistance(pos1, pos2) {

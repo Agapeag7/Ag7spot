@@ -10,13 +10,14 @@ function renderProfile(container) {
         const shop = SHOPS.find(sh => sh.id === p.shopId);
         return shop && shop.ownerId === user.id;
     }).length;
+    const roleLabel = user.role === 'seller' ? 'Vendeur' : 'Acheteur';
 
     container.innerHTML = `
         <div class="page active">
             <div class="profile-card">
                 <div class="avatar">${user.avatar}</div>
                 <h3>${user.username}</h3>
-                <p class="profile-role">Développeur & Créateur</p>
+                <p class="profile-role">${roleLabel}</p>
                 <div class="profile-stats">
                     <div><strong>${followCount}</strong> <span>Abonnements</span></div>
                     <div><strong>${productCount}</strong> <span>Mes produits</span></div>
@@ -29,23 +30,27 @@ function renderProfile(container) {
 
             <div class="settings-card">
                 <h4><i class="fas fa-store"></i> Ma boutique</h4>
-                ${myShop ? `
-                    <div class="settings-item">
-                        <span>${myShop.name}</span>
-                        <span class="settings-value">${renderShopStatus(myShop)}</span>
-                    </div>
-                    <div class="settings-item">
-                        <span>Adresse</span>
-                        <span class="settings-value">${myShop.address}</span>
-                    </div>
-                    <button class="btn-primary w-full" onclick="navigateTo('add')">
-                        <i class="fas fa-plus-circle"></i> Ajouter un produit
-                    </button>
+                ${user.role === 'seller' ? `
+                    ${myShop ? `
+                        <div class="settings-item">
+                            <span>${myShop.name}</span>
+                            <span class="settings-value">${renderShopStatus(myShop)}</span>
+                        </div>
+                        <div class="settings-item">
+                            <span>Adresse</span>
+                            <span class="settings-value">${myShop.address}</span>
+                        </div>
+                        <button class="btn-primary w-full" onclick="navigateTo('add')">
+                            <i class="fas fa-plus-circle"></i> ${myShop ? 'Ajouter un produit' : 'Créer ma boutique'}
+                        </button>
+                    ` : `
+                        <p>Tu n'as pas encore de boutique. Crée-la pour vendre dans l'application.</p>
+                        <button class="btn-primary w-full" onclick="navigateTo('add')">
+                            <i class="fas fa-store"></i> Créer ma boutique
+                        </button>
+                    `}
                 ` : `
-                    <p>Tu n'as pas encore de boutique. Crée-la pour vendre dans l'application.</p>
-                    <button class="btn-primary w-full" onclick="navigateTo('add')">
-                        <i class="fas fa-store"></i> Créer ma boutique
-                    </button>
+                    <p>En tant qu'acheteur, tu peux que parcourir les boutiques et découvrir des produits.</p>
                 `}
             </div>
 

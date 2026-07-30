@@ -2,6 +2,20 @@
 // PAGE : AJOUTER UN PRODUIT / CRÉER MA BOUTIQUE
 // =========================================
 function renderAddProduct(container) {
+    if (!CURRENT_USER || CURRENT_USER.role !== 'seller') {
+        container.innerHTML = `
+            <div class="page active">
+                <div class="empty-state">
+                    <i class="fas fa-lock"></i>
+                    <h3>Accès réservé aux vendeurs</h3>
+                    <p>Les produits ne peuvent être ajoutés que par des vendeurs possédant une boutique.</p>
+                    <button class="btn-primary btn-sm" onclick="navigateTo('profile')">Retour au profil</button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
     const ownedShops = SHOPS.filter(shop => shop.ownerId === CURRENT_USER.id);
     const hasShop = ownedShops.length > 0;
 
