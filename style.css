@@ -156,7 +156,18 @@ body {
     padding: 32px 28px;
     backdrop-filter: blur(18px);
 }
-.auth-header {
+.auth-shop-map {
+    width: 100%;
+    height: 240px;
+    border-radius: 22px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+    margin-top: 10px;
+}
+.auth-shop-map .leaflet-container {
+    border-radius: 22px;
+}
+.auth-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;

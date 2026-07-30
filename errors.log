@@ -1,1 +1,3 @@
-- en creant des formulaires tu dois te referer a la logique presente de l'application : donc tu as oublier le fais qu'en creant un compte on doit s'identifier comme vendeur ou acheteur, et que si on est vendeur on doit remplir les champs de la boutique. Donc tu dois ajouter un select pour choisir le type de compte, et si c'est vendeur alors afficher les champs de la boutique.
+- concernant ceci : Informations de boutique
+l'utilisateur doit placer le marqueur sur la carte pour indiquer l'emplacement exact de sa boutique. Les champs de latitude et de longitude sont automatiquement remplis en fonction de la position du marqueur.
+donc aulieu d'affocher des champs comme latitude et longitude, il faut afficher une carte avec un marqueur que l'utilisateur peut déplacer pour indiquer l'emplacement exact de sa boutique. Les champs de latitude et de longitude seront mis à jour automatiquement en fonction de la position du marqueur sur la carte.

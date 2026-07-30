@@ -9,7 +9,7 @@ function renderAuth(container) {
                     <div>
                         <span class="auth-badge">Ag7Spot</span>
                         <h2>Bienvenue</h2>
-                        <p>Connecte-toi ou crée un compte pour explorer les boutiques de la RDC en toute confiance.</p>
+                        <p>Connecte-toi ou crée un compte pour explorer les boutiques en toute confiance.</p>
                     </div>
                     <div class="auth-illustration">
                         <i class="fas fa-map-pin"></i>
@@ -58,15 +58,12 @@ function renderAuth(container) {
                                 <label>Adresse de la boutique</label>
                                 <input type="text" id="authShopAddress" placeholder="Ex: Boulevard du 30 Juin" />
                             </div>
-                            <div class="form-group form-row">
-                                <div>
-                                    <label>Latitude</label>
-                                    <input type="number" id="authShopLat" placeholder="-4.3253" step="0.0001" />
-                                </div>
-                                <div>
-                                    <label>Longitude</label>
-                                    <input type="number" id="authShopLng" placeholder="15.3135" step="0.0001" />
-                                </div>
+                            <div class="form-group">
+                                <label>Position de la boutique</label>
+                                <div id="authShopMap" class="auth-shop-map"></div>
+                                <p class="map-hint">Déplace le marqueur pour placer la boutique exactement.</p>
+                                <input type="hidden" id="authShopLat" />
+                                <input type="hidden" id="authShopLng" />
                             </div>
                         </div>
                     </div>
@@ -94,6 +91,12 @@ function renderAuth(container) {
     const submitBtn = container.querySelector('.auth-submit-btn');
     const loginNote = container.querySelector('.auth-note-login');
     const registerNote = container.querySelector('.auth-note-register');
+    const authShopMap = document.getElementById('authShopMap');
+    const authShopLat = document.getElementById('authShopLat');
+    const authShopLng = document.getElementById('authShopLng');
+
+    let authMapInstance = null;
+    let authShopMarker = null;
 
     const setMode = (mode) => {
         authForm.dataset.mode = mode;
@@ -121,6 +124,47 @@ function renderAuth(container) {
 
     accountTypeSelect?.addEventListener('change', updateSellerFields);
 
+    const initializeAuthShopMap = () => {
+        if (!authShopMap || authMapInstance) return;
+        getUserPosition().then(pos => {
+            const startLat = pos?.lat || -4.3253;
+            const startLng = pos?.lng || 15.3135;
+            authMapInstance = L.map('authShopMap', {
+                zoomControl: true,
+                attributionControl: false
+            }).setView([startLat, startLng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(authMapInstance);
+
+            authShopMarker = L.marker([startLat, startLng], {
+                draggable: true
+            }).addTo(authMapInstance);
+
+            authShopLat.value = startLat.toFixed(4);
+            authShopLng.value = startLng.toFixed(4);
+
+            authShopMarker.on('move', function(e) {
+                const { lat, lng } = e.latlng;
+                authShopLat.value = lat.toFixed(4);
+                authShopLng.value = lng.toFixed(4);
+            });
+        });
+    };
+
+    const updateSellerFields = () => {
+        const isSeller = accountTypeSelect?.value === 'seller';
+        const sellerSection = container.querySelector('.seller-section');
+        if (sellerSection) {
+            sellerSection.classList.toggle('hidden', !isSeller);
+        }
+        if (isSeller) {
+            initializeAuthShopMap();
+        }
+    };
+
+    setTimeout(updateSellerFields, 0);
     setMode('login');
 
     authForm?.addEventListener('submit', function(e) {
@@ -183,7 +227,7 @@ function renderAuth(container) {
             const shopLng = parseFloat(document.getElementById('authShopLng').value);
 
             if (!shopName || !shopCategory || !shopAddress || Number.isNaN(shopLat) || Number.isNaN(shopLng)) {
-                showToast('Remplis tous les champs de la boutique.', 'warning');
+                showToast('Remplis tous les champs de la boutique et déplace le marqueur sur la carte.', 'warning');
                 return;
             }
 
