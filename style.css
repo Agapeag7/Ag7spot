@@ -596,6 +596,11 @@ body {
     margin-right: 8px;
     color: var(--primary);
 }
+
+.settings-card p {
+    color: var(--text-gray);
+}
+
 .settings-item {
     display: flex;
     justify-content: space-between;
