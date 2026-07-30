@@ -53,9 +53,9 @@ function showShopDetail(shopId) {
     const shop = SHOPS.find(s => s.id === shopId);
     if (!shop) return;
     const products = PRODUCTS.filter(p => p.shopId === shopId);
-    let msg = `🏪 ${shop.name}\n📍 ${shop.address}\n${renderShopStatus(shop)}\n\n📦 Produits:\n`;
+    let msg = `🏪 ${shop.name}\n📍 ${shop.address}\n${renderShopStatus(shop)}\n\n Produits:\n`;
     products.forEach(p => {
-        msg += `- ${p.name} : ${p.price.toFixed(2)} € (${p.stock} en stock)\n`;
+        msg += `- ${p.name} : ${p.price.toFixed(2)} $ (${p.stock} en stock)\n`;
     });
     alert(msg);
 }

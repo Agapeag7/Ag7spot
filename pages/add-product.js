@@ -12,7 +12,7 @@ function renderAddProduct(container) {
                         <input type="text" id="productName" placeholder="Ex: Sweat à capuche oversize" required />
                     </div>
                     <div class="form-group">
-                        <label>Prix (€)</label>
+                        <label>Prix ($)</label>
                         <input type="number" id="productPrice" placeholder="49.99" step="0.01" required />
                     </div>
                     <div class="form-group">

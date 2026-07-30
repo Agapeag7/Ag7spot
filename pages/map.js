@@ -94,7 +94,7 @@ function loadShopsOnMap(pos) {
         const productList = products.map(p => 
             `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;">
                 <span>${p.name}</span>
-                <span style="font-weight:600;">${p.price.toFixed(2)} €</span>
+                <span style="font-weight:600;">${p.price.toFixed(2)} $</span>
             </div>`
         ).join('');
 

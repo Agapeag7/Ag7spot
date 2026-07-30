@@ -76,7 +76,7 @@ function loadFeed(maxDistance) {
                         </div>
                         <h3>${p.name}</h3>
                         <div class="meta">
-                            <span class="price">${p.price.toFixed(2)} €</span>
+                            <span class="price">${p.price.toFixed(2)} $</span>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 ${stockHtml}
                                 <button class="btn-outline btn-sm" onclick="event.stopPropagation(); openChat(${p.id})">
@@ -98,7 +98,7 @@ function showProductDetail(productId) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (!product) return;
     const shop = SHOPS.find(s => s.id === product.shopId);
-    alert(`🛍️ ${product.name}\n📍 ${shop.name}\n💰 ${product.price} €\n📦 Stock: ${product.stock} unités`);
+    alert(`🛍️ ${product.name}\n📍 ${shop.name}\n💰 ${product.price} $\n Stock: ${product.stock} unités`);
 }
 
 function getDirections(lat, lng) {
