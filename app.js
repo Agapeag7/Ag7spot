@@ -69,6 +69,9 @@ function navigateTo(page) {
         case 'map':
             renderMap(container);
             break;
+        case 'parcours':
+            renderParcours(container);
+            break;
         case 'add':
             renderAddProduct(container);
             break;

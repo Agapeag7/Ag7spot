@@ -30,16 +30,17 @@ function renderProfile(container) {
                     <span>Mode sombre</span>
                     <span class="settings-value">Désactivé</span>
                 </div>
+
                 <div class="settings-item">
                     <span>Mode hors-ligne</span>
+
+                    <!--
                     <span class="settings-value" onclick="preloadOfflineMap()" style="cursor:pointer;color:var(--primary);">
                         <i class="fas fa-download"></i> Télécharger
                     </span>
+                    -->
                 </div>
-                <div class="settings-item no-border">
-                    <span>Version de l'app</span>
-                    <span class="settings-value">1.0.0</span>
-                </div>
+                
             </div>
         </div>
     `;

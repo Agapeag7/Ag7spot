@@ -97,8 +97,7 @@ function startCollectionRoute(collectionId) {
     }
 
     // Naviguer vers le parcours
-    navigateTo('feed');
-    setTimeout(() => startParcours(waypoints), 300);
+    startParcours(waypoints);
 }
 
 // Exposer pour les appels

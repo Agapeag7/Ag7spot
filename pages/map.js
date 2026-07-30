@@ -6,6 +6,7 @@ function renderMap(container) {
         <div class="page active">
             <div class="map-controls">
                 <input type="text" placeholder="Rechercher une boutique..." id="searchMap" />
+                <button class="btn-outline" id="routeBtn"><i class="fas fa-route"></i></button>
                 <button class="btn-outline" id="locateBtn"><i class="fas fa-location-arrow"></i></button>
             </div>
             <div id="map"></div>
@@ -19,6 +20,9 @@ function renderMap(container) {
 
 let mapInstance = null;
 let mapMarkers = [];
+let userMarker = null;
+let currentMapPosition = null;
+let currentSearchQuery = '';
 let routeLayer = null;
 
 function initMap() {
@@ -26,8 +30,11 @@ function initMap() {
     if (!mapContainer) return;
 
     getUserPosition().then(pos => {
+        currentMapPosition = pos;
+
         if (mapInstance) {
             mapInstance.invalidateSize();
+            loadShopsOnMap(currentMapPosition, currentSearchQuery);
             return;
         }
 
@@ -39,7 +46,7 @@ function initMap() {
         }).addTo(mapInstance);
 
         // Marqueur utilisateur
-        L.marker([pos.lat, pos.lng], {
+        userMarker = L.marker([pos.lat, pos.lng], {
             icon: L.divIcon({
                 className: 'user-marker',
                 html: '<i class="fas fa-circle" style="color:#6C3BFF;font-size:18px;"></i>',
@@ -50,10 +57,24 @@ function initMap() {
         // Charger les boutiques
         loadShopsOnMap(pos);
 
+        // Bouton parcours
+        document.getElementById('routeBtn')?.addEventListener('click', () => {
+            if (window.routeWaypoints && window.routeWaypoints.length > 0) {
+                navigateTo('parcours');
+                return;
+            }
+            showToast('Ajoute d\'abord des boutiques au parcours', 'warning');
+        });
+
         // Bouton localisation
         document.getElementById('locateBtn')?.addEventListener('click', () => {
             getUserPosition().then(newPos => {
+                currentMapPosition = newPos;
+                if (userMarker) {
+                    userMarker.setLatLng([newPos.lat, newPos.lng]);
+                }
                 mapInstance.setView([newPos.lat, newPos.lng], 15);
+                loadShopsOnMap(newPos, currentSearchQuery);
                 showToast('Position mise à jour', 'info');
             });
         });
@@ -66,20 +87,60 @@ function initMap() {
     });
 }
 
-function loadShopsOnMap(pos) {
-    if (!mapInstance) return;
+function loadShopsOnMap(pos, query = '') {
+    if (!mapInstance || !pos) return;
+
+    currentMapPosition = pos;
+    currentSearchQuery = query.trim();
+    const normalizedQuery = currentSearchQuery.toLowerCase();
 
     // Effacer les anciens marqueurs
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
     mapMarkers = [];
 
-    // Afficher les boutiques
+    const matchesShopQuery = (shop) => {
+        if (!normalizedQuery) return true;
+        const text = `${shop.name} ${shop.address} ${shop.category}`.toLowerCase();
+        return text.includes(normalizedQuery);
+    };
+
+    const matchesCollectionQuery = (col) => {
+        if (!normalizedQuery) return true;
+        if (`${col.name} ${col.description}`.toLowerCase().includes(normalizedQuery)) {
+            return true;
+        }
+        return col.shops.some(id => {
+            const shop = SHOPS.find(sh => sh.id === id);
+            return shop && `${shop.name} ${shop.address}`.toLowerCase().includes(normalizedQuery);
+        });
+    };
+
     SHOPS.forEach(shop => {
         const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
-        if (dist > 20) return; // Ignorer les boutiques trop loin
+        if (dist > 20 || !matchesShopQuery(shop)) return;
 
         const isOpen = shop.status === 'open';
         const statusColor = isOpen ? '#10B981' : '#EF4444';
+        const selected = window.routeWaypoints?.some(w => w.lat === shop.lat && w.lng === shop.lng);
+        const routeButton = selected
+            ? `<button class="btn-outline btn-sm" disabled><i class="fas fa-check"></i> Ajouté au parcours</button>`
+            : `<button class="btn-outline btn-sm" onclick="addRoutePoint(${shop.id})"><i class="fas fa-route"></i> Ajouter au parcours</button>`;
+
+        const products = PRODUCTS.filter(p => p.shopId === shop.id);
+        const productList = products.map(p => 
+            `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;">
+                <span>${p.name}</span>
+                <span style="font-weight:600;">${p.price.toFixed(2)} $</span>
+            </div>`
+        ).join('');
+
+        const deals = FLASH_DEALS.filter(d => d.shopId === shop.id);
+        const dealsHtml = deals.length ? `
+            <div style="margin:8px 0;padding:8px;background:#f9fafb;border-radius:12px;">
+                <strong>Flash deals :</strong>
+                ${deals.map(d => `<span style="display:inline-block;margin-top:4px;padding:4px 6px;background:#fde68a;border-radius:12px;font-size:12px;">-${d.discount}%</span>`).join(' ')}
+            </div>
+        ` : '';
 
         const marker = L.marker([shop.lat, shop.lng], {
             icon: L.divIcon({
@@ -89,53 +150,34 @@ function loadShopsOnMap(pos) {
             })
         }).addTo(mapInstance);
 
-        // Popup
-        const products = PRODUCTS.filter(p => p.shopId === shop.id);
-        const productList = products.map(p => 
-            `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;">
-                <span>${p.name}</span>
-                <span style="font-weight:600;">${p.price.toFixed(2)} $</span>
-            </div>`
-        ).join('');
-
         marker.bindPopup(`
-            <div style="min-width:200px;">
+            <div style="min-width:220px;">
                 <h4 style="margin:0 0 4px 0;">${shop.name}</h4>
                 <p style="margin:0 0 8px 0;font-size:12px;color:#6B7280;">${shop.address}</p>
                 ${renderShopStatus(shop)}
+                ${dealsHtml}
                 <div style="margin:8px 0;">
                     <strong>Produits :</strong>
                     ${productList || 'Aucun produit'}
                 </div>
-                <div style="display:flex;gap:8px;margin-top:8px;">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
                     <button class="btn-outline btn-sm" onclick="getDirectionsStatic(${shop.lat}, ${shop.lng})">
                         <i class="fas fa-map-pin"></i> Itinéraire
                     </button>
                     <button class="btn-outline btn-sm" onclick="doCheckIn(${shop.id})">
                         <i class="fas fa-check"></i> Check-in
                     </button>
+                    ${routeButton}
                 </div>
             </div>
         `);
 
         mapMarkers.push(marker);
-
-        // Flash Deals sur la carte
-        const deals = FLASH_DEALS.filter(d => d.shopId === shop.id);
-        deals.forEach(deal => {
-            const dealMarker = L.marker([shop.lat + 0.001, shop.lng + 0.001], {
-                icon: L.divIcon({
-                    className: 'flash-deal-marker',
-                    html: `<i class="fas fa-bolt"></i> -${deal.discount}%`,
-                    iconSize: [60, 26]
-                })
-            }).addTo(mapInstance);
-            mapMarkers.push(dealMarker);
-        });
     });
 
-    // Afficher les collections
     COLLECTIONS.forEach(col => {
+        if (!matchesCollectionQuery(col)) return;
+
         const centerLat = col.shops.reduce((sum, id) => {
             const s = SHOPS.find(sh => sh.id === id);
             return sum + (s ? s.lat : 0);
@@ -154,20 +196,24 @@ function loadShopsOnMap(pos) {
         }).addTo(mapInstance);
         mapMarkers.push(marker);
         marker.bindPopup(`
-            <h4>${col.name}</h4>
-            <p>${col.description}</p>
-            <button class="btn-outline btn-sm" onclick="startCollectionRoute(${col.id})">
-                <i class="fas fa-route"></i> Parcours
-            </button>
+            <div style="min-width:220px;">
+                <h4 style="margin:0 0 4px 0;">${col.name}</h4>
+                <p style="margin:0 0 8px 0;font-size:12px;color:#6B7280;">${col.description}</p>
+                <div style="margin-bottom:8px;font-size:12px;color:#4B5563;">${col.shops.map(id => {
+                    const shop = SHOPS.find(sh => sh.id === id);
+                    return shop ? shop.name : 'Inconnu';
+                }).join(', ')}</div>
+                <button class="btn-outline btn-sm" onclick="startCollectionRoute(${col.id})">
+                    <i class="fas fa-route"></i> Parcours
+                </button>
+            </div>
         `);
     });
 }
 
 function filterMarkers(query) {
-    if (!mapInstance) return;
-    // On cache/affiche les marqueurs selon la recherche
-    // Pour simplifier, on refait un filtrage avec les popups
-    // Dans une version pro, on gère ça avec des layers
+    if (!mapInstance || !currentMapPosition) return;
+    loadShopsOnMap(currentMapPosition, query);
 }
 
 function getDirectionsStatic(lat, lng) {
@@ -179,8 +225,19 @@ function getDirectionsStatic(lat, lng) {
 
 function doCheckIn(shopId) {
     getUserPosition().then(pos => {
+        currentMapPosition = pos;
+        if (pos.accuracy && pos.accuracy > 100) {
+            showToast('Position trop imprécise pour un check-in', 'warning');
+            return;
+        }
+
         const shop = SHOPS.find(s => s.id === shopId);
         if (!shop) return;
+
+        if (shop.status !== 'open') {
+            showToast('Impossible de check-in : boutique fermée ou en pause', 'warning');
+            return;
+        }
 
         const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
         if (dist > 0.1) {
@@ -188,7 +245,6 @@ function doCheckIn(shopId) {
             return;
         }
 
-        // Appel API simulé
         showToast('Check-in validé ! +10 points', 'success');
         CURRENT_USER.points += 10;
         const profilePointsEl = document.querySelector('.profile-stats strong');

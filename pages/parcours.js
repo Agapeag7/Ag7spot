@@ -148,12 +148,7 @@ function startNavigation() {
 // Fonction pour lancer le parcours depuis une collection
 function startParcours(waypoints) {
     routeWaypoints = waypoints;
-    const container = document.getElementById('pageContainer');
-    renderParcours(container);
-    // Activer la page
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('pageContainer').querySelector('.page').classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    navigateTo('parcours');
 }
 
 // Exposer pour les appels depuis la carte
