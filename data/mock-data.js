@@ -2,11 +2,11 @@
 // DONNÉES SIMULÉES (remplacées par l'API plus tard)
 // =========================================
 const SHOPS = [
-    { id: 1, name: "Urban Wear Lyon", category: "fashion", lat: 45.7640, lng: 4.8357, avatar: "https://picsum.photos/seed/urban/100/100", cover: "https://picsum.photos/seed/urban/600/300", followed: true, status: 'open', address: '15 Rue de la République, Lyon' },
-    { id: 2, name: "Librairie du Coin", category: "books", lat: 45.7580, lng: 4.8450, avatar: "https://picsum.photos/seed/librairie/100/100", cover: "https://picsum.photos/seed/librairie/600/300", followed: false, status: 'open', address: '8 Place des Terreaux, Lyon' },
-    { id: 3, name: "ElectroShop Pro", category: "tech", lat: 45.7700, lng: 4.8250, avatar: "https://picsum.photos/seed/electro/100/100", cover: "https://picsum.photos/seed/electro/600/300", followed: true, status: 'break', address: '42 Rue Garibaldi, Lyon' },
-    { id: 4, name: "Boulangerie des Artisans", category: "food", lat: 45.7550, lng: 4.8600, avatar: "https://picsum.photos/seed/boulangerie/100/100", cover: "https://picsum.photos/seed/boulangerie/600/300", followed: false, status: 'open', address: '3 Rue Tête d\'Or, Lyon' },
-    { id: 5, name: "Beauty & Co", category: "beauty", lat: 45.7620, lng: 4.8500, avatar: "https://picsum.photos/seed/beauty/100/100", cover: "https://picsum.photos/seed/beauty/600/300", followed: false, status: 'closed', address: '10 Rue Victor Hugo, Lyon' }
+    { id: 1, ownerId: 1, name: "Urban Wear Lyon", category: "fashion", lat: 45.7640, lng: 4.8357, avatar: "https://picsum.photos/seed/urban/100/100", cover: "https://picsum.photos/seed/urban/600/300", followed: true, status: 'open', address: '15 Rue de la République, Lyon' },
+    { id: 2, ownerId: 2, name: "Librairie du Coin", category: "books", lat: 45.7580, lng: 4.8450, avatar: "https://picsum.photos/seed/librairie/100/100", cover: "https://picsum.photos/seed/librairie/600/300", followed: false, status: 'open', address: '8 Place des Terreaux, Lyon' },
+    { id: 3, ownerId: 3, name: "ElectroShop Pro", category: "tech", lat: 45.7700, lng: 4.8250, avatar: "https://picsum.photos/seed/electro/100/100", cover: "https://picsum.photos/seed/electro/600/300", followed: true, status: 'break', address: '42 Rue Garibaldi, Lyon' },
+    { id: 4, ownerId: 4, name: "Boulangerie des Artisans", category: "food", lat: 45.7550, lng: 4.8600, avatar: "https://picsum.photos/seed/boulangerie/100/100", cover: "https://picsum.photos/seed/boulangerie/600/300", followed: false, status: 'open', address: '3 Rue Tête d\'Or, Lyon' },
+    { id: 5, ownerId: 5, name: "Beauty & Co", category: "beauty", lat: 45.7620, lng: 4.8500, avatar: "https://picsum.photos/seed/beauty/100/100", cover: "https://picsum.photos/seed/beauty/600/300", followed: false, status: 'closed', address: '10 Rue Victor Hugo, Lyon' }
 ];
 
 const PRODUCTS = [
@@ -30,7 +30,7 @@ const COLLECTIONS = [
     { id: 2, name: "Petit-déjeuner gourmand", description: "Boulangeries et café de quartier", shops: [4], creator: 2 }
 ];
 
-const CURRENT_USER = { id: 1, username: 'Ag7 Dev', points: 450, avatar: 'AG' };
+const CURRENT_USER = { id: 1, username: 'Ag7 Dev', points: 450, avatar: 'AG', shopId: 1 };
 
 // Distance helper
 function calculateDistance(pos1, pos2) {

@@ -9,6 +9,7 @@ function renderMap(container) {
                 <button class="btn-outline" id="routeBtn"><i class="fas fa-route"></i></button>
                 <button class="btn-outline" id="locateBtn"><i class="fas fa-location-arrow"></i></button>
             </div>
+            <div id="mapSummary" class="map-summary"></div>
             <div id="map"></div>
             <p class="map-hint"><i class="fas fa-info-circle"></i> Clique sur une boutique pour voir ses produits.</p>
         </div>
@@ -93,6 +94,7 @@ function loadShopsOnMap(pos, query = '') {
     currentMapPosition = pos;
     currentSearchQuery = query.trim();
     const normalizedQuery = currentSearchQuery.toLowerCase();
+    const visibleShops = [];
 
     // Effacer les anciens marqueurs
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
@@ -116,8 +118,16 @@ function loadShopsOnMap(pos, query = '') {
     };
 
     SHOPS.forEach(shop => {
+        if (!shop.ownerId) return;
         const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
         if (dist > 20 || !matchesShopQuery(shop)) return;
+        visibleShops.push({
+            id: shop.id,
+            name: shop.name,
+            dist,
+            status: shop.status,
+            selected: window.routeWaypoints?.some(w => w.lat === shop.lat && w.lng === shop.lng)
+        });
 
         const isOpen = shop.status === 'open';
         const statusColor = isOpen ? '#10B981' : '#EF4444';
@@ -145,8 +155,12 @@ function loadShopsOnMap(pos, query = '') {
         const marker = L.marker([shop.lat, shop.lng], {
             icon: L.divIcon({
                 className: 'shop-marker',
-                html: `<i class="fas fa-store" style="color:white;font-size:14px;background:${statusColor};padding:6px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);"></i>`,
-                iconSize: [30, 30]
+                html: `<div style="display:flex;flex-direction:column;align-items:center;">
+                    <span style="font-size:11px;font-weight:700;color:white;padding:2px 6px;border-radius:10px;background:${statusColor};margin-bottom:4px;box-shadow:0 1px 4px rgba(0,0,0,0.12);">${shop.name}</span>
+                    <i class="fas fa-store" style="color:white;font-size:14px;background:${statusColor};padding:6px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);"></i>
+                </div>`,
+                iconSize: [90, 60],
+                className: 'shop-marker-with-label'
             })
         }).addTo(mapInstance);
 
@@ -177,7 +191,6 @@ function loadShopsOnMap(pos, query = '') {
 
     COLLECTIONS.forEach(col => {
         if (!matchesCollectionQuery(col)) return;
-
         const centerLat = col.shops.reduce((sum, id) => {
             const s = SHOPS.find(sh => sh.id === id);
             return sum + (s ? s.lat : 0);
@@ -209,6 +222,26 @@ function loadShopsOnMap(pos, query = '') {
             </div>
         `);
     });
+
+    // Résumé des boutiques visibles
+    const summaryContainer = document.getElementById('mapSummary');
+    if (summaryContainer) {
+        if (visibleShops.length === 0) {
+            summaryContainer.innerHTML = `<div class="map-summary-empty">Aucune boutique trouvée. Ajuste la recherche ou la position.</div>`;
+        } else {
+            summaryContainer.innerHTML = `
+                <div class="map-summary-card">
+                    <strong>${visibleShops.length} boutiques visibles</strong>
+                    <div class="shop-labels">${visibleShops.slice(0, 5).map(shop => `
+                        <span class="shop-label ${shop.selected ? 'selected' : ''}">
+                            ${shop.name} <small>${shop.dist.toFixed(1)} km</small>
+                        </span>
+                    `).join('')}</div>
+                    ${visibleShops.length > 5 ? `<div class="shop-label-more">+${visibleShops.length - 5} autres</div>` : ''}
+                </div>
+            `;
+        }
+    }
 }
 
 function filterMarkers(query) {

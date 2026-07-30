@@ -4,6 +4,13 @@
 function renderProfile(container) {
     const user = CURRENT_USER;
 
+    const myShop = SHOPS.find(s => s.ownerId === user.id);
+    const followCount = SHOPS.filter(s => s.followed).length;
+    const productCount = PRODUCTS.filter(p => {
+        const shop = SHOPS.find(sh => sh.id === p.shopId);
+        return shop && shop.ownerId === user.id;
+    }).length;
+
     container.innerHTML = `
         <div class="page active">
             <div class="profile-card">
@@ -11,13 +18,35 @@ function renderProfile(container) {
                 <h3>${user.username}</h3>
                 <p class="profile-role">Développeur & Créateur</p>
                 <div class="profile-stats">
-                    <div><strong>${SHOPS.filter(s => s.followed).length}</strong> <span>Abonnements</span></div>
-                    <div><strong>${PRODUCTS.length}</strong> <span>Produits</span></div>
+                    <div><strong>${followCount}</strong> <span>Abonnements</span></div>
+                    <div><strong>${productCount}</strong> <span>Mes produits</span></div>
                     <div><strong>${user.points}</strong> <span>Points</span></div>
                 </div>
                 <button class="btn-outline profile-edit-btn" onclick="alert('✏️ Édition du profil (simulation)')">
                     <i class="fas fa-edit"></i> Modifier le profil
                 </button>
+            </div>
+
+            <div class="settings-card">
+                <h4><i class="fas fa-store"></i> Ma boutique</h4>
+                ${myShop ? `
+                    <div class="settings-item">
+                        <span>${myShop.name}</span>
+                        <span class="settings-value">${renderShopStatus(myShop)}</span>
+                    </div>
+                    <div class="settings-item">
+                        <span>Adresse</span>
+                        <span class="settings-value">${myShop.address}</span>
+                    </div>
+                    <button class="btn-primary w-full" onclick="navigateTo('add')">
+                        <i class="fas fa-plus-circle"></i> Ajouter un produit
+                    </button>
+                ` : `
+                    <p>Tu n'as pas encore de boutique. Crée-la pour vendre dans l'application.</p>
+                    <button class="btn-primary w-full" onclick="navigateTo('add')">
+                        <i class="fas fa-store"></i> Créer ma boutique
+                    </button>
+                `}
             </div>
 
             <div class="settings-card">
@@ -33,25 +62,18 @@ function renderProfile(container) {
 
                 <div class="settings-item">
                     <span>Mode hors-ligne</span>
-
-                    <!--
-                    <span class="settings-value" onclick="preloadOfflineMap()" style="cursor:pointer;color:var(--primary);">
-                        <i class="fas fa-download"></i> Télécharger
-                    </span>
-                    -->
                 </div>
-                
             </div>
         </div>
     `;
 }
 
 function preloadOfflineMap() {
-    showToast('🗺️ Téléchargement de la carte en cours...', 'info');
+    showToast('Téléchargement de la carte en cours...', 'info');
     getUserPosition().then(pos => {
         // Simuler un téléchargement
         setTimeout(() => {
-            showToast('✅ Carte téléchargée pour le hors-ligne', 'success');
+            showToast('Carte téléchargée pour le hors-ligne', 'success');
             localStorage.setItem('offline_map_downloaded', 'true');
         }, 2000);
     });
