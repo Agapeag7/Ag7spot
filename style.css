@@ -89,13 +89,13 @@ body {
 }
 .logo .app-icon,
 .btn-icon-app {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     object-fit: contain;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 .btn-icon-app {
-    display: inline-flex;
+    display: inline-block;
     vertical-align: middle;
 }
 .logo span {
@@ -513,7 +513,6 @@ body {
     color: var(--primary);
     padding: 8px 16px;
     border-radius: 30px;
-    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);

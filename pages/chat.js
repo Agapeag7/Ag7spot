@@ -24,8 +24,8 @@ function openChat(productId) {
             <button onclick="closeChat()"><i class="fas fa-times"></i></button>
         </div>
         <div class="chat-messages" id="chatMessages">
-            <div class="message system">🔹 ${product.name} - ${product.price.toFixed(2)} $</div>
-            <div class="message system">💡 Envoie un message pour réserver</div>
+            <div class="message system">${product.name} - ${product.price.toFixed(2)} $</div>
+            <div class="message system">Envoie un message pour réserver</div>
         </div>
         <div class="chat-input">
             <input type="text" id="chatInput" placeholder="Ex: Je viens dans 30 min, gardez ce pull en M" />
