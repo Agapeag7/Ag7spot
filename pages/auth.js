@@ -9,10 +9,10 @@ function renderAuth(container) {
                     <div>
                         <span class="auth-badge">Ag7Spot</span>
                         <h2>Bienvenue</h2>
-                        <p>Connecte-toi ou crée un compte pour explorer les boutiques en toute confiance.</p>
+                        <p>Connecte-toi ou crée un compte.</p>
                     </div>
                     <div class="auth-illustration">
-                        <i class="fas fa-map-pin"></i>
+                        <img src="ico/spot.png" alt="Ag7Spot" class="app-icon" />
                     </div>
                 </div>
                 <div class="auth-mode-toggle">
@@ -86,23 +86,65 @@ function renderAuth(container) {
     `;
 
     const modeButtons = container.querySelectorAll('.auth-mode-btn');
-    const authForm = document.getElementById('authForm');
+    const authForm = container.querySelector('#authForm');
     const registerFields = container.querySelectorAll('.auth-register-field');
+    const sellerSection = container.querySelector('.seller-section');
     const submitBtn = container.querySelector('.auth-submit-btn');
     const loginNote = container.querySelector('.auth-note-login');
     const registerNote = container.querySelector('.auth-note-register');
-    const authShopMap = document.getElementById('authShopMap');
-    const authShopLat = document.getElementById('authShopLat');
-    const authShopLng = document.getElementById('authShopLng');
+    const authShopMap = container.querySelector('#authShopMap');
+    const authShopLat = container.querySelector('#authShopLat');
+    const authShopLng = container.querySelector('#authShopLng');
+    const accountTypeSelect = container.querySelector('#authAccountType');
+    const shopAddressInput = container.querySelector('#authShopAddress');
 
     let authMapInstance = null;
     let authShopMarker = null;
+    let geocodeTimer = null;
+
+    const geocodeShopAddress = async (address) => {
+        const cleanAddress = (address || '').trim();
+        if (!cleanAddress) return null;
+
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(cleanAddress)}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await response.json();
+            if (!Array.isArray(data) || data.length === 0) return null;
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        } catch (error) {
+            console.warn('Geocoding failed:', error);
+            return null;
+        }
+    };
+
+    const updateShopMarkerFromAddress = async () => {
+        if (!authMapInstance || !authShopMarker || !shopAddressInput) return;
+        const address = shopAddressInput.value.trim();
+        if (!address) return;
+
+        const coords = await geocodeShopAddress(address);
+        if (!coords) return;
+
+        authMapInstance.setView([coords.lat, coords.lng], 15);
+        authShopMarker.setLatLng([coords.lat, coords.lng]);
+        authShopLat.value = coords.lat.toFixed(4);
+        authShopLng.value = coords.lng.toFixed(4);
+    };
 
     const setMode = (mode) => {
         authForm.dataset.mode = mode;
         modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
         const isRegister = mode === 'register';
         registerFields.forEach(field => field.classList.toggle('hidden', !isRegister));
+        if (sellerSection) {
+            const isSeller = accountTypeSelect?.value === 'seller';
+            sellerSection.classList.toggle('hidden', !isRegister || !isSeller);
+        }
         submitBtn.innerHTML = isRegister ? '<i class="fas fa-user-plus"></i> Créer mon compte' : '<i class="fas fa-sign-in-alt"></i> Se connecter';
         loginNote.classList.toggle('hidden', isRegister);
         registerNote.classList.toggle('hidden', !isRegister);
@@ -112,24 +154,29 @@ function renderAuth(container) {
         btn.addEventListener('click', () => setMode(btn.dataset.mode));
     });
 
-    const accountTypeSelect = document.getElementById('authAccountType');
-
     const updateSellerFields = () => {
         const isSeller = accountTypeSelect?.value === 'seller';
-        const sellerSection = container.querySelector('.seller-section');
         if (sellerSection) {
-            sellerSection.classList.toggle('hidden', !isSeller);
+            sellerSection.classList.toggle('hidden', !isSeller || authForm.dataset.mode !== 'register');
+        }
+        if (isSeller) {
+            initializeAuthShopMap();
         }
     };
 
     accountTypeSelect?.addEventListener('change', updateSellerFields);
 
-    const initializeAuthShopMap = () => {
+    const initializeAuthShopMap = async () => {
         if (!authShopMap || authMapInstance) return;
-        getUserPosition().then(pos => {
-            const startLat = pos?.lat || -4.3253;
-            const startLng = pos?.lng || 15.3135;
-            authMapInstance = L.map('authShopMap', {
+
+        try {
+            const pos = await getUserPosition();
+            const address = shopAddressInput?.value.trim();
+            const geocoded = address ? await geocodeShopAddress(address) : null;
+            const startLat = geocoded?.lat ?? pos?.lat ?? -4.3253;
+            const startLng = geocoded?.lng ?? pos?.lng ?? 15.3135;
+
+            authMapInstance = L.map(authShopMap, {
                 zoomControl: true,
                 attributionControl: false
             }).setView([startLat, startLng], 15);
@@ -150,17 +197,15 @@ function renderAuth(container) {
                 authShopLat.value = lat.toFixed(4);
                 authShopLng.value = lng.toFixed(4);
             });
-        });
-    };
 
-    const updateSellerFields = () => {
-        const isSeller = accountTypeSelect?.value === 'seller';
-        const sellerSection = container.querySelector('.seller-section');
-        if (sellerSection) {
-            sellerSection.classList.toggle('hidden', !isSeller);
-        }
-        if (isSeller) {
-            initializeAuthShopMap();
+            shopAddressInput?.addEventListener('input', () => {
+                clearTimeout(geocodeTimer);
+                geocodeTimer = setTimeout(() => {
+                    updateShopMarkerFromAddress();
+                }, 700);
+            });
+        } catch (error) {
+            console.warn('Initialisation carte boutique impossible:', error);
         }
     };
 
@@ -171,8 +216,8 @@ function renderAuth(container) {
         e.preventDefault();
 
         const mode = authForm.dataset.mode;
-        const email = document.getElementById('authEmail').value.trim();
-        const password = document.getElementById('authPassword').value;
+        const email = container.querySelector('#authEmail').value.trim();
+        const password = container.querySelector('#authPassword').value;
 
         if (!email || !password) {
             showToast('Veuillez remplir tous les champs obligatoires.', 'warning');
@@ -194,10 +239,10 @@ function renderAuth(container) {
             return;
         }
 
-        const name = document.getElementById('authName').value.trim();
-        const confirmPassword = document.getElementById('authConfirmPassword').value;
-        const accountType = document.getElementById('authAccountType').value;
-        const privacyAccepted = document.getElementById('authPrivacy').checked;
+        const name = container.querySelector('#authName').value.trim();
+        const confirmPassword = container.querySelector('#authConfirmPassword').value;
+        const accountType = container.querySelector('#authAccountType').value;
+        const privacyAccepted = container.querySelector('#authPrivacy').checked;
 
         if (!name) {
             showToast('Merci de renseigner ton nom complet.', 'warning');
@@ -220,11 +265,11 @@ function renderAuth(container) {
         const newUserId = Date.now();
         let shopId = null;
         if (accountType === 'seller') {
-            const shopName = document.getElementById('authShopName').value.trim();
-            const shopCategory = document.getElementById('authShopCategory').value.trim();
-            const shopAddress = document.getElementById('authShopAddress').value.trim();
-            const shopLat = parseFloat(document.getElementById('authShopLat').value);
-            const shopLng = parseFloat(document.getElementById('authShopLng').value);
+            const shopName = container.querySelector('#authShopName').value.trim();
+            const shopCategory = container.querySelector('#authShopCategory').value.trim();
+            const shopAddress = container.querySelector('#authShopAddress').value.trim();
+            const shopLat = parseFloat(container.querySelector('#authShopLat').value);
+            const shopLng = parseFloat(container.querySelector('#authShopLng').value);
 
             if (!shopName || !shopCategory || !shopAddress || Number.isNaN(shopLat) || Number.isNaN(shopLng)) {
                 showToast('Remplis tous les champs de la boutique et déplace le marqueur sur la carte.', 'warning');

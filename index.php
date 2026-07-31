@@ -11,7 +11,8 @@ if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         
-        <link rel="website icon" type="png" href="ico/spot.png">
+        <link rel="icon" type="image/png" href="ico/spot.png" />
+        <link rel="apple-touch-icon" href="ico/spot.png" />
 
         <title>Ag7Spot - Trouve près de chez toi</title>
 
@@ -30,7 +31,7 @@ if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
             <!-- ===== HEADER ===== -->
             <header class="app-header">
                 <div class="logo">
-                    <i class="fas fa-map-pin"></i>
+                    <img src="ico/spot.png" alt="Ag7Spot" class="app-icon" />
                     <span>Ag7Spot</span>
                 </div>
                 <div class="header-actions">
