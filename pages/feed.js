@@ -86,7 +86,7 @@ function loadFeed(maxDistance, productQuery = '') {
                                     <i class="fas fa-comment"></i> Réserver
                                 </button>
                                 <button class="btn-outline btn-sm" onclick="event.stopPropagation(); getDirections(${shop.lat}, ${shop.lng})">
-                                    <i class="fas fa-map-pin"></i>
+                                    <img src="ico/spot.png" alt="Ag7Spot" class="btn-icon-app" />
                                 </button>
                             </div>
                         </div>

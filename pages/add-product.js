@@ -71,10 +71,6 @@ function renderAddProduct(container) {
                             <input type="text" id="shopCategory" placeholder="Ex: mode, food, tech" required />
                         </div>
                         <div class="form-group">
-                            <label>Adresse</label>
-                            <input type="text" id="shopAddress" placeholder="Ex: 12 Rue Victor Hugo" required />
-                        </div>
-                        <div class="form-group">
                             <label>Position sur la carte</label>
                             <div id="shopCreateMap" class="shop-create-map"></div>
                             <p class="map-hint">Déplace le marqueur pour choisir l'emplacement précis de la boutique.</p>
@@ -200,11 +196,10 @@ function setupShopForm() {
 
         const name = document.getElementById('shopName').value.trim();
         const category = document.getElementById('shopCategory').value.trim();
-        const address = document.getElementById('shopAddress').value.trim();
         const lat = parseFloat(latInput.value);
         const lng = parseFloat(lngInput.value);
 
-        if (!name || !category || !address || Number.isNaN(lat) || Number.isNaN(lng)) {
+        if (!name || !category || Number.isNaN(lat) || Number.isNaN(lng)) {
             showToast('Remplis tous les champs de la boutique et place la boutique sur la carte.', 'warning');
             return;
         }
@@ -220,7 +215,7 @@ function setupShopForm() {
             cover: 'https://picsum.photos/seed/shop' + Date.now() + '/600/300',
             followed: false,
             status: 'open',
-            address
+            address: `Coordonnées ${lat.toFixed(4)}, ${lng.toFixed(4)}`
         };
 
         SHOPS.push(newShop);
