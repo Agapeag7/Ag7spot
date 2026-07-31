@@ -69,9 +69,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialiser la géolocalisation
     try {
         const pos = await getUserPosition();
-        console.log('Position utilisateur:', pos);
     } catch (e) {
         console.warn('Erreur géoloc:', e);
+        if (typeof showToast === 'function') {
+            showToast('Autorise la localisation pour voir la carte et les boutiques à proximité.', 'warning');
+        }
     }
 
     // Charger la page par défaut

@@ -75,12 +75,11 @@ function renderAddProduct(container) {
                             <input type="text" id="shopAddress" placeholder="Ex: 12 Rue Victor Hugo" required />
                         </div>
                         <div class="form-group">
-                            <label>Latitude</label>
-                            <input type="number" id="shopLat" placeholder="-4.3253" step="0.0001" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Longitude</label>
-                            <input type="number" id="shopLng" placeholder="15.3135" step="0.0001" required />
+                            <label>Position sur la carte</label>
+                            <div id="shopCreateMap" class="shop-create-map"></div>
+                            <p class="map-hint">Déplace le marqueur pour choisir l'emplacement précis de la boutique.</p>
+                            <input type="hidden" id="shopLat" />
+                            <input type="hidden" id="shopLng" />
                         </div>
                         <button type="submit" class="btn-primary w-full">
                             <i class="fas fa-store"></i> Créer ma boutique
@@ -159,15 +158,44 @@ function setupProductForm() {
 function setupShopForm() {
     const latInput = document.getElementById('shopLat');
     const lngInput = document.getElementById('shopLng');
+    const mapContainer = document.getElementById('shopCreateMap');
+    const form = document.getElementById('createShopForm');
 
-    getUserPosition().then(pos => {
-        if (pos) {
-            latInput.value = pos.lat.toFixed(4);
-            lngInput.value = pos.lng.toFixed(4);
+    const initializeShopMap = async () => {
+        if (!mapContainer) return;
+
+        try {
+            const pos = await getUserPosition();
+            const startLat = parseFloat(latInput.value) || pos.lat;
+            const startLng = parseFloat(lngInput.value) || pos.lng;
+            latInput.value = startLat.toFixed(4);
+            lngInput.value = startLng.toFixed(4);
+
+            const mapInstance = L.map('shopCreateMap', {
+                zoomControl: true,
+                attributionControl: false
+            }).setView([startLat, startLng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(mapInstance);
+
+            const marker = L.marker([startLat, startLng], { draggable: true }).addTo(mapInstance);
+            marker.on('move', function(e) {
+                const { lat, lng } = e.latlng;
+                latInput.value = lat.toFixed(4);
+                lngInput.value = lng.toFixed(4);
+            });
+        } catch (error) {
+            console.warn('Impossible d\'initialiser la carte de boutique:', error);
+            mapContainer.innerHTML = '<div class="empty-state"><i class="fas fa-location-dot"></i><p>Autorise la localisation pour placer votre boutique sur la carte.</p></div>';
+            showToast('Autorise la localisation pour créer une boutique.', 'warning');
         }
-    });
+    };
 
-    document.getElementById('createShopForm').addEventListener('submit', function(e) {
+    setTimeout(() => initializeShopMap(), 250);
+
+    form?.addEventListener('submit', function(e) {
         e.preventDefault();
 
         const name = document.getElementById('shopName').value.trim();
@@ -177,7 +205,7 @@ function setupShopForm() {
         const lng = parseFloat(lngInput.value);
 
         if (!name || !category || !address || Number.isNaN(lat) || Number.isNaN(lng)) {
-            showToast('Remplis tous les champs de la boutique.', 'warning');
+            showToast('Remplis tous les champs de la boutique et place la boutique sur la carte.', 'warning');
             return;
         }
 
@@ -197,6 +225,8 @@ function setupShopForm() {
 
         SHOPS.push(newShop);
         CURRENT_USER.shopId = newShop.id;
+        CURRENT_USER.role = 'seller';
+        localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
 
         showToast('✅ Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
         renderAddProduct(document.getElementById('pageContainer'));

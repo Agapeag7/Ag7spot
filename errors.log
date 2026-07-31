@@ -1,2 +1,4 @@
 - vu que finalement on cree une boutique une fois connecter a un compte, en creant un compte la section concernant la creation de la boutique n'est plus necessaire. Il faut donc la supprimer de la page d'inscription.
 et ajouter la carte dans l'interface de la creation de la boutique.
+- l'application doit obligatoirement demander la localisation de l'utilisateur pour pouvoir afficher la carte et les boutiques à proximité. Il faut donc ajouter une demande de permission pour accéder à la localisation
+- l'application doit afficher les boutiques à proximité de l'utilisateur sur la carte, en utilisant la localisation obtenue. Il faut donc implémenter une fonctionnalité pour récupérer les boutiques à proximité et les afficher sur la carte.

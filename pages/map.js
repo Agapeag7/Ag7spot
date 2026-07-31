@@ -11,7 +11,7 @@ function renderMap(container) {
             </div>
             <div id="mapSummary" class="map-summary"></div>
             <div id="map"></div>
-            <p class="map-hint"><i class="fas fa-info-circle"></i> Clique sur une boutique pour voir ses produits.</p>
+            <p class="map-hint"><i class="fas fa-info-circle"></i> Les boutiques affichées sont celles à proximité de votre position.</p>
         </div>
     `;
 
@@ -26,11 +26,12 @@ let currentMapPosition = null;
 let currentSearchQuery = '';
 let routeLayer = null;
 
-function initMap() {
+async function initMap() {
     const mapContainer = document.getElementById('map');
     if (!mapContainer) return;
 
-    getUserPosition().then(pos => {
+    try {
+        const pos = await getUserPosition();
         currentMapPosition = pos;
 
         if (mapInstance) {
@@ -68,8 +69,9 @@ function initMap() {
         });
 
         // Bouton localisation
-        document.getElementById('locateBtn')?.addEventListener('click', () => {
-            getUserPosition().then(newPos => {
+        document.getElementById('locateBtn')?.addEventListener('click', async () => {
+            try {
+                const newPos = await getUserPosition();
                 currentMapPosition = newPos;
                 if (userMarker) {
                     userMarker.setLatLng([newPos.lat, newPos.lng]);
@@ -77,7 +79,9 @@ function initMap() {
                 mapInstance.setView([newPos.lat, newPos.lng], 15);
                 loadShopsOnMap(newPos, currentSearchQuery);
                 showToast('Position mise à jour', 'info');
-            });
+            } catch (error) {
+                showToast('Autorise la localisation pour mettre à jour la carte.', 'warning');
+            }
         });
 
         // Recherche
@@ -85,7 +89,10 @@ function initMap() {
             const query = this.value.toLowerCase();
             filterMarkers(query);
         });
-    });
+    } catch (error) {
+        mapContainer.innerHTML = '<div class="empty-state"><i class="fas fa-location-dot"></i><p>Autorise la localisation pour afficher les boutiques autour de vous.</p></div>';
+        showToast('Autorise la localisation pour afficher la carte.', 'warning');
+    }
 }
 
 function loadShopsOnMap(pos, query = '') {
@@ -95,6 +102,7 @@ function loadShopsOnMap(pos, query = '') {
     currentSearchQuery = query.trim();
     const normalizedQuery = currentSearchQuery.toLowerCase();
     const visibleShops = [];
+    const nearbyRadiusKm = 8;
 
     // Effacer les anciens marqueurs
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
@@ -122,7 +130,7 @@ function loadShopsOnMap(pos, query = '') {
     SHOPS.forEach(shop => {
         if (!shop.ownerId) return;
         const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
-        if (dist > 20 || !matchesShopQuery(shop)) return;
+        if (dist > nearbyRadiusKm || !matchesShopQuery(shop)) return;
         visibleShops.push({
             id: shop.id,
             name: shop.name,
@@ -229,11 +237,11 @@ function loadShopsOnMap(pos, query = '') {
     const summaryContainer = document.getElementById('mapSummary');
     if (summaryContainer) {
         if (visibleShops.length === 0) {
-            summaryContainer.innerHTML = `<div class="map-summary-empty">Aucune boutique trouvée. Ajuste la recherche ou la position.</div>`;
+            summaryContainer.innerHTML = `<div class="map-summary-empty">Aucune boutique trouvée à proximité. Ajuste la recherche ou la position.</div>`;
         } else {
             summaryContainer.innerHTML = `
                 <div class="map-summary-card">
-                    <strong>${visibleShops.length} boutiques visibles</strong>
+                    <strong>${visibleShops.length} boutiques à proximité</strong>
                     
                     ${visibleShops.length > 5 ? `<div class="shop-label-more">+${visibleShops.length - 5} autres</div>` : ''}
                 </div>

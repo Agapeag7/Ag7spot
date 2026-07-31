@@ -158,15 +158,18 @@ body {
     padding: 32px 28px;
     backdrop-filter: blur(18px);
 }
-.auth-shop-map {
+.auth-shop-map,
+.shop-create-map {
     width: 100%;
     height: 240px;
     border-radius: 22px;
     border: 1px solid #e5e7eb;
     background: #f8fafc;
     margin-top: 10px;
+    overflow: hidden;
 }
-.auth-shop-map .leaflet-container {
+.auth-shop-map .leaflet-container,
+.shop-create-map .leaflet-container {
     border-radius: 22px;
 }
 .auth-footer {

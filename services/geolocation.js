@@ -3,19 +3,22 @@
 // =========================================
 let userPosition = null;
 let watchId = null;
+let locationRequestPromise = null;
 
 function getUserPosition() {
-    return new Promise((resolve, reject) => {
-        if (userPosition) {
-            resolve(userPosition);
-            return;
-        }
+    if (userPosition) {
+        return Promise.resolve(userPosition);
+    }
 
-        if (!navigator.geolocation) {
-            reject(new Error('La géolocalisation n\'est pas supportée'));
-            return;
-        }
+    if (locationRequestPromise) {
+        return locationRequestPromise;
+    }
 
+    if (!navigator.geolocation) {
+        return Promise.reject(new Error('La géolocalisation n\'est pas supportée'));
+    }
+
+    locationRequestPromise = new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 userPosition = {
@@ -26,14 +29,16 @@ function getUserPosition() {
                 resolve(userPosition);
             },
             (err) => {
-                // Fallback sur Kinshasa par défaut
-                console.warn('Géolocalisation refusée, fallback sur Kinshasa', err);
-                userPosition = { lat: -4.325321, lng: 15.313543, accuracy: 1000 };
-                resolve(userPosition);
+                userPosition = null;
+                reject(err);
             },
-            { enableHighAccuracy: true, timeout: 10000 }
+            { enableHighAccuracy: true, timeout: 15000 }
         );
+    }).finally(() => {
+        locationRequestPromise = null;
     });
+
+    return locationRequestPromise;
 }
 
 function watchUserPosition(callback) {
