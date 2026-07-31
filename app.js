@@ -14,7 +14,29 @@ function loadStoredUser() {
     }
 }
 
+function attachNavigationHandlers() {
+    document.removeEventListener('click', handleGlobalNavigationClick);
+    document.addEventListener('click', handleGlobalNavigationClick);
+}
+
+function handleGlobalNavigationClick(event) {
+    const navButton = event.target.closest('.nav-item');
+    if (navButton) {
+        event.preventDefault();
+        navigateTo(navButton.dataset.page);
+        return;
+    }
+
+    const link = event.target.closest('[data-nav]');
+    if (link) {
+        event.preventDefault();
+        navigateTo(link.dataset.nav);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+    attachNavigationHandlers();
+
     const storedUser = loadStoredUser();
     if (storedUser) {
         if (typeof applyStoredUser === 'function') {
@@ -43,23 +65,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderOnboarding();
         document.getElementById('onboardingModal').classList.remove('hidden');
     }
-
-    // Navigation
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const page = this.dataset.page;
-            navigateTo(page);
-        });
-    });
-
-    // Liens internes
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('[data-nav]');
-        if (link) {
-            e.preventDefault();
-            navigateTo(link.dataset.nav);
-        }
-    });
 
     // Initialiser la géolocalisation
     try {
