@@ -1,10 +1,7 @@
-- ce checkbox ne doit pas se placer au dessus de "j'accepte la politique de confidentialité"; il doit se placer juste avant ce message cote à cote et non l'un au dessus de l'autre :
-<input type="checkbox" id="authPrivacy">
+en creant une boutique on doit choisir une categorie de boutique :
+- Vêtements et chaussures
+- Maison et déco
+- High-tech et électronique
+- Santé et beauté
 
-- en creant une boutique cette partie n'a egalement pas d'importance car l'adresse est directement selectionner sur la carte :
-<input type="text" id="shopAddress" placeholder="Ex: 12 Rue Victor Hugo" required="">
-
-- change l'icone de ce bouton par l'icone de l'application ico/spot.png et en cliquant sur ce bouton on doit prendre la localisation de l'utilisateur connecter et la localisation de la boutique qui vend cet article pour le maps (donc la position devient la localisation de l'utilisateur et la destination devient l'adresse de la boutique sur la carte) :
-<button class="btn-outline btn-sm" onclick="event.stopPropagation(); getDirections(-1.6829, 29.2211)">
-                                    <i class="fas fa-map-pin"></i>
-                                </button>
+car en creant un compte l'utilisateur choisi le type de ce qui l'interesse et c'est ce qui s'affiche dans son fil d'actualites

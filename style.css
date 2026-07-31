@@ -521,6 +521,14 @@ body {
     gap: 6px;
     font-family: 'Inter', sans-serif;
 }
+.btn-outline.btn-sm {
+    padding: 6px 10px;
+    min-width: 0;
+}
+.btn-outline.btn-sm .btn-icon-app {
+    width: 18px;
+    height: 18px;
+}
 .btn-outline:hover {
     background: var(--primary);
     color: white;

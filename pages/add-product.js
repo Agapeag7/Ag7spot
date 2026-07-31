@@ -68,7 +68,13 @@ function renderAddProduct(container) {
                         </div>
                         <div class="form-group">
                             <label>Catégorie</label>
-                            <input type="text" id="shopCategory" placeholder="Ex: mode, food, tech" required />
+                            <select id="shopCategory" required>
+                                <option value="" disabled selected>Choisis une catégorie</option>
+                                <option value="fashion">Vêtements et chaussures</option>
+                                <option value="home">Maison et déco</option>
+                                <option value="tech">High-tech et électronique</option>
+                                <option value="beauty">Santé et beauté</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Position sur la carte</label>
@@ -136,7 +142,7 @@ function setupProductForm() {
         try {
             await new Promise(resolve => setTimeout(resolve, 800));
             PRODUCTS.push(newProduct);
-            showToast('✅ Produit ajouté avec succès !', 'success');
+            showToast('Produit ajouté avec succès !', 'success');
             this.reset();
             uploadArea.classList.remove('has-image');
             uploadArea.innerHTML = `
