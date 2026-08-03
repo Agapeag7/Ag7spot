@@ -1,29 +1,11 @@
-- Les produits déjà ajouter doivent apparaitre sur le profil du vendeur et non sur l'endroit d'ajout des produits:
-<div class="seller-products-card">
-                        <div class="section-title">
-                            <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
-                            <a href="#" id="refreshSellerProducts">Actualiser</a>
-                        </div>
-                        <div id="sellerProductsList">
-                            
-            <div class="seller-product-item">
-                <div class="seller-product-thumbnail">
-                    <img src="https://picsum.photos/seed/1785753284277/400/400" alt="tricot" loading="lazy">
-                </div>
-                <div class="seller-product-info">
-                    <strong>tricot</strong>
-                    <p>ag7 marque · 5 en stock</p>
-                    <p class="price">5.00 $</p>
-                </div>
-                <div class="seller-product-actions">
-                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(1785753284277)">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(1785753284277)">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+- cette zone ne doit pas apparaitre chez les acheteurs : <div><strong>0</strong> <span>Mes produits</span></div>
+- refais toutes les requetes de la base de données adapter à l'état actuel de l'application. et n'y met pas des requetes d'insertion
+- un acheteur ne doit plus voir cette zone :
+<div class="settings-card">
+                <h4><i class="fas fa-store"></i> Ma boutique</h4>
+                
+                    <p>En tant qu'acheteur, tu peux que parcourir des boutiques et découvrir des produits.</p>
+                
             </div>
-        
-                        </div>
-                    </div>
+
+- cree toutes les classes et methodes pour toutes les fonctionnalités de cette application dans le fichier : spot.class.php

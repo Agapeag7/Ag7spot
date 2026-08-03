@@ -16,11 +16,8 @@ try {
 
 $lat = floatval($_GET['lat'] ?? 0);
 $lng = floatval($_GET['lng'] ?? 0);
-$radius = floatval($_GET['radius'] ?? 2);
+$maxDistance = floatval($_GET['max_distance'] ?? 5);
 
-$deals = $spot->flashDeals->getActiveDealsNearby($lat, $lng, $radius);
-echo json_encode([
-    'success' => true,
-    'deals' => $deals
-]);
+$feed = $spot->feed->getFeed($lat, $lng, $maxDistance);
+echo json_encode(['success' => true, 'feed' => $feed]);
 ?>

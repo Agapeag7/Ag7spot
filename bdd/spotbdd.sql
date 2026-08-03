@@ -129,7 +129,3 @@ CREATE TABLE `collection_shops` (
 --   (1, 'Mode Vintage à Lyon', 'Les meilleures adresses pour du vintage', 1),
 --   (2, 'Petit-déjeuner gourmand', 'Boulangeries et café de quartier', 2);
 
--- INSERT INTO `collection_shops` (`collection_id`, `shop_id`) VALUES
---   (1, 1),
---   (1, 5),
---   (2, 4);

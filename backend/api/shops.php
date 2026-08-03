@@ -1,42 +1,52 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, PUT, POST');
+header('Access-Control-Allow-Methods: GET, PUT');
 header('Access-Control-Allow-Headers: Content-Type');
 
-require_once '../config/database.php';
+require_once '../spot.class.php';
+
+try {
+    $spot = new Spot();
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    exit;
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        // Récupérer les boutiques à proximité
-        $lat = $_GET['lat'] ?? 0;
-        $lng = $_GET['lng'] ?? 0;
-        $radius = $_GET['radius'] ?? 5;
-        $categories = isset($_GET['categories']) ? explode(',', $_GET['categories']) : [];
+        $lat = floatval($_GET['lat'] ?? 0);
+        $lng = floatval($_GET['lng'] ?? 0);
+        $radius = floatval($_GET['radius'] ?? 5);
+        $categories = [];
+        if (!empty($_GET['categories'])) {
+            $categories = array_filter(array_map('trim', explode(',', $_GET['categories'])));
+        }
 
-        // Requête SQL avec calcul de distance (Haversine)
-        // ... (à implémenter)
-
-        echo json_encode([
-            'success' => true,
-            'shops' => [] // Remplacer par les données
-        ]);
+        $shops = $spot->shops->getNearbyShops($lat, $lng, $radius, $categories);
+        echo json_encode(['success' => true, 'shops' => $shops]);
         break;
 
     case 'PUT':
-        // Mise à jour du statut
         $data = json_decode(file_get_contents('php://input'), true);
-        $shopId = $data['shop_id'] ?? null;
-        $status = $data['status'] ?? null;
+        $shopId = intval($data['shop_id'] ?? 0);
+        $status = trim($data['status'] ?? '');
 
-        // UPDATE shops SET status = ? WHERE id = ?
-        echo json_encode(['success' => true]);
+        if (!$shopId || !in_array($status, ['open', 'closed', 'break'], true)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Invalid shop_id or status']);
+            break;
+        }
+
+        $success = $spot->shops->updateStatus($shopId, $status);
+        echo json_encode(['success' => $success]);
         break;
 
     default:
         http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
+        echo json_encode(['success' => false, 'error' => 'Method not allowed']);
 }
 ?>

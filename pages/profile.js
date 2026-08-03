@@ -6,10 +6,12 @@ function renderProfile(container) {
 
     const myShop = SHOPS.find(s => s.ownerId === user.id);
     const followCount = SHOPS.filter(s => s.followed).length;
-    const productCount = PRODUCTS.filter(p => {
-        const shop = SHOPS.find(sh => sh.id === p.shopId);
-        return shop && shop.ownerId === user.id;
-    }).length;
+    const productCount = user.role === 'seller'
+        ? PRODUCTS.filter(p => {
+            const shop = SHOPS.find(sh => sh.id === p.shopId);
+            return shop && shop.ownerId === user.id;
+        }).length
+        : 0;
     const roleLabel = user.role === 'seller' ? 'Vendeur' : 'Acheteur';
 
     container.innerHTML = `
@@ -20,7 +22,7 @@ function renderProfile(container) {
                 <p class="profile-role">${roleLabel}</p>
                 <div class="profile-stats">
                     <div><strong>${followCount}</strong> <span>Abonnements</span></div>
-                    <div><strong>${productCount}</strong> <span>Mes produits</span></div>
+                    ${user.role === 'seller' ? `<div><strong>${productCount}</strong> <span>Mes produits</span></div>` : ''}
                     <div><strong>${user.points}</strong> <span>Points</span></div>
                 </div>
                 <button class="btn-outline profile-edit-btn" onclick="alert('✏️ Édition du profil (simulation)')">
@@ -28,9 +30,9 @@ function renderProfile(container) {
                 </button>
             </div>
 
-            <div class="settings-card">
-                <h4><i class="fas fa-store"></i> Ma boutique</h4>
-                ${user.role === 'seller' ? `
+            ${user.role === 'seller' ? `
+                <div class="settings-card">
+                    <h4><i class="fas fa-store"></i> Ma boutique</h4>
                     ${myShop ? `
                         <div class="settings-item">
                             <span>${myShop.name}</span>
@@ -49,10 +51,8 @@ function renderProfile(container) {
                             <i class="fas fa-store"></i> Créer ma boutique
                         </button>
                     `}
-                ` : `
-                    <p>En tant qu'acheteur, tu peux que parcourir des boutiques et découvrir des produits.</p>
-                `}
-            </div>
+                </div>
+            ` : ''}
 
             ${user.role === 'seller' && myShop ? `
                 <div class="settings-card">
