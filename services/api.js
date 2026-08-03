@@ -35,20 +35,24 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 // Endpoints spécifiques
 function getNearbyShops(lat, lng, radius = 5, categories = []) {
     const params = new URLSearchParams({ lat, lng, radius, categories: categories.join(',') });
-    return apiCall(`shops.php?${params.toString()}`);
+    return apiCall(`shops.php?${params.toString()}`).then(response => response.shops || []);
 }
 
 function getShopProducts(shopId) {
-    return apiCall(`products.php?shop_id=${shopId}`);
+    return apiCall(`products.php?shop_id=${shopId}`).then(response => response.products || []);
 }
 
 function getFeed(lat, lng, maxDistance = 5) {
     const params = new URLSearchParams({ lat, lng, max_distance: maxDistance });
-    return apiCall(`feed.php?${params.toString()}`);
+    return apiCall(`feed.php?${params.toString()}`).then(response => response.feed || []);
+}
+
+function createShop(shopData) {
+    return apiCall('shops.php', 'POST', shopData).then(response => response.shop_id || null);
 }
 
 function addProduct(productData) {
-    return apiCall('products.php', 'POST', productData);
+    return apiCall('products.php', 'POST', productData).then(response => response.product_id || null);
 }
 
 function updateStock(productId, newStock) {
@@ -61,19 +65,19 @@ function calculateRoute(waypoints, mode = 'walking') {
 
 function getFlashDeals(lat, lng, radius = 2) {
     const params = new URLSearchParams({ lat, lng, radius });
-    return apiCall(`flashdeals.php?${params.toString()}`);
+    return apiCall(`flashdeals.php?${params.toString()}`).then(response => response.deals || []);
 }
 
 function checkIn(shopId) {
-    return apiCall('checkin.php', 'POST', { shop_id: shopId });
+    return apiCall('checkin.php', 'POST', { shop_id: shopId }).then(response => response);
 }
 
 function getCollections() {
-    return apiCall('collections.php');
+    return apiCall('collections.php').then(response => response.collections || []);
 }
 
 function createCollection(name, description, shopIds) {
-    return apiCall('collections.php', 'POST', { name, description, shops: shopIds });
+    return apiCall('collections.php', 'POST', { name, description, shops: shopIds }).then(response => response.collection_id || null);
 }
 
 function sendMessage(shopId, productId, content) {
@@ -81,7 +85,7 @@ function sendMessage(shopId, productId, content) {
 }
 
 function getMessages(shopId) {
-    return apiCall(`messages.php?shop_id=${shopId}`);
+    return apiCall(`messages.php?shop_id=${shopId}`).then(response => response.messages || []);
 }
 
 function updateShopStatus(shopId, status) {

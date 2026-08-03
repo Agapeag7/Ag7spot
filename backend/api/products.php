@@ -24,7 +24,22 @@ switch ($method) {
         break;
 
     case 'POST':
-        echo json_encode(['success' => false, 'error' => 'Product creation is not supported by this API implementation.']);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $shopId = intval($data['shop_id'] ?? 0);
+        $name = trim($data['name'] ?? '');
+        $price = floatval($data['price'] ?? 0);
+        $stock = intval($data['stock'] ?? 0);
+        $description = trim($data['description'] ?? '');
+        $image = trim($data['image'] ?? '');
+
+        if ($shopId <= 0 || $name === '' || $price <= 0) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Missing product data']);
+            break;
+        }
+
+        $productId = $spot->products->createProduct($shopId, $name, $price, $stock, $description, $image);
+        echo json_encode(['success' => true, 'product_id' => intval($productId)]);
         break;
 
     case 'PUT':

@@ -93,9 +93,16 @@ function addChatMessage(sender, message, type) {
 async function loadChatMessages(shopId) {
     try {
         const messages = await getMessages(shopId);
-        // Afficher les messages existants
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        container.innerHTML = messages.map(msg => {
+            const type = msg.sender_id === CURRENT_USER.id ? 'sent' : 'received';
+            const sender = msg.sender_id === CURRENT_USER.id ? 'Vous' : 'Boutique';
+            return `<div class="message ${type}"><strong>${sender}:</strong> ${msg.content}</div>`;
+        }).join('');
+        container.scrollTop = container.scrollHeight;
     } catch (e) {
-        // Pas de messages, on ignore
+        console.warn('Impossible de charger les messages', e);
     }
 }
 

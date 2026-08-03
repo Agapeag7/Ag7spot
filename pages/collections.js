@@ -15,43 +15,49 @@ function renderCollections(container) {
     loadCollections();
 }
 
-function loadCollections() {
+async function loadCollections() {
     const container = document.getElementById('collectionsContainer');
 
-    if (COLLECTIONS.length === 0) {
+    try {
+        const collections = await getCollections();
+        if (!collections || collections.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-flag"></i>
+                    <p>Aucune collection pour le moment.</p>
+                    <button class="btn-primary btn-sm" onclick="showCreateCollection()">Créer une collection</button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = collections.map(col => {
+            return `
+                <div class="product-card" onclick="startCollectionRoute(${col.id})">
+                    <div style="padding:16px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);">
+                        <h3 style="margin:0;"><i class="fas fa-flag" style="color:var(--primary);"></i> ${col.name}</h3>
+                        <p style="margin:4px 0 0 0;color:var(--text-gray);font-size:14px;">${col.description}</p>
+                        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+                            ${col.shops.map(id => {
+                                const s = SHOPS.find(sh => sh.id === id);
+                                return s ? `<span class="tag"><i class="fas fa-store"></i> ${s.name}</span>` : '';
+                            }).join('')}
+                        </div>
+                        <button class="btn-primary btn-sm" style="margin-top:10px;" onclick="event.stopPropagation();startCollectionRoute(${col.id})">
+                            <i class="fas fa-route"></i> Faire le parcours
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fas fa-flag"></i>
-                <p>Aucune collection pour le moment.</p>
-                <button class="btn-primary btn-sm" onclick="showCreateCollection()">Créer une collection</button>
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Impossible de charger les collections.</p>
             </div>
         `;
-        return;
     }
-
-    container.innerHTML = COLLECTIONS.map(col => {
-        const shopNames = col.shops.map(id => {
-            const s = SHOPS.find(sh => sh.id === id);
-            return s ? s.name : 'Inconnu';
-        }).join(', ');
-        return `
-            <div class="product-card" onclick="startCollectionRoute(${col.id})">
-                <div style="padding:16px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);">
-                    <h3 style="margin:0;"><i class="fas fa-flag" style="color:var(--primary);"></i> ${col.name}</h3>
-                    <p style="margin:4px 0 0 0;color:var(--text-gray);font-size:14px;">${col.description}</p>
-                    <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-                        ${col.shops.map(id => {
-                            const s = SHOPS.find(sh => sh.id === id);
-                            return s ? `<span class="tag"><i class="fas fa-store"></i> ${s.name}</span>` : '';
-                        }).join('')}
-                    </div>
-                    <button class="btn-primary btn-sm" style="margin-top:10px;" onclick="event.stopPropagation();startCollectionRoute(${col.id})">
-                        <i class="fas fa-route"></i> Faire le parcours
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
 }
 
 function showCreateCollection() {
@@ -71,16 +77,17 @@ function showCreateCollection() {
         return;
     }
 
-    COLLECTIONS.push({
-        id: Date.now(),
-        name,
-        description: desc,
-        shops: shopIds,
-        creator: CURRENT_USER.id
-    });
+    try {
+        const collectionId = await createCollection(name, desc, shopIds);
+        if (!collectionId) {
+            throw new Error('Erreur création collection');
+        }
 
-    loadCollections();
-    showToast('✅ Collection créée !', 'success');
+        loadCollections();
+        showToast('✅ Collection créée !', 'success');
+    } catch (error) {
+        showToast('Impossible de créer la collection.', 'error');
+    }
 }
 
 function startCollectionRoute(collectionId) {

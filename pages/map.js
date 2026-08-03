@@ -95,7 +95,7 @@ async function initMap() {
     }
 }
 
-function loadShopsOnMap(pos, query = '') {
+async function loadShopsOnMap(pos, query = '') {
     if (!mapInstance || !pos) return;
 
     currentMapPosition = pos;
@@ -104,7 +104,6 @@ function loadShopsOnMap(pos, query = '') {
     const visibleShops = [];
     const nearbyRadiusKm = 8;
 
-    // Effacer les anciens marqueurs
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
     mapMarkers = [];
 
@@ -127,10 +126,23 @@ function loadShopsOnMap(pos, query = '') {
         });
     };
 
-    SHOPS.forEach(shop => {
-        if (!shop.ownerId) return;
-        const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
+    let shops = SHOPS;
+    try {
+        shops = await getNearbyShops(pos.lat, pos.lng, nearbyRadiusKm);
+        if (Array.isArray(shops) && shops.length > 0) {
+            SHOPS.length = 0;
+            shops.forEach(shop => SHOPS.push(shop));
+        }
+    } catch (error) {
+        console.warn('Impossible de récupérer les boutiques via l\'API, utilisation des données locales.', error);
+        shops = SHOPS;
+    }
+
+    shops.forEach(shop => {
+        if (!shop.owner_id && !shop.ownerId) return;
+        const dist = parseFloat(shop.distance) || getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
         if (dist > nearbyRadiusKm || !matchesShopQuery(shop)) return;
+
         visibleShops.push({
             id: shop.id,
             name: shop.name,
@@ -150,7 +162,7 @@ function loadShopsOnMap(pos, query = '') {
         const productList = products.map(p => 
             `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;">
                 <span>${p.name}</span>
-                <span style="font-weight:600;">${p.price.toFixed(2)} $</span>
+                <span style="font-weight:600;">${parseFloat(p.price).toFixed(2)} $</span>
             </div>`
         ).join('');
 
@@ -233,7 +245,6 @@ function loadShopsOnMap(pos, query = '') {
         `);
     });
 
-    // Résumé des boutiques visibles
     const summaryContainer = document.getElementById('mapSummary');
     if (summaryContainer) {
         if (visibleShops.length === 0) {
@@ -242,7 +253,6 @@ function loadShopsOnMap(pos, query = '') {
             summaryContainer.innerHTML = `
                 <div class="map-summary-card">
                     <strong>${visibleShops.length} boutiques à proximité</strong>
-                    
                     ${visibleShops.length > 5 ? `<div class="shop-label-more">+${visibleShops.length - 5} autres</div>` : ''}
                 </div>
             `;
@@ -262,8 +272,9 @@ function getDirectionsStatic(lat, lng) {
     });
 }
 
-function doCheckIn(shopId) {
-    getUserPosition().then(pos => {
+async function doCheckIn(shopId) {
+    try {
+        const pos = await getUserPosition();
         currentMapPosition = pos;
         if (pos.accuracy && pos.accuracy > 100) {
             showToast('Position trop imprécise pour un check-in', 'warning');
@@ -284,13 +295,20 @@ function doCheckIn(shopId) {
             return;
         }
 
-        showToast('Check-in validé ! +10 points', 'success');
-        CURRENT_USER.points += 10;
-        const profilePointsEl = document.querySelector('.profile-stats strong');
-        if (profilePointsEl) {
-            profilePointsEl.textContent = CURRENT_USER.points;
+        const result = await checkIn(shopId);
+        if (result && result.success) {
+            CURRENT_USER.points = result.points || CURRENT_USER.points + 10;
+            const profilePointsEl = document.querySelector('.profile-stats strong:last-child');
+            if (profilePointsEl) {
+                profilePointsEl.textContent = CURRENT_USER.points;
+            }
+            showToast('Check-in validé ! +10 points', 'success');
+        } else {
+            showToast(result.error || 'Échec du check-in', 'error');
         }
-    });
+    } catch (error) {
+        showToast('Impossible de faire le check-in.', 'error');
+    }
 }
 
 function startCollectionRoute(collectionId) {

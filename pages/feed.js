@@ -35,20 +35,18 @@ function renderDistanceFilter() {
     `;
 }
 
-function loadFeed(maxDistance, productQuery = '') {
+async function loadFeed(maxDistance, productQuery = '') {
     const container = document.getElementById('feedContainer');
     const query = productQuery.trim().toLowerCase();
 
-    // Simulation d'appel API
-    getUserPosition().then(pos => {
-        // Filtrer les produits par distance et par nom
-        const filtered = PRODUCTS.filter(p => {
-            const shop = SHOPS.find(s => s.id === p.shopId);
-            if (!shop) return false;
-            const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
-            if (dist > maxDistance) return false;
+    try {
+        const pos = await getUserPosition();
+        const feed = await getFeed(pos.lat, pos.lng, maxDistance);
+        const filtered = feed.filter(p => {
             if (!query) return true;
-            return p.name.toLowerCase().includes(query) || shop.name.toLowerCase().includes(query) || shop.category.toLowerCase().includes(query);
+            const shopName = p.shop_name?.toLowerCase() || '';
+            const category = p.category?.toLowerCase() || '';
+            return p.name.toLowerCase().includes(query) || shopName.includes(query) || category.includes(query);
         });
 
         if (filtered.length === 0) {
@@ -63,9 +61,8 @@ function loadFeed(maxDistance, productQuery = '') {
         }
 
         container.innerHTML = filtered.map(p => {
-            const shop = SHOPS.find(s => s.id === p.shopId);
-            const dist = getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
-            const statusHtml = renderShopStatus(shop);
+            const dist = parseFloat(p.distance) || 0;
+            const statusHtml = renderShopStatus({ status: p.status });
             const stockHtml = renderStockBadge(p);
 
             return `
@@ -73,19 +70,19 @@ function loadFeed(maxDistance, productQuery = '') {
                     <img src="${p.image}" alt="${p.name}" loading="lazy" />
                     <div class="product-info">
                         <div class="shop-name">
-                            <i class="fas fa-store"></i> ${shop.name}
+                            <i class="fas fa-store"></i> ${p.shop_name || 'Boutique'}
                             <span class="distance-badge"><i class="fas fa-location-dot"></i> ${dist.toFixed(1)} km</span>
                             ${statusHtml}
                         </div>
                         <h3>${p.name}</h3>
                         <div class="meta">
-                            <span class="price">${p.price.toFixed(2)} $</span>
+                            <span class="price">${parseFloat(p.price).toFixed(2)} $</span>
                             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 ${stockHtml}
                                 <button class="btn-outline btn-sm" onclick="event.stopPropagation(); openChat(${p.id})">
                                     <i class="fas fa-comment"></i> Réserver
                                 </button>
-                                <button class="btn-outline btn-sm" onclick="event.stopPropagation(); getDirections(${shop.lat}, ${shop.lng})">
+                                <button class="btn-outline btn-sm" onclick="event.stopPropagation(); getDirections(${p.lat}, ${p.lng})">
                                     <img src="ico/spot.png" alt="Ag7Spot" class="btn-icon-app" />
                                 </button>
                             </div>
@@ -94,7 +91,14 @@ function loadFeed(maxDistance, productQuery = '') {
                 </div>
             `;
         }).join('');
-    });
+    } catch (error) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Impossible de charger le fil d'actualité pour le moment.</p>
+            </div>
+        `;
+    }
 }
 
 function showProductDetail(productId) {

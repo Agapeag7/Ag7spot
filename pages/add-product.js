@@ -210,22 +210,33 @@ function setupProductForm() {
             return;
         }
 
-        const newProduct = {
-            id: Date.now(),
-            shopId,
-            name,
-            price,
-            stock,
-            description,
-            image: 'https://picsum.photos/seed/' + Date.now() + '/400/400',
-            distance: 0
-        };
+        const image = 'https://picsum.photos/seed/' + Date.now() + '/400/400';
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 800));
-            PRODUCTS.push(newProduct);
-            showToast('Produit ajouté avec succès !', 'success');
-            renderAddProduct(document.getElementById('pageContainer'));
+            const productId = await addProduct({
+                shop_id: shopId,
+                name,
+                price,
+                stock,
+                description,
+                image
+            });
+            if (productId) {
+                PRODUCTS.push({
+                    id: productId,
+                    shopId,
+                    name,
+                    price,
+                    stock,
+                    description,
+                    image,
+                    distance: 0
+                });
+                showToast('Produit ajouté avec succès !', 'success');
+                renderAddProduct(document.getElementById('pageContainer'));
+            } else {
+                throw new Error('Erreur création produit');
+            }
         } catch (error) {
             showToast('Erreur lors de l\'ajout du produit.', 'error');
         }
@@ -279,7 +290,7 @@ function setupShopForm() {
 
     setTimeout(() => initializeShopMap(), 250);
 
-    form?.addEventListener('submit', function(e) {
+    form?.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const name = document.getElementById('shopName').value.trim();
@@ -292,26 +303,49 @@ function setupShopForm() {
             return;
         }
 
-        const newShop = {
-            id: Date.now(),
-            ownerId: CURRENT_USER.id,
-            name,
-            category,
-            lat,
-            lng,
-            avatar: 'https://picsum.photos/seed/shop' + Date.now() + '/100/100',
-            cover: 'https://picsum.photos/seed/shop' + Date.now() + '/600/300',
-            followed: false,
-            status: 'open',
-            address: `Coordonnées ${lat.toFixed(4)}, ${lng.toFixed(4)}`
-        };
+        const avatar = 'https://picsum.photos/seed/shop' + Date.now() + '/100/100';
+        const cover = 'https://picsum.photos/seed/shop' + Date.now() + '/600/300';
+        const address = `Coordonnées ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
-        SHOPS.push(newShop);
-        CURRENT_USER.shopId = newShop.id;
-        CURRENT_USER.role = 'seller';
-        localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
+        try {
+            const shopId = await createShop({
+                owner_id: CURRENT_USER.id,
+                name,
+                category,
+                lat,
+                lng,
+                avatar,
+                cover,
+                address
+            });
 
-        showToast('Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
-        renderAddProduct(document.getElementById('pageContainer'));
+            if (!shopId) {
+                throw new Error('Erreur création boutique');
+            }
+
+            const newShop = {
+                id: shopId,
+                ownerId: CURRENT_USER.id,
+                name,
+                category,
+                lat,
+                lng,
+                avatar,
+                cover,
+                followed: false,
+                status: 'open',
+                address
+            };
+
+            SHOPS.push(newShop);
+            CURRENT_USER.shopId = shopId;
+            CURRENT_USER.role = 'seller';
+            localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
+
+            showToast('Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
+            renderAddProduct(document.getElementById('pageContainer'));
+        } catch (error) {
+            showToast('Erreur lors de la création de la boutique.', 'error');
+        }
     });
 }
