@@ -99,6 +99,88 @@ function renderAddProduct(container) {
     }
 }
 
+function renderSellerProducts(shopIds) {
+    const sellerProducts = PRODUCTS.filter(product => shopIds.includes(product.shopId));
+    if (sellerProducts.length === 0) {
+        return `
+            <div class="empty-state small">
+                <i class="fas fa-box"></i>
+                <p>Aucun produit ajouté pour le moment. Publie ton premier produit ici.</p>
+            </div>
+        `;
+    }
+
+    return sellerProducts.map(product => {
+        const shop = SHOPS.find(s => s.id === product.shopId) || { name: 'Boutique inconnue' };
+        return `
+            <div class="seller-product-item">
+                <div class="seller-product-thumbnail">
+                    <img src="${product.image}" alt="${product.name}" loading="lazy" />
+                </div>
+                <div class="seller-product-info">
+                    <strong>${product.name}</strong>
+                    <p>${shop.name} · ${product.stock} en stock</p>
+                    <p class="price">${product.price.toFixed(2)} $</p>
+                </div>
+                <div class="seller-product-actions">
+                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(${product.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(${product.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function editProduct(productId) {
+    const product = PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+    const shop = SHOPS.find(s => s.id === product.shopId);
+    if (!CURRENT_USER || CURRENT_USER.role !== 'seller' || !shop || shop.ownerId !== CURRENT_USER.id) {
+        showToast('Tu ne peux modifier que tes propres produits.', 'warning');
+        return;
+    }
+
+    const name = prompt('Modifier le nom du produit', product.name);
+    if (name === null) return;
+    const priceValue = prompt('Modifier le prix ($)', product.price);
+    if (priceValue === null) return;
+    const stockValue = prompt('Modifier la quantité en stock', product.stock);
+    if (stockValue === null) return;
+
+    const price = parseFloat(priceValue);
+    const stock = parseInt(stockValue, 10);
+    if (name.trim()) product.name = name.trim();
+    if (!Number.isNaN(price)) product.price = price;
+    if (!Number.isNaN(stock)) product.stock = stock;
+
+    showToast('Produit mis à jour.', 'success');
+    renderAddProduct(document.getElementById('pageContainer'));
+}
+
+function deleteProduct(productId) {
+    const product = PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+    const shop = SHOPS.find(s => s.id === product.shopId);
+    if (!CURRENT_USER || CURRENT_USER.role !== 'seller' || !shop || shop.ownerId !== CURRENT_USER.id) {
+        showToast('Tu ne peux supprimer que tes propres produits.', 'warning');
+        return;
+    }
+
+    const confirmed = confirm(`Supprimer le produit « ${product.name} » ?`);
+    if (!confirmed) return;
+
+    const index = PRODUCTS.findIndex(p => p.id === productId);
+    if (index !== -1) {
+        PRODUCTS.splice(index, 1);
+        showToast('Produit supprimé.', 'success');
+        renderAddProduct(document.getElementById('pageContainer'));
+    }
+}
+
 function setupProductForm() {
     const uploadArea = document.getElementById('imageUploadArea');
     const fileInput = document.getElementById('fileInput');
@@ -143,14 +225,7 @@ function setupProductForm() {
             await new Promise(resolve => setTimeout(resolve, 800));
             PRODUCTS.push(newProduct);
             showToast('Produit ajouté avec succès !', 'success');
-            this.reset();
-            uploadArea.classList.remove('has-image');
-            uploadArea.innerHTML = `
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>Cliquez pour importer une image</span>
-                <input type="file" id="fileInput" accept="image/*" />
-            `;
-            setupProductForm();
+            renderAddProduct(document.getElementById('pageContainer'));
         } catch (error) {
             showToast('Erreur lors de l\'ajout du produit.', 'error');
         }
@@ -182,12 +257,19 @@ function setupShopForm() {
                 maxZoom: 19
             }).addTo(mapInstance);
 
-            const marker = L.marker([startLat, startLng], { draggable: true }).addTo(mapInstance);
-            marker.on('move', function(e) {
-                const { lat, lng } = e.latlng;
-                latInput.value = lat.toFixed(4);
-                lngInput.value = lng.toFixed(4);
-            });
+            const centerPin = document.createElement('div');
+            centerPin.className = 'center-map-pin';
+            centerPin.innerHTML = '<i class="fas fa-map-marker-alt"></i>';
+            mapContainer.appendChild(centerPin);
+
+            const updateCenterInputs = () => {
+                const center = mapInstance.getCenter();
+                latInput.value = center.lat.toFixed(4);
+                lngInput.value = center.lng.toFixed(4);
+            };
+
+            mapInstance.on('moveend', updateCenterInputs);
+            updateCenterInputs();
         } catch (error) {
             console.warn('Impossible d\'initialiser la carte de boutique:', error);
             mapContainer.innerHTML = '<div class="empty-state"><i class="fas fa-location-dot"></i><p>Autorise la localisation pour placer votre boutique sur la carte.</p></div>';
@@ -229,7 +311,7 @@ function setupShopForm() {
         CURRENT_USER.role = 'seller';
         localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
 
-        showToast('✅ Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
+        showToast('Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
         renderAddProduct(document.getElementById('pageContainer'));
     });
 }

@@ -50,9 +50,21 @@ function renderProfile(container) {
                         </button>
                     `}
                 ` : `
-                    <p>En tant qu'acheteur, tu peux que parcourir les boutiques et découvrir des produits.</p>
+                    <p>En tant qu'acheteur, tu peux que parcourir des boutiques et découvrir des produits.</p>
                 `}
             </div>
+
+            ${user.role === 'seller' && myShop ? `
+                <div class="settings-card">
+                    <div class="section-title">
+                        <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
+                        <a href="#" onclick="navigateTo('profile')">Actualiser</a>
+                    </div>
+                    <div id="sellerProductsList">
+                        ${renderSellerProducts([myShop.id])}
+                    </div>
+                </div>
+            ` : ''}
 
             <div class="settings-card">
                 <h4><i class="fas fa-cog"></i> Paramètres</h4>

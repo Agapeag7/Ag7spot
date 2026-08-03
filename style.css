@@ -172,10 +172,22 @@ body {
     background: #f8fafc;
     margin-top: 10px;
     overflow: hidden;
+    position: relative;
 }
 .auth-shop-map .leaflet-container,
 .shop-create-map .leaflet-container {
     border-radius: 22px;
+}
+.center-map-pin {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+    color: var(--primary);
+    font-size: 30px;
+    z-index: 999;
+    text-shadow: 0 0 10px rgba(0,0,0,0.15);
 }
 .auth-footer {
     display: flex;
@@ -766,6 +778,81 @@ body {
     background: rgba(16, 185, 129, 0.05);
 }
 
+.seller-products-card {
+    margin-top: 24px;
+}
+
+.seller-product-item {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #eef2ff;
+    border-radius: 18px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+}
+
+.seller-product-thumbnail {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.seller-product-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.seller-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.seller-product-info strong {
+    font-size: 14px;
+    display: block;
+}
+
+.seller-product-info p {
+    margin: 0;
+    color: var(--text-gray);
+    font-size: 13px;
+}
+
+.seller-product-info .price {
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.seller-product-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.seller-product-actions .btn-outline {
+    min-width: 40px;
+    height: 38px;
+    padding: 0 10px;
+}
+
+.seller-product-actions .btn-outline.delete {
+    border-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.seller-product-actions .btn-outline.delete:hover {
+    background: rgba(239, 68, 68, 0.08);
+}
+
 /* ===== PROFIL ===== */
 .profile-card {
     background: white;
@@ -812,6 +899,7 @@ body {
 }
 
 .settings-card {
+    margin-bottom: 20px;
     background: white;
     border-radius: var(--radius-lg);
     padding: 16px;

@@ -1,7 +1,29 @@
-en creant une boutique on doit choisir une categorie de boutique :
-- Vêtements et chaussures
-- Maison et déco
-- High-tech et électronique
-- Santé et beauté
-
-car en creant un compte l'utilisateur choisi le type de ce qui l'interesse et c'est ce qui s'affiche dans son fil d'actualites
+- Les produits déjà ajouter doivent apparaitre sur le profil du vendeur et non sur l'endroit d'ajout des produits:
+<div class="seller-products-card">
+                        <div class="section-title">
+                            <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
+                            <a href="#" id="refreshSellerProducts">Actualiser</a>
+                        </div>
+                        <div id="sellerProductsList">
+                            
+            <div class="seller-product-item">
+                <div class="seller-product-thumbnail">
+                    <img src="https://picsum.photos/seed/1785753284277/400/400" alt="tricot" loading="lazy">
+                </div>
+                <div class="seller-product-info">
+                    <strong>tricot</strong>
+                    <p>ag7 marque · 5 en stock</p>
+                    <p class="price">5.00 $</p>
+                </div>
+                <div class="seller-product-actions">
+                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(1785753284277)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(1785753284277)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        
+                        </div>
+                    </div>
