@@ -25,8 +25,8 @@ function renderAuth(container) {
                         <input type="text" id="authName" placeholder="Jean Mbemba" />
                     </div>
                     <div class="form-group">
-                        <label>Adresse e-mail</label>
-                        <input type="email" id="authEmail" placeholder="exemple@domaine.com" required />
+                        <label id="authEmailLabel">Adresse e-mail</label>
+                        <input type="text" id="authEmail" placeholder="exemple@domaine.com" required />
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
@@ -63,6 +63,8 @@ function renderAuth(container) {
 
     const modeButtons = container.querySelectorAll('.auth-mode-btn');
     const authForm = container.querySelector('#authForm');
+    const authEmailLabel = container.querySelector('#authEmailLabel');
+    const authEmailInput = container.querySelector('#authEmail');
     const registerFields = container.querySelectorAll('.auth-register-field');
     const submitBtn = container.querySelector('.auth-submit-btn');
     const loginNote = container.querySelector('.auth-note-login');
@@ -74,6 +76,9 @@ function renderAuth(container) {
         const isRegister = mode === 'register';
         registerFields.forEach(field => field.classList.toggle('hidden', !isRegister));
         submitBtn.innerHTML = isRegister ? '<i class="fas fa-user-plus"></i> Créer mon compte' : '<i class="fas fa-sign-in-alt"></i> Se connecter';
+        authEmailLabel.textContent = isRegister ? 'Adresse e-mail' : 'Nom d\'utilisateur';
+        authEmailInput.placeholder = isRegister ? 'exemple@domaine.com' : 'Entrez votre nom d\'utilisateur';
+        authEmailInput.type = isRegister ? 'email' : 'text';
         loginNote.classList.toggle('hidden', isRegister);
         registerNote.classList.toggle('hidden', !isRegister);
     };
@@ -88,17 +93,17 @@ function renderAuth(container) {
         e.preventDefault();
 
         const mode = authForm.dataset.mode;
-        const email = container.querySelector('#authEmail').value.trim();
+        const identifier = container.querySelector('#authEmail').value.trim();
         const password = container.querySelector('#authPassword').value;
 
-        if (!email || !password) {
+        if (!identifier || !password) {
             showToast('Veuillez remplir tous les champs obligatoires.', 'warning');
             return;
         }
 
         if (mode === 'login') {
             try {
-                const response = await login(email, password);
+                const response = await login(identifier, password);
                 const user = response.user;
                 localStorage.setItem('ag7_current_user', JSON.stringify(user));
                 localStorage.removeItem('onboarding_done');
@@ -113,12 +118,17 @@ function renderAuth(container) {
         }
 
         const name = container.querySelector('#authName').value.trim();
+        const email = identifier;
         const confirmPassword = container.querySelector('#authConfirmPassword').value;
         const accountType = container.querySelector('#authAccountType').value;
         const privacyAccepted = container.querySelector('#authPrivacy').checked;
 
         if (!name) {
             showToast('Merci de renseigner ton nom complet.', 'warning');
+            return;
+        }
+        if (!email) {
+            showToast('Merci de renseigner une adresse e-mail valide.', 'warning');
             return;
         }
         if (password !== confirmPassword) {

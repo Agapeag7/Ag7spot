@@ -60,7 +60,7 @@ async function loadCollections() {
     }
 }
 
-function showCreateCollection() {
+async function showCreateCollection() {
     const name = prompt('Nom de la collection :');
     if (!name) return;
     const desc = prompt('Description :');

@@ -104,8 +104,14 @@ class SpotUsers {
         return $stmt->fetch();
     }
 
-    public function verifyCredentials($email, $password) {
-        $user = $this->getUserByEmail($email);
+    public function getUserByUsername($username) {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE username = ?');
+        $stmt->execute([trim($username)]);
+        return $stmt->fetch();
+    }
+
+    public function verifyCredentials($username, $password) {
+        $user = $this->getUserByUsername($username);
         if (!$user) {
             return null;
         }

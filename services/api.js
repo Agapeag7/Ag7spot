@@ -1,7 +1,7 @@
 // =========================================
 // API SERVICE (Appels AJAX vers le back-end PHP)
 // =========================================
-const API_BASE = '/backend/api';
+const API_BASE = './backend/api';
 
 async function apiCall(endpoint, method = 'GET', data = null) {
     const options = {
@@ -67,8 +67,8 @@ function auth(action, payload) {
     return apiCall('auth.php', 'POST', Object.assign({ action }, payload));
 }
 
-function login(email, password) {
-    return auth('login', { email, password });
+function login(username, password) {
+    return auth('login', { username, password });
 }
 
 function register(name, email, password, role) {

@@ -19,19 +19,19 @@ $data = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = trim(strtolower($data['action'] ?? 'login'));
 
 if ($action === 'login') {
-    $email = trim($data['email'] ?? '');
+    $username = trim($data['username'] ?? '');
     $password = $data['password'] ?? '';
 
-    if ($email === '' || $password === '') {
+    if ($username === '' || $password === '') {
         http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'Email et mot de passe requis']);
+        echo json_encode(['success' => false, 'error' => 'Nom d\'utilisateur et mot de passe requis']);
         exit;
     }
 
-    $user = $spot->users->verifyCredentials($email, $password);
+    $user = $spot->users->verifyCredentials($username, $password);
     if (!$user) {
         http_response_code(401);
-        echo json_encode(['success' => false, 'error' => 'Email ou mot de passe invalide']);
+        echo json_encode(['success' => false, 'error' => 'Nom d\'utilisateur ou mot de passe invalide']);
         exit;
     }
 
