@@ -66,16 +66,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('onboardingModal').classList.remove('hidden');
     }
 
-    // Initialiser la géolocalisation
-    try {
-        const pos = await getUserPosition();
-    } catch (e) {
-        console.warn('Erreur géoloc:', e);
-        if (typeof showToast === 'function') {
-            showToast('Autorise la localisation pour voir la carte et les boutiques à proximité.', 'warning');
-        }
-    }
-
     // Charger la page par défaut
     navigateTo('feed');
     appInitialized = true;
@@ -83,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Service Worker pour le hors-ligne
     const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-    const canRegisterSW = ('serviceWorker' in navigator) && ((location.protocol === 'http:' && isLocalhost) || (location.protocol === 'https:' && !isLocalhost));
+    const canRegisterSW = ('serviceWorker' in navigator) && (location.protocol === 'https:' || (location.protocol === 'http:' && isLocalhost));
     if (canRegisterSW) {
         navigator.serviceWorker.register('sw.js')
             .then(() => console.log('SW enregistré'))

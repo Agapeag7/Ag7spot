@@ -13,7 +13,7 @@ async function renderProfile(container) {
     try {
         const data = await getProfile();
         const user = data.user || CURRENT_USER;
-        const myShop = data.shop || null;
+        const myShop = user.role === 'seller' ? (data.shop || null) : null;
         const products = data.products || [];
         const followCount = data.followCount ?? 0;
         const roleLabel = user.role === 'seller' ? 'Vendeur' : 'Acheteur';

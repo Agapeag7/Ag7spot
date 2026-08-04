@@ -1,34 +1,18 @@
-[Violation] 'OMR' handler took 200ms
-53c9b7e9-c917-4d73-be9d-83e1348f9f64:669 [Violation] 'DOMContentLoaded' handler took 570ms
-[Violation] 'readystatechange' handler took 161ms
-[Violation] 'setTimeout' handler took 292ms
-[Violation] 'setTimeout' handler took 50ms
-[Violation] 'setTimeout' handler took 3174ms
-app.js:73 Erreur géoloc: GeolocationPositionError {code: 3, message: 'Timeout expired'}
-(anonymous) @ app.js:73
-app.js:92 SW non enregistré : service worker nécessite soit https, soit http sur localhost https: localhost
-(anonymous) @ app.js:92
-[Violation] 'setTimeout' handler took 163ms
+19d5c85a-87b0-4f5a-934a-86bd6f1e58a6:669 [Violation] 'DOMContentLoaded' handler took 332ms
+[Violation] 'readystatechange' handler took 686ms
 api.js:24 API Request: GET /Ag7Spot/backend/api/feed.php?lat=0.121705&lng=29.292747&max_distance=5 null
-api.js:26  GET https://localhost/Ag7Spot/backend/api/feed.php?lat=0.121705&lng=29.292747&max_distance=5 500 (Internal Server Error)
-apiCall @ api.js:26
-getFeed @ api.js:80
-loadFeed @ feed.js:47
-await in loadFeed
-renderFeed @ feed.js:25
-navigateTo @ app.js:151
-(anonymous) @ app.js:80
-api.js:30 API Response: 500 application/json {"success":false,"error":"SQLSTATE[HY093]: Invalid parameter number"}
-api.js:58 API Error: Error: Erreur serveur (500) : {"success":false,"error":"SQLSTATE[HY093]: Invalid parameter number"}
-    at apiCall (api.js:38:27)
-    at async loadFeed (feed.js:47:22)
-apiCall @ api.js:58
-await in apiCall
-getFeed @ api.js:80
-loadFeed @ feed.js:47
-await in loadFeed
-renderFeed @ feed.js:25
-navigateTo @ app.js:151
-(anonymous) @ app.js:80
+[Violation] 'setTimeout' handler took 50ms
+An unknown error occurred when fetching the script.
+app.js:90 SW erreur: SecurityError: Failed to register a ServiceWorker for scope ('https://localhost/Ag7Spot/') with script ('https://localhost/Ag7Spot/sw.js'): An unknown error occurred when fetching the script.
+(anonymous) @ app.js:90
+Promise.catch
+(anonymous) @ app.js:90
+api.js:30 API Response: 200 application/json {"success":true,"feed":[]}
+api.js:24 API Request: GET /Ag7Spot/backend/api/profile.php null
+api.js:30 API Response: 200 application/json {"success":true,"user":{"id":1,"username":"ag7","email":"agapeag7@gmail.com","role":"seller","avatar":"A","points":0,"shop_id":null,"created_at":"2026-08-04 12:20:46","updated_at":null},"shop":null,"products":[],"followCount":0}
+api.js:24 API Request: GET /Ag7Spot/backend/api/profile.php null
+api.js:30 API Response: 200 application/json {"success":true,"user":{"id":1,"username":"ag7","email":"agapeag7@gmail.com","role":"seller","avatar":"A","points":0,"shop_id":null,"created_at":"2026-08-04 12:20:46","updated_at":null},"shop":null,"products":[],"followCount":0}
+api.js:24 API Request: GET /Ag7Spot/backend/api/profile.php null
+api.js:30 API Response: 200 application/json {"success":true,"user":{"id":1,"username":"ag7","email":"agapeag7@gmail.com","role":"seller","avatar":"A","points":0,"shop_id":null,"created_at":"2026-08-04 12:20:46","updated_at":null},"shop":null,"products":[],"followCount":0}
 api.js:24 API Request: GET /Ag7Spot/backend/api/profile.php null
 api.js:30 API Response: 200 application/json {"success":true,"user":{"id":1,"username":"ag7","email":"agapeag7@gmail.com","role":"seller","avatar":"A","points":0,"shop_id":null,"created_at":"2026-08-04 12:20:46","updated_at":null},"shop":null,"products":[],"followCount":0}
