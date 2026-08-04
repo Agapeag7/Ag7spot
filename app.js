@@ -91,9 +91,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-function logout() {
+async function logout() {
+    try {
+        await logoutApi();
+    } catch (error) {
+        console.warn('Logout API failed, clearing local state anyway');
+    }
+
     localStorage.removeItem('ag7_current_user');
-    localStorage.removeItem('ag7_onboarding_done');
+    localStorage.removeItem('onboarding_done');
     CURRENT_USER.id = null;
     CURRENT_USER.username = '';
     CURRENT_USER.points = 0;

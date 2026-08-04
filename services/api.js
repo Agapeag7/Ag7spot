@@ -63,6 +63,22 @@ function calculateRoute(waypoints, mode = 'walking') {
     return apiCall('route.php', 'POST', { waypoints, mode });
 }
 
+function auth(action, payload) {
+    return apiCall('auth.php', 'POST', Object.assign({ action }, payload));
+}
+
+function login(email, password) {
+    return auth('login', { email, password });
+}
+
+function register(name, email, password, role) {
+    return auth('register', { name, email, password, role });
+}
+
+function logoutApi() {
+    return apiCall('logout.php', 'POST');
+}
+
 function getFlashDeals(lat, lng, radius = 2) {
     const params = new URLSearchParams({ lat, lng, radius });
     return apiCall(`flashdeals.php?${params.toString()}`).then(response => response.deals || []);

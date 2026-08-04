@@ -84,7 +84,7 @@ function renderAuth(container) {
 
     setMode('login');
 
-    authForm?.addEventListener('submit', function(e) {
+    authForm?.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const mode = authForm.dataset.mode;
@@ -97,17 +97,18 @@ function renderAuth(container) {
         }
 
         if (mode === 'login') {
-            const matchingUser = USERS.find(user => user.email.toLowerCase() === email.toLowerCase() && user.password === password);
-            if (!matchingUser) {
-                showToast('Email ou mot de passe invalide.', 'error');
-                return;
+            try {
+                const response = await login(email, password);
+                const user = response.user;
+                localStorage.setItem('ag7_current_user', JSON.stringify(user));
+                localStorage.removeItem('onboarding_done');
+                applyStoredUser(user);
+                updateHeaderActionsVisibility();
+                showToast('Bienvenue, ' + user.username + ' !', 'success');
+                navigateTo('feed');
+            } catch (error) {
+                // showToast already handled in apiCall
             }
-            localStorage.setItem('ag7_current_user', JSON.stringify(matchingUser));
-            localStorage.removeItem('ag7_onboarding_done');
-            applyStoredUser(matchingUser);
-            updateHeaderActionsVisibility();
-            showToast('Bienvenue, ' + matchingUser.username + ' !', 'success');
-            navigateTo('feed');
             return;
         }
 
@@ -129,30 +130,18 @@ function renderAuth(container) {
             return;
         }
 
-        if (USERS.some(user => user.email.toLowerCase() === email.toLowerCase())) {
-            showToast('Cette adresse e-mail est déjà utilisée.', 'error');
-            return;
+        try {
+            const response = await register(name, email, password, accountType);
+            const user = response.user;
+            localStorage.setItem('ag7_current_user', JSON.stringify(user));
+            localStorage.removeItem('onboarding_done');
+            applyStoredUser(user);
+            updateHeaderActionsVisibility();
+            showToast('Compte créé avec succès !', 'success');
+            navigateTo('feed');
+        } catch (error) {
+            // showToast already handled in apiCall
         }
-
-        const newUserId = Date.now();
-        const newUser = {
-            id: newUserId,
-            username: name,
-            email,
-            password,
-            role: accountType,
-            avatar: name.split(' ').map(part => part[0]?.toUpperCase()).join('').slice(0, 2),
-            points: 0,
-            shopId: null
-        };
-
-        USERS.push(newUser);
-        localStorage.setItem('ag7_current_user', JSON.stringify(newUser));
-        localStorage.removeItem('ag7_onboarding_done');
-        applyStoredUser(newUser);
-        updateHeaderActionsVisibility();
-        showToast('Compte créé avec succès !', 'success');
-        navigateTo('feed');
     });
 }
 

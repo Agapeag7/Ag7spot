@@ -1,11 +1,1 @@
-- cette zone ne doit pas apparaitre chez les acheteurs : <div><strong>0</strong> <span>Mes produits</span></div>
-- refais toutes les requetes de la base de données adapter à l'état actuel de l'application. et n'y met pas des requetes d'insertion
-- un acheteur ne doit plus voir cette zone :
-<div class="settings-card">
-                <h4><i class="fas fa-store"></i> Ma boutique</h4>
-                
-                    <p>En tant qu'acheteur, tu peux que parcourir des boutiques et découvrir des produits.</p>
-                
-            </div>
-
-- cree toutes les classes et methodes pour toutes les fonctionnalités de cette application dans le fichier : spot.class.php
+- implemente le backend de la section de login, implemente le backend au complet pour la creation d'un compte et se connecter au compte créer

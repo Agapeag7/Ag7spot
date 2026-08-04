@@ -104,6 +104,62 @@ class SpotUsers {
         return $stmt->fetch();
     }
 
+    public function verifyCredentials($email, $password) {
+        $user = $this->getUserByEmail($email);
+        if (!$user) {
+            return null;
+        }
+
+        if (password_verify($password, $user['password'])) {
+            if (password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
+                $this->updatePasswordHash($user['id'], password_hash($password, PASSWORD_DEFAULT));
+            }
+            return $user;
+        }
+
+        if (hash_equals($user['password'], $password)) {
+            $this->updatePasswordHash($user['id'], password_hash($password, PASSWORD_DEFAULT));
+            return $user;
+        }
+
+        return null;
+    }
+
+    public function createUser($username, $email, $password, $role = 'buyer', $avatar = '') {
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        if ($avatar === '') {
+            $avatar = $this->generateAvatar($username);
+        }
+
+        $stmt = $this->db->prepare('INSERT INTO users (username, email, password, role, avatar) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([
+            trim($username),
+            trim($email),
+            $passwordHash,
+            in_array($role, ['seller', 'buyer'], true) ? $role : 'buyer',
+            trim($avatar)
+        ]);
+
+        return $this->db->lastInsertId();
+    }
+
+    public function updatePasswordHash($userId, $passwordHash) {
+        $stmt = $this->db->prepare('UPDATE users SET password = ? WHERE id = ?');
+        return $stmt->execute([trim($passwordHash), intval($userId)]);
+    }
+
+    private function generateAvatar($username) {
+        $initials = '';
+        $parts = array_filter(array_map('trim', explode(' ', $username)));
+        foreach ($parts as $part) {
+            $initials .= mb_strtoupper(mb_substr($part, 0, 1));
+            if (mb_strlen($initials) >= 2) {
+                break;
+            }
+        }
+        return $initials ?: 'AG';
+    }
+
     public function updatePoints($userId, $points) {
         $stmt = $this->db->prepare('UPDATE users SET points = points + ? WHERE id = ?');
         return $stmt->execute([intval($points), intval($userId)]);
