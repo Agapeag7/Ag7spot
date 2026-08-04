@@ -1,5 +1,7 @@
 <?php
-if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
+$isLocalHost = preg_match('/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/', $_SERVER['HTTP_HOST']);
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443;
+if (!$isLocalHost && !$isHttps) {
     $httpsUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     header('Location: ' . $httpsUrl);
     exit;

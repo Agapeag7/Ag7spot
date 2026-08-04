@@ -126,7 +126,7 @@ function renderSellerProducts(shopIds) {
                     <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(${product.id})">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(${product.id})">
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProductAction(${product.id})">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -135,7 +135,7 @@ function renderSellerProducts(shopIds) {
     }).join('');
 }
 
-function editProduct(productId) {
+async function editProduct(productId) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (!product) return;
     const shop = SHOPS.find(s => s.id === product.shopId);
@@ -153,15 +153,35 @@ function editProduct(productId) {
 
     const price = parseFloat(priceValue);
     const stock = parseInt(stockValue, 10);
-    if (name.trim()) product.name = name.trim();
-    if (!Number.isNaN(price)) product.price = price;
-    if (!Number.isNaN(stock)) product.stock = stock;
+    if (!name.trim() || Number.isNaN(price) || Number.isNaN(stock)) {
+        showToast('Valeurs invalides.', 'warning');
+        return;
+    }
 
-    showToast('Produit mis à jour.', 'success');
-    renderAddProduct(document.getElementById('pageContainer'));
+    try {
+        const success = await updateProduct(productId, {
+            name: name.trim(),
+            price,
+            stock,
+            description: product.description || '',
+            image: product.image || ''
+        });
+
+        if (success) {
+            product.name = name.trim();
+            product.price = price;
+            product.stock = stock;
+            showToast('Produit mis à jour.', 'success');
+            renderProfile(document.getElementById('pageContainer'));
+        } else {
+            throw new Error('Échec mise à jour produit');
+        }
+    } catch (error) {
+        showToast('Erreur lors de la mise à jour du produit.', 'error');
+    }
 }
 
-function deleteProduct(productId) {
+async function deleteProductAction(productId) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (!product) return;
     const shop = SHOPS.find(s => s.id === product.shopId);
@@ -173,11 +193,18 @@ function deleteProduct(productId) {
     const confirmed = confirm(`Supprimer le produit « ${product.name} » ?`);
     if (!confirmed) return;
 
-    const index = PRODUCTS.findIndex(p => p.id === productId);
-    if (index !== -1) {
-        PRODUCTS.splice(index, 1);
-        showToast('Produit supprimé.', 'success');
-        renderAddProduct(document.getElementById('pageContainer'));
+    try {
+        const success = await deleteProduct(productId);
+        if (success) {
+            const index = PRODUCTS.findIndex(p => p.id === productId);
+            if (index !== -1) PRODUCTS.splice(index, 1);
+            showToast('Produit supprimé.', 'success');
+            renderProfile(document.getElementById('pageContainer'));
+        } else {
+            throw new Error('Échec suppression produit');
+        }
+    } catch (error) {
+        showToast('Erreur lors de la suppression du produit.', 'error');
     }
 }
 

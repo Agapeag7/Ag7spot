@@ -1,1 +1,129 @@
-- implemente le backend de la section de login, implemente le backend au complet pour la creation d'un compte et se connecter au compte créer
+- Implemente le backend de cette zone au complet en enlevant les simulations et remplacer par la vraie logique : 
+<main class="main-content" id="mainContent">
+                <!-- Les pages sont injectées dynamiquement par JavaScript -->
+                <div id="pageContainer">
+        <div class="page active">
+            <div class="profile-card">
+                <div class="avatar">A</div>
+                <h3>ag7</h3>
+                <p class="profile-role">Vendeur</p>
+                <div class="profile-stats">
+                    <div><strong>2</strong> <span>Abonnements</span></div>
+                    <div><strong>3</strong> <span>Mes produits</span></div>
+                    <div><strong>0</strong> <span>Points</span></div>
+                </div>
+                <button class="btn-outline profile-edit-btn" onclick="alert('✏️ Édition du profil (simulation)')">
+                    <i class="fas fa-edit"></i> Modifier le profil
+                </button>
+            </div>
+
+            
+                <div class="settings-card">
+                    <h4><i class="fas fa-store"></i> Ma boutique</h4>
+                    
+                        <div class="settings-item">
+                            <span>Urban Wear Kinshasa</span>
+                            <span class="settings-value"><span class="shop-status open"><i class="fas fa-store"></i> Ouvert</span></span>
+                        </div>
+                        <div class="settings-item">
+                            <span>Adresse</span>
+                            <span class="settings-value">Avenue de la Paix, Gombe, Kinshasa</span>
+                        </div>
+                        <button class="btn-primary w-full" onclick="navigateTo('add')">
+                            <i class="fas fa-plus-circle"></i> Ajouter un produit
+                        </button>
+                    
+                </div>
+            
+
+            
+                <div class="settings-card">
+                    <div class="section-title">
+                        <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
+                        <a href="#" onclick="navigateTo('profile')">Actualiser</a>
+                    </div>
+                    <div id="sellerProductsList">
+                        
+            <div class="seller-product-item">
+                <div class="seller-product-thumbnail">
+                    <img src="https://source.unsplash.com/400x400/?congo,african-fashion" alt="Sweat Oversize X" loading="lazy">
+                </div>
+                <div class="seller-product-info">
+                    <strong>Sweat Oversize X</strong>
+                    <p>Urban Wear Kinshasa · 12 en stock</p>
+                    <p class="price">49.99 $</p>
+                </div>
+                <div class="seller-product-actions">
+                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(101)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(101)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        
+            <div class="seller-product-item">
+                <div class="seller-product-thumbnail">
+                    <img src="https://source.unsplash.com/400x400/?congo,africa,street-style" alt="Jeans Vintage Coupe" loading="lazy">
+                </div>
+                <div class="seller-product-info">
+                    <strong>Jeans Vintage Coupe</strong>
+                    <p>Urban Wear Kinshasa · 3 en stock</p>
+                    <p class="price">69.00 $</p>
+                </div>
+                <div class="seller-product-actions">
+                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(102)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(102)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        
+            <div class="seller-product-item">
+                <div class="seller-product-thumbnail">
+                    <img src="https://source.unsplash.com/400x400/?congo,african-accessories" alt="Casquette Edition Limitee" loading="lazy">
+                </div>
+                <div class="seller-product-info">
+                    <strong>Casquette Edition Limitee</strong>
+                    <p>Urban Wear Kinshasa · 0 en stock</p>
+                    <p class="price">29.99 $</p>
+                </div>
+                <div class="seller-product-actions">
+                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(103)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProduct(103)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        
+                    </div>
+                </div>
+            
+
+            <div class="settings-card">
+                <h4><i class="fas fa-cog"></i> Paramètres</h4>
+                <div class="settings-item">
+                    <span>Notifications push</span>
+                    <span class="settings-value">Activées</span>
+                </div>
+                <div class="settings-item">
+                    <span>Mode sombre</span>
+                    <span class="settings-value">Désactivé</span>
+                </div>
+
+                <div class="settings-item">
+                    <span>Mode hors-ligne</span>
+                </div>
+
+                <button class="btn-outline w-full" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                </button>
+            </div>
+        </div>
+    </div>
+            </main>

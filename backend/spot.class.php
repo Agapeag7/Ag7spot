@@ -232,6 +232,12 @@ class SpotShops {
         return $stmt->fetchAll();
     }
 
+    public function getShopByOwner($ownerId) {
+        $stmt = $this->db->prepare('SELECT * FROM shops WHERE owner_id = ? ORDER BY created_at DESC LIMIT 1');
+        $stmt->execute([intval($ownerId)]);
+        return $stmt->fetch();
+    }
+
     public function updateStatus($shopId, $status) {
         $stmt = $this->db->prepare('UPDATE shops SET status = ? WHERE id = ?');
         return $stmt->execute([trim($status), intval($shopId)]);
@@ -267,10 +273,48 @@ class SpotProducts {
         return $stmt->fetchAll();
     }
 
+    public function getProductsByOwner($ownerId) {
+        $stmt = $this->db->prepare(
+            'SELECT p.* FROM products p
+             JOIN shops s ON p.shop_id = s.id
+             WHERE s.owner_id = ?
+             ORDER BY p.created_at DESC'
+        );
+        $stmt->execute([intval($ownerId)]);
+        return $stmt->fetchAll();
+    }
+
     public function getProductById($productId) {
         $stmt = $this->db->prepare('SELECT * FROM products WHERE id = ?');
         $stmt->execute([intval($productId)]);
         return $stmt->fetch();
+    }
+
+    public function getProductOwnerId($productId) {
+        $stmt = $this->db->prepare(
+            'SELECT s.owner_id FROM products p
+             JOIN shops s ON p.shop_id = s.id
+             WHERE p.id = ?'
+        );
+        $stmt->execute([intval($productId)]);
+        return $stmt->fetchColumn();
+    }
+
+    public function updateProduct($productId, $name, $price, $stock, $description, $image) {
+        $stmt = $this->db->prepare('UPDATE products SET name = ?, price = ?, stock = ?, description = ?, image = ? WHERE id = ?');
+        return $stmt->execute([
+            trim($name),
+            floatval($price),
+            intval($stock),
+            trim($description),
+            trim($image),
+            intval($productId)
+        ]);
+    }
+
+    public function deleteProduct($productId) {
+        $stmt = $this->db->prepare('DELETE FROM products WHERE id = ?');
+        return $stmt->execute([intval($productId)]);
     }
 
     public function updateStock($productId, $stock) {
@@ -449,8 +493,8 @@ class SpotFeed {
 
     public function getFeed($lat, $lng, $maxDistance) {
         $sql = 'SELECT p.*, s.name AS shop_name, s.lat, s.lng, s.category, (6371 * ACOS(
-            COS(RADIANS(:lat)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
-            SIN(RADIANS(:lat)) * SIN(RADIANS(s.lat))
+            COS(RADIANS(:lat1)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
+            SIN(RADIANS(:lat2)) * SIN(RADIANS(s.lat))
         )) AS distance
         FROM products p
         JOIN shops s ON p.shop_id = s.id
@@ -459,7 +503,8 @@ class SpotFeed {
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':lat' => floatval($lat),
+            ':lat1' => floatval($lat),
+            ':lat2' => floatval($lat),
             ':lng' => floatval($lng),
             ':maxDistance' => floatval($maxDistance)
         ]);

@@ -1,7 +1,8 @@
 // =========================================
 // API SERVICE (Appels AJAX vers le back-end PHP)
 // =========================================
-const API_BASE = './backend/api';
+const APP_ROOT = window.location.pathname.replace(/\/[^/]*$/, '') || '/';
+const API_BASE = `${APP_ROOT}/backend/api`.replace(/\/+/g, '/');
 
 async function apiCall(endpoint, method = 'GET', data = null) {
     const options = {
@@ -19,12 +20,40 @@ async function apiCall(endpoint, method = 'GET', data = null) {
     }
 
     try {
-        const response = await fetch(`${API_BASE}/${endpoint}`, options);
+        const url = `${API_BASE}/${endpoint}`.replace(/([^:]\/\/)\//g, '$1');
+        console.debug('API Request:', method, url, data);
+
+        const response = await fetch(url, options);
+        const contentType = response.headers.get('content-type') || '';
+        const text = await response.text();
+
+        console.debug('API Response:', response.status, contentType, text.slice(0, 500));
+
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Erreur serveur');
+            if (contentType.includes('application/json')) {
+                try {
+                    const error = JSON.parse(text);
+                    throw new Error(error.message || `Erreur serveur (${response.status})`);
+                } catch (jsonError) {
+                    throw new Error(`Erreur serveur (${response.status}) : ${text}`);
+                }
+            }
+            throw new Error(text || `Erreur serveur (${response.status})`);
         }
-        return await response.json();
+
+        if (text.trim() === '') {
+            return {};
+        }
+
+        if (contentType.includes('application/json')) {
+            try {
+                return JSON.parse(text);
+            } catch (jsonError) {
+                throw new Error('Réponse JSON invalide : ' + text);
+            }
+        }
+
+        throw new Error('Réponse API inattendue: ' + text);
     } catch (error) {
         console.error('API Error:', error);
         showToast(error.message || 'Erreur de connexion', 'error');
@@ -42,6 +71,10 @@ function getShopProducts(shopId) {
     return apiCall(`products.php?shop_id=${shopId}`).then(response => response.products || []);
 }
 
+function getProfile() {
+    return apiCall('profile.php');
+}
+
 function getFeed(lat, lng, maxDistance = 5) {
     const params = new URLSearchParams({ lat, lng, max_distance: maxDistance });
     return apiCall(`feed.php?${params.toString()}`).then(response => response.feed || []);
@@ -53,6 +86,14 @@ function createShop(shopData) {
 
 function addProduct(productData) {
     return apiCall('products.php', 'POST', productData).then(response => response.product_id || null);
+}
+
+function updateProduct(productId, productData) {
+    return apiCall('products.php', 'PUT', Object.assign({ product_id: productId }, productData)).then(response => response.success || false);
+}
+
+function deleteProduct(productId) {
+    return apiCall('products.php', 'DELETE', { product_id: productId }).then(response => !!response.success);
 }
 
 function updateStock(productId, newStock) {

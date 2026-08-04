@@ -1,183 +1,51 @@
-collections.js:81 Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules (at collections.js:81:30)
-VM216:88  POST https://rdtds.net/siblings/find?place=2 net::ERR_CONNECTION_TIMED_OUT
-wrapper.<computed> @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:239
-eval @ VM216:88
-A @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-r @ VM216:83
-s @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-d @ VM216:88
-c @ VM216:88
-eval @ VM216:88
-A @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-r @ VM216:83
-s @ VM216:83
-Promise.then
-r @ VM216:83
-s @ VM216:83
-Promise.then
-r @ VM216:83
-s @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-eval @ VM216:88
-getScriptList @ VM216:88
-f @ VM216:88
-setTimeout
-wrapper.<computed> @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:239
-eval @ VM216:88
-openPage @ VM216:88
-eval @ VM216:88
-Promise.then
-pn.onMessage @ VM216:88
-eval @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-s.emit @ VM216:86
-sendMessage @ VM216:88
-value @ VM216:88
-eval @ VM216:88
-eval @ VM216:88
-Promise.then
-a @ VM216:88
-148 @ VM216:88
-n @ VM216:88
-eval @ VM216:88
-e.contentScriptIndex @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-eval @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-value @ VM216:88
-eval @ VM216:88
-setTimeout
-wrapper.<computed> @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:239
-eval @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-value @ VM216:88
-value @ VM216:88
-t @ VM216:88
-eval @ VM216:88
-n @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-eval @ VM216:90
-eval @ VM216:91
-runCode @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:119
-buildCode @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:620
-run @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:632
-comm.load @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:645
-(anonymous) @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:671
-VM216:88 TypeError: Failed to fetch
-    at wrapper.<computed> [as fetch] (31614283-184e-4c8f-a1a6-1ecaab4e5d40:239:25)
-    at eval (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:88:3015147)
-    at A (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:314160)
-    at Generator.eval (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:315487)
-    at Generator.eval [as next] (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:314570)
-    at r (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:1164)
-    at s (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:1367)
-    at eval (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:1426)
-    at new Promise (<anonymous>)
-    at eval (eval at buildCode (31614283-184e-4c8f-a1a6-1ecaab4e5d40:615:33), <anonymous>:83:1307)
-eval @ VM216:88
-Promise.catch
-eval @ VM216:88
-A @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-r @ VM216:83
-s @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-d @ VM216:88
-c @ VM216:88
-eval @ VM216:88
-A @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-r @ VM216:83
-s @ VM216:83
-Promise.then
-r @ VM216:83
-s @ VM216:83
-Promise.then
-r @ VM216:83
-s @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-eval @ VM216:88
-getScriptList @ VM216:88
-f @ VM216:88
-setTimeout
-wrapper.<computed> @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:239
-eval @ VM216:88
-openPage @ VM216:88
-eval @ VM216:88
-Promise.then
-pn.onMessage @ VM216:88
-eval @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-s.emit @ VM216:86
-sendMessage @ VM216:88
-value @ VM216:88
-eval @ VM216:88
-eval @ VM216:88
-Promise.then
-a @ VM216:88
-148 @ VM216:88
-n @ VM216:88
-eval @ VM216:88
-e.contentScriptIndex @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-eval @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-value @ VM216:88
-eval @ VM216:88
-setTimeout
-wrapper.<computed> @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:239
-eval @ VM216:88
-eval @ VM216:88
-value @ VM216:88
-value @ VM216:88
-value @ VM216:88
-value @ VM216:88
-t @ VM216:88
-eval @ VM216:88
-n @ VM216:83
-eval @ VM216:83
-eval @ VM216:83
-eval @ VM216:90
-eval @ VM216:91
-runCode @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:119
-buildCode @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:620
-run @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:632
-comm.load @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:645
-(anonymous) @ 31614283-184e-4c8f-a1a6-1ecaab4e5d40:671
-api.js:22  POST https://localhost/backend/api/auth.php 404 (Not Found)
-apiCall @ api.js:22
-auth @ api.js:67
-register @ api.js:75
-(anonymous) @ auth.js:144
-api.js:29 API Error: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
-apiCall @ api.js:29
+j'ai cette notification : impossible de charger le profil
+- An unknown error occurred when fetching the script.
+api.js:26  GET https://localhost/Ag7Spot/backend/api/feed.php?lat=0.121705&lng=29.292747&max_distance=5 500 (Internal Server Error)
+apiCall @ api.js:26
+getFeed @ api.js:80
+loadFeed @ feed.js:44
+await in loadFeed
+renderFeed @ feed.js:25
+navigateTo @ app.js:149
+(anonymous) @ app.js:80
+api.js:58 API Error: Error: Erreur serveur (500) : 
+    at apiCall (api.js:38:27)
+    at async loadFeed (feed.js:44:22)
+apiCall @ api.js:58
 await in apiCall
-auth @ api.js:67
-register @ api.js:75
-(anonymous) @ auth.js:144
+getFeed @ api.js:80
+loadFeed @ feed.js:44
+await in loadFeed
+renderFeed @ feed.js:25
+navigateTo @ app.js:149
+(anonymous) @ app.js:80
+api.js:26  GET https://localhost/Ag7Spot/backend/api/profile.php 500 (Internal Server Error)
+apiCall @ api.js:26
+getProfile @ api.js:75
+renderProfile @ profile.js:14
+navigateTo @ app.js:167
+handleGlobalNavigationClick @ app.js:26
+api.js:58 API Error: Error: Erreur serveur (500) : 
+    at apiCall (api.js:38:27)
+    at async renderProfile (profile.js:14:22)
+apiCall @ api.js:58
+await in apiCall
+getProfile @ api.js:75
+renderProfile @ profile.js:14
+navigateTo @ app.js:167
+handleGlobalNavigationClick @ app.js:26
+api.js:26  GET https://localhost/Ag7Spot/backend/api/profile.php 500 (Internal Server Error)
+apiCall @ api.js:26
+getProfile @ api.js:75
+renderProfile @ profile.js:14
+navigateTo @ app.js:167
+handleGlobalNavigationClick @ app.js:26
+api.js:58 API Error: Error: Erreur serveur (500) : 
+    at apiCall (api.js:38:27)
+    at async renderProfile (profile.js:14:22)
+apiCall @ api.js:58
+await in apiCall
+getProfile @ api.js:75
+renderProfile @ profile.js:14
+navigateTo @ app.js:167
+handleGlobalNavigationClick @ app.js:26
