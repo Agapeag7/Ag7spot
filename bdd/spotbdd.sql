@@ -99,6 +99,19 @@ CREATE TABLE `collection_shops` (
   CONSTRAINT `fk_collection_shops_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `shop_follows` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` INT UNSIGNED NOT NULL,
+  `shop_id` INT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_shop_follows_user_shop` (`user_id`,`shop_id`),
+  KEY `idx_shop_follows_user_id` (`user_id`),
+  KEY `idx_shop_follows_shop_id` (`shop_id`),
+  CONSTRAINT `fk_shop_follows_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_shop_follows_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `avatar`, `points`, `shop_id`) VALUES
 --   (1, 'Ag7 Dev', 'ag7@dev.com', 'password123', 'seller', 'AG', 450, 1),
 --   (2, 'Lina Achete', 'lina@achete.com', 'acheteur123', 'buyer', 'LA', 120, NULL),

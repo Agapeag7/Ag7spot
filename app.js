@@ -82,12 +82,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateHeaderActionsVisibility();
 
     // Service Worker pour le hors-ligne
-    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+    const canRegisterSW = ('serviceWorker' in navigator) && ((location.protocol === 'http:' && isLocalhost) || (location.protocol === 'https:' && !isLocalhost));
+    if (canRegisterSW) {
         navigator.serviceWorker.register('sw.js')
             .then(() => console.log('SW enregistré'))
             .catch(err => console.warn('SW erreur:', err));
     } else if ('serviceWorker' in navigator) {
-        console.warn('SW non enregistré : protocole non sécurisé ou environnement local invalide', location.protocol);
+        console.warn('SW non enregistré : service worker nécessite soit https, soit http sur localhost', location.protocol, location.hostname);
     }
 });
 

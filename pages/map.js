@@ -31,8 +31,12 @@ async function initMap() {
     if (!mapContainer) return;
 
     try {
-        const pos = await getUserPosition();
+        const pos = await getUserPosition(true);
         currentMapPosition = pos;
+
+        if (!userPosition) {
+            showToast('Localisation non autorisée : affichage par défaut.', 'warning');
+        }
 
         if (mapInstance) {
             mapInstance.invalidateSize();

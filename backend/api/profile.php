@@ -66,7 +66,13 @@ try {
 
     $shop = null;
     $products = [];
-    $myShop = $spot->shops->getShopByOwner($userId);
+    if (method_exists($spot->shops, 'getShopByOwner')) {
+        $myShop = $spot->shops->getShopByOwner($userId);
+    } else {
+        $ownerShops = $spot->shops->getShopsByOwner($userId);
+        $myShop = !empty($ownerShops) ? $ownerShops[0] : null;
+    }
+
     if ($myShop) {
         $shop = $myShop;
         $products = $spot->products->getProductsByShop(intval($myShop['id']));

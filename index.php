@@ -1,5 +1,5 @@
 <?php
-$isLocalHost = preg_match('/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/', $_SERVER['HTTP_HOST']);
+$isLocalHost = preg_match('/^(localhost|127\.0\.0\.1|\[::1\]|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}|192\.168(?:\.\d{1,3}){2})(:\d+)?$/', $_SERVER['HTTP_HOST']);
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443;
 if (!$isLocalHost && !$isHttps) {
     $httpsUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -8,7 +8,6 @@ if (!$isLocalHost && !$isHttps) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />

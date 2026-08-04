@@ -40,7 +40,10 @@ async function loadFeed(maxDistance, productQuery = '') {
     const query = productQuery.trim().toLowerCase();
 
     try {
-        const pos = await getUserPosition();
+        const pos = await getUserPosition(true);
+        if (!userPosition) {
+            showToast('Localisation non autorisée : affichage par défaut.', 'warning');
+        }
         const feed = await getFeed(pos.lat, pos.lng, maxDistance);
         const filtered = feed.filter(p => {
             if (!query) return true;

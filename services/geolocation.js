@@ -4,8 +4,13 @@
 let userPosition = null;
 let watchId = null;
 let locationRequestPromise = null;
+const DEFAULT_POSITION = {
+    lat: -4.325321,
+    lng: 15.313543,
+    accuracy: null
+};
 
-function getUserPosition() {
+function getUserPosition(useFallback = false) {
     if (userPosition) {
         return Promise.resolve(userPosition);
     }
@@ -15,7 +20,7 @@ function getUserPosition() {
     }
 
     if (!navigator.geolocation) {
-        return Promise.reject(new Error('La géolocalisation n\'est pas supportée'));
+        return useFallback ? Promise.resolve(DEFAULT_POSITION) : Promise.reject(new Error('La géolocalisation n\'est pas supportée'));
     }
 
     locationRequestPromise = new Promise((resolve, reject) => {
@@ -30,7 +35,11 @@ function getUserPosition() {
             },
             (err) => {
                 userPosition = null;
-                reject(err);
+                if (useFallback) {
+                    resolve(DEFAULT_POSITION);
+                } else {
+                    reject(err);
+                }
             },
             { enableHighAccuracy: true, timeout: 15000 }
         );

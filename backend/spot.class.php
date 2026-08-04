@@ -504,8 +504,8 @@ class SpotFeed {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':lat1' => floatval($lat),
-            ':lat2' => floatval($lat),
             ':lng' => floatval($lng),
+            ':lat2' => floatval($lat),
             ':maxDistance' => floatval($maxDistance)
         ]);
         return $stmt->fetchAll();
@@ -530,8 +530,15 @@ class SpotFollows {
     }
 
     public function getFollowedShopIds($userId) {
-        $stmt = $this->db->prepare('SELECT shop_id FROM shop_follows WHERE user_id = ?');
-        $stmt->execute([intval($userId)]);
-        return array_map('intval', array_column($stmt->fetchAll(), 'shop_id'));
+        try {
+            $stmt = $this->db->prepare('SELECT shop_id FROM shop_follows WHERE user_id = ?');
+            $stmt->execute([intval($userId)]);
+            return array_map('intval', array_column($stmt->fetchAll(), 'shop_id'));
+        } catch (PDOException $e) {
+            if ($e->getCode() === '42S02') {
+                return [];
+            }
+            throw $e;
+        }
     }
 }
