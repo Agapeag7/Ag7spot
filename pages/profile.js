@@ -16,6 +16,8 @@ async function renderProfile(container) {
         console.debug('renderProfile: api data', data);
         const user = data.user || CURRENT_USER;
         const myShop = user.role === 'seller' ? (data.shop || null) : null;
+        const isSellerWithShop = user.role === 'seller' && !!myShop;
+        const isSellerWithoutShop = user.role === 'seller' && !myShop;
         const products = data.products || [];
         const followCount = data.followCount ?? 0;
         const roleLabel = user.role === 'seller' ? 'Vendeur' : 'Acheteur';
@@ -39,7 +41,7 @@ async function renderProfile(container) {
                 ${user.role === 'seller' ? `
                     <div class="settings-card">
                         <h4><i class="fas fa-store"></i> Ma boutique</h4>
-                        ${myShop ? `
+                        ${isSellerWithShop ? `
                             <div class="settings-item">
                                 <span>${myShop.name}</span>
                                 <span class="settings-value">${renderShopStatus(myShop)}</span>
@@ -49,11 +51,11 @@ async function renderProfile(container) {
                                 <span class="settings-value">${myShop.address}</span>
                             </div>
                             <button class="btn-primary w-full" onclick="navigateTo('add')">
-                                <i class="fas fa-plus-circle"></i> ${myShop ? 'Ajouter un produit' : 'Créer ma boutique'}
+                                <i class="fas fa-plus-circle"></i> Ajouter un produit
                             </button>
                         ` : `
                             <p>Tu n'as pas encore de boutique. Crée-la pour vendre dans l'application.</p>
-                            <button class="btn-primary w-full" onclick="navigateTo('add')">
+                            <button class="btn-primary w-full" onclick="navigateToAddShop()">
                                 <i class="fas fa-store"></i> Créer ma boutique
                             </button>
                         `}

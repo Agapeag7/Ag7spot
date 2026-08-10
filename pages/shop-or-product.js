@@ -18,12 +18,50 @@ function renderAddProduct(container) {
 
     const ownedShops = SHOPS.filter(shop => shop.ownerId === CURRENT_USER.id);
     const hasShop = ownedShops.length > 0;
+    const forceShopCreation = !!window.forceShopCreation;
+    const showShopCreation = !hasShop || forceShopCreation;
 
-    container.innerHTML = `
-        <div class="page active">
-            <h2 class="section-title"><i class="fas fa-shopping-bag"></i> ${hasShop ? 'Ajouter un produit' : 'Créer ma boutique'}</h2>
-            <div class="form-card">
-                ${hasShop ? `
+    if (showShopCreation) {
+        container.innerHTML = `
+            <div class="page active">
+                <h2 class="section-title"><i class="fas fa-shopping-bag"></i> Créer ma boutique</h2>
+                <div class="form-card">
+                    <p>Tu n'as pas encore de boutique. Crée-la pour vendre dans l'application et apparaître sur la carte.</p>
+                    <form id="createShopForm">
+                        <div class="form-group">
+                            <label>Nom de la boutique</label>
+                            <input type="text" id="shopName" placeholder="Ex: Ma boutique locale" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Catégorie</label>
+                            <select id="shopCategory" required>
+                                <option value="" disabled selected>Choisis une catégorie</option>
+                                <option value="fashion">Vêtements et chaussures</option>
+                                <option value="home">Maison et déco</option>
+                                <option value="tech">High-tech et électronique</option>
+                                <option value="beauty">Santé et beauté</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Position sur la carte</label>
+                            <div id="shopCreateMap" class="shop-create-map"></div>
+                            <p class="map-hint">Déplace le marqueur pour choisir l'emplacement précis de la boutique.</p>
+                            <input type="hidden" id="shopLat" />
+                            <input type="hidden" id="shopLng" />
+                        </div>
+                        <button type="submit" class="btn-primary w-full">
+                            <i class="fas fa-store"></i> Créer ma boutique
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+        setupShopForm();
+    } else {
+        container.innerHTML = `
+            <div class="page active">
+                <h2 class="section-title"><i class="fas fa-shopping-bag"></i> Ajouter un produit</h2>
+                <div class="form-card">
                     <form id="addProductForm">
                         <div class="form-group">
                             <label>Nom du produit</label>
@@ -59,44 +97,13 @@ function renderAddProduct(container) {
                             <i class="fas fa-plus-circle"></i> Publier le produit
                         </button>
                     </form>
-                ` : `
-                    <p>Tu n'as pas encore de boutique. Crée-la pour vendre dans l'application et apparaître sur la carte.</p>
-                    <form id="createShopForm">
-                        <div class="form-group">
-                            <label>Nom de la boutique</label>
-                            <input type="text" id="shopName" placeholder="Ex: Ma boutique locale" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Catégorie</label>
-                            <select id="shopCategory" required>
-                                <option value="" disabled selected>Choisis une catégorie</option>
-                                <option value="fashion">Vêtements et chaussures</option>
-                                <option value="home">Maison et déco</option>
-                                <option value="tech">High-tech et électronique</option>
-                                <option value="beauty">Santé et beauté</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Position sur la carte</label>
-                            <div id="shopCreateMap" class="shop-create-map"></div>
-                            <p class="map-hint">Déplace le marqueur pour choisir l'emplacement précis de la boutique.</p>
-                            <input type="hidden" id="shopLat" />
-                            <input type="hidden" id="shopLng" />
-                        </div>
-                        <button type="submit" class="btn-primary w-full">
-                            <i class="fas fa-store"></i> Créer ma boutique
-                        </button>
-                    </form>
-                `}
+                </div>
             </div>
-        </div>
-    `;
-
-    if (hasShop) {
+        `;
         setupProductForm();
-    } else {
-        setupShopForm();
     }
+
+    window.forceShopCreation = false;
 }
 
 function renderSellerProducts(shopIds) {

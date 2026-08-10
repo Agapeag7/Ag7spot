@@ -117,6 +117,11 @@ function clearClientSession() {
     navigateTo('auth');
 }
 
+function navigateToAddShop() {
+    window.forceShopCreation = true;
+    navigateTo('add');
+}
+
 function updateHeaderActionsVisibility() {
     const headerActions = document.querySelector('.header-actions');
     const bottomNav = document.querySelector('.bottom-nav');
@@ -183,6 +188,7 @@ function navigateTo(page) {
 
 // Exposer globalement pour les appels depuis les pages
 window.navigateTo = navigateTo;
+window.navigateToAddShop = navigateToAddShop;
 window.logout = logout;
 window.clearClientSession = clearClientSession;
 window.showToast = showToast;

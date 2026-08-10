@@ -1,2 +1,4 @@
-- Ajouter des logs console supplémentaires et un log toast plus verbeux dans renderProfile() pour tracer pourquoi la vue tombe en erreur.
-- Inspecter le backend profile.php si vous voulez que je cherche pourquoi il renvoyait 401 précédemment (je peux ouvrir ce fichier et analyser).
+ce bouton apparait uniquement aux vendeurs qui n'ont pas encore de boutique et en cliquant dessus on doit etre diriger vers la creation de boutique :
+<button class="btn-primary w-full" onclick="navigateTo('add')">
+    <i class="fas fa-store"></i> Créer ma boutique
+</button>

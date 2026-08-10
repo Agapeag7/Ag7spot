@@ -110,7 +110,7 @@ if (!$isLocalHost && !$isHttps) {
         <!-- Pages -->
         <script src="pages/feed.js"></script>
         <script src="pages/map.js"></script>
-        <script src="pages/add-product.js"></script>
+        <script src="pages/shop-or-product.js"></script>
         <script src="pages/favorites.js"></script>
         <script src="pages/profile.js"></script>
         <script src="pages/parcours.js"></script>
