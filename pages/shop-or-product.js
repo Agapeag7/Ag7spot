@@ -290,13 +290,14 @@ function setupShopForm() {
             const pos = await getUserPosition();
             const startLat = parseFloat(latInput.value) || pos.lat;
             const startLng = parseFloat(lngInput.value) || pos.lng;
-            latInput.value = startLat.toFixed(4);
-            lngInput.value = startLng.toFixed(4);
+            // store with higher precision for exact positioning
+            latInput.value = startLat.toFixed(6);
+            lngInput.value = startLng.toFixed(6);
 
             const mapInstance = L.map('shopCreateMap', {
                 zoomControl: true,
                 attributionControl: false
-            }).setView([startLat, startLng], 15);
+            }).setView([startLat, startLng], 18);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19
