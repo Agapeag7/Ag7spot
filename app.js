@@ -102,6 +102,21 @@ async function logout() {
     navigateTo('auth');
 }
 
+function clearClientSession() {
+    localStorage.removeItem('ag7_current_user');
+    localStorage.removeItem('onboarding_done');
+    if (window.CURRENT_USER) {
+        window.CURRENT_USER.id = null;
+        window.CURRENT_USER.username = '';
+        window.CURRENT_USER.points = 0;
+        window.CURRENT_USER.avatar = '';
+        window.CURRENT_USER.shopId = null;
+        window.CURRENT_USER.role = 'buyer';
+    }
+    updateHeaderActionsVisibility();
+    navigateTo('auth');
+}
+
 function updateHeaderActionsVisibility() {
     const headerActions = document.querySelector('.header-actions');
     const bottomNav = document.querySelector('.bottom-nav');
@@ -169,6 +184,7 @@ function navigateTo(page) {
 // Exposer globalement pour les appels depuis les pages
 window.navigateTo = navigateTo;
 window.logout = logout;
+window.clearClientSession = clearClientSession;
 window.showToast = showToast;
 window.getUserPosition = getUserPosition;
 window.getDistanceBetween = getDistanceBetween;

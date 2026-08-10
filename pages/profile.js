@@ -2,6 +2,7 @@
 // PAGE : PROFIL UTILISATEUR
 // =========================================
 async function renderProfile(container) {
+    console.debug('renderProfile: start', { CURRENT_USER });
     container.innerHTML = `
         <div class="page active">
             <div class="loading-state">
@@ -12,6 +13,7 @@ async function renderProfile(container) {
 
     try {
         const data = await getProfile();
+        console.debug('renderProfile: api data', data);
         const user = data.user || CURRENT_USER;
         const myShop = user.role === 'seller' ? (data.shop || null) : null;
         const products = data.products || [];
@@ -90,14 +92,16 @@ async function renderProfile(container) {
             </div>
         `;
 
-        CURRENT_USER = Object.assign(CURRENT_USER || {}, user);
-        localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
+        Object.assign(CURRENT_USER || window.CURRENT_USER || {}, user);
+        localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
     } catch (error) {
+        console.error('renderProfile: error', error);
+        showToast(error.message || 'Impossible de charger le profil.', 'error');
         container.innerHTML = `
             <div class="page active">
                 <div class="empty-state">
                     <i class="fas fa-exclamation-circle"></i>
-                    <p>Impossible de charger le profil.</p>
+                    <p>Impossible de charger le profil. ${error.message ? '(' + error.message + ')' : ''}</p>
                 </div>
             </div>
         `;
@@ -157,8 +161,8 @@ async function updateProfile(username, email) {
     try {
         const response = await apiCall('profile.php', 'PUT', { username, email });
         if (response.success && response.user) {
-            CURRENT_USER = Object.assign(CURRENT_USER, response.user);
-            localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
+            Object.assign(CURRENT_USER || window.CURRENT_USER || {}, response.user);
+            localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
             showToast('Profil mis à jour.', 'success');
             renderProfile(document.getElementById('pageContainer'));
         }

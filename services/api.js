@@ -30,6 +30,32 @@ async function apiCall(endpoint, method = 'GET', data = null) {
         console.debug('API Response:', response.status, contentType, text.slice(0, 500));
 
         if (!response.ok) {
+            if (response.status === 401) {
+                let msg = `Session expirée (${response.status})`;
+                if (contentType.includes('application/json')) {
+                    try {
+                        const errJson = JSON.parse(text);
+                        msg = errJson.error || errJson.message || msg;
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+                if (typeof window !== 'undefined') {
+                    if (!window.sessionClearingInProgress) {
+                        window.sessionClearingInProgress = true;
+                        if (typeof window.clearClientSession === 'function') {
+                            showToast('Session expirée, veuillez vous connecter.', 'warning');
+                            window.clearClientSession();
+                        } else {
+                            try {
+                                localStorage.removeItem('ag7_current_user');
+                            } catch (e) {}
+                        }
+                    }
+                }
+                throw new Error(msg);
+            }
+
             if (contentType.includes('application/json')) {
                 try {
                     const error = JSON.parse(text);

@@ -1,0 +1,2 @@
+- Ajouter des logs console supplémentaires et un log toast plus verbeux dans renderProfile() pour tracer pourquoi la vue tombe en erreur.
+- Inspecter le backend profile.php si vous voulez que je cherche pourquoi il renvoyait 401 précédemment (je peux ouvrir ce fichier et analyser).
