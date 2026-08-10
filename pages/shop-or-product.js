@@ -1,7 +1,7 @@
 ﻿// =========================================
 // PAGE : AJOUTER UN PRODUIT / CRÉER MA BOUTIQUE
 // =========================================
-function renderAddProduct(container) {
+function renderShopOrProduct(container) {
     if (!CURRENT_USER || CURRENT_USER.role !== 'seller') {
         container.innerHTML = `
             <div class="page active">
@@ -267,7 +267,7 @@ function setupProductForm() {
                     distance: 0
                 });
                 showToast('Produit ajouté avec succès !', 'success');
-                renderAddProduct(document.getElementById('pageContainer'));
+                renderShopOrProduct(document.getElementById('pageContainer'));
             } else {
                 throw new Error('Erreur création produit');
             }
@@ -377,7 +377,7 @@ function setupShopForm() {
             localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
 
             showToast('Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
-            renderAddProduct(document.getElementById('pageContainer'));
+            renderShopOrProduct(document.getElementById('pageContainer'));
         } catch (error) {
             showToast('Erreur lors de la création de la boutique.', 'error');
         }

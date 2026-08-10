@@ -1,4 +1,0 @@
-ce bouton apparait uniquement aux vendeurs qui n'ont pas encore de boutique et en cliquant dessus on doit etre diriger vers la creation de boutique :
-<button class="btn-primary w-full" onclick="navigateTo('add')">
-    <i class="fas fa-store"></i> Créer ma boutique
-</button>

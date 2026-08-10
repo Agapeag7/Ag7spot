@@ -167,7 +167,7 @@ function navigateTo(page) {
             renderParcours(container);
             break;
         case 'add':
-            renderAddProduct(container);
+            renderShopOrProduct(container);
             break;
         case 'auth':
             renderAuth(container);
