@@ -1,7 +1,30 @@
 ﻿// =========================================
 // PAGE : AJOUTER UN PRODUIT / CRÉER MA BOUTIQUE
 // =========================================
-function renderShopOrProduct(container) {
+async function renderShopOrProduct(container) {
+    // Refresh profile/shop info to ensure we render correct UI after role/login changes
+    if (CURRENT_USER && CURRENT_USER.id) {
+        try {
+            const profileData = await getProfile();
+            if (profileData && profileData.user) {
+                Object.assign(CURRENT_USER, profileData.user);
+                localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER));
+            }
+            if (profileData && profileData.shop) {
+                const shop = profileData.shop;
+                const existing = SHOPS.findIndex(s => s.id === shop.id);
+                if (existing > -1) {
+                    SHOPS[existing] = shop;
+                } else {
+                    SHOPS.push(shop);
+                }
+                CURRENT_USER.shopId = shop.id;
+            }
+        } catch (e) {
+            console.debug('renderShopOrProduct: profile fetch failed', e);
+        }
+    }
+
     if (!CURRENT_USER || CURRENT_USER.role !== 'seller') {
         container.innerHTML = `
             <div class="page active">
