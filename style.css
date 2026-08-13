@@ -8,6 +8,7 @@
     /* Couleurs principales - tons doux et élégants */
     --primary: #4A6CF7;          /* Bleu vif mais tempéré */
     --primary-dark: #3651B5;     /* Bleu plus profond pour les hover */
+    --primary-gradient: linear-gradient(135deg, #4A6CF7, #001e70); /* Dégradé bleu-jaune pour les boutons et accents */
     --primary-light: #E8EDFD;    /* Fond bleu très clair pour les sélections */
     --secondary: #F59E0B;        /* Jaune doux pour les accents (badges, deals) */
     --secondary-light: #FEF3C7;  /* Fond jaune pâle */
@@ -200,7 +201,7 @@ body {
 }
 .center-map-pin i {
     /* Gradient text color */
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: var(--primary-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
