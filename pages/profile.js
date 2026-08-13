@@ -124,7 +124,7 @@ function renderSellerProducts(products, myShop) {
         return `
             <div class="seller-product-item">
                 <div class="seller-product-thumbnail">
-                    <img src="${product.image}" alt="${product.name}" loading="lazy" />
+                    <img src="${getProductImage(product)}" alt="${product.name}" loading="lazy" />
                 </div>
                 <div class="seller-product-info">
                     <strong>${product.name}</strong>

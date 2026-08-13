@@ -122,7 +122,7 @@ function renderSellerProducts(shopIds) {
         return `
             <div class="seller-product-item">
                 <div class="seller-product-thumbnail">
-                    <img src="${product.image}" alt="${product.name}" loading="lazy" />
+                    <img src="${getProductImage(product)}" alt="${product.name}" loading="lazy" />
                 </div>
                 <div class="seller-product-info">
                     <strong>${product.name}</strong>
@@ -264,7 +264,7 @@ function setupProductForm() {
         try {
             const res = await addProduct(formData);
             const productId = res && res.product_id ? res.product_id : null;
-            const imageUrl = res && res.image ? res.image : (formData.get('image') || '');
+            const imageUrl = (res && (res.image_url || res.image)) || (formData.get('image') || '');
             if (productId) {
                 PRODUCTS.push({
                     id: productId,

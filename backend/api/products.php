@@ -61,8 +61,9 @@ switch ($method) {
             $dest = $uploadDir . '/' . $filename;
 
             if (move_uploaded_file($tmpPath, $dest)) {
-                // Web-accessible path
-                $image = '/backend/articles/' . $filename;
+                // Store only filename in DB, but return web-accessible path
+                $image = $filename; // filename only for DB
+                $image_url = '/backend/articles/' . $filename;
             } else {
                 http_response_code(500);
                 echo json_encode(['success' => false, 'error' => 'Failed to move uploaded file']);
@@ -76,6 +77,7 @@ switch ($method) {
             $stock = intval($_POST['stock'] ?? 0);
             $description = trim($_POST['description'] ?? '');
             $image = trim($_POST['image'] ?? '');
+            $image_url = $image;
         } else {
             // JSON body
             $data = json_decode(file_get_contents('php://input'), true);
@@ -85,6 +87,7 @@ switch ($method) {
             $stock = intval($data['stock'] ?? 0);
             $description = trim($data['description'] ?? '');
             $image = trim($data['image'] ?? '');
+            $image_url = $image;
         }
 
         if ($shopId <= 0 || $name === '' || $price <= 0) {
@@ -93,8 +96,24 @@ switch ($method) {
             break;
         }
 
-        $productId = $spot->products->createProduct($shopId, $name, $price, $stock, $description, $image);
-        echo json_encode(['success' => true, 'product_id' => intval($productId), 'image' => $image]);
+        // If $image contains a full URL (no uploaded file), we keep it as-is in DB
+        // If $image is a filename produced above, store only filename in DB
+        $imageToStore = $image;
+        if (!empty($image) && isset($filename) && $image === $filename) {
+            $imageToStore = $filename; // filename only
+        }
+
+        $productId = $spot->products->createProduct($shopId, $name, $price, $stock, $description, $imageToStore);
+        $response = ['success' => true, 'product_id' => intval($productId)];
+        if (!empty($image_url)) {
+            $response['image_url'] = $image_url;
+            $response['image_filename'] = basename($image_url);
+        } else {
+            $response['image_url'] = $image;
+            $response['image_filename'] = basename($image);
+        }
+
+        echo json_encode($response);
         break;
 
     case 'PUT':

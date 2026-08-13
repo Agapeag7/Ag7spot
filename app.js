@@ -206,8 +206,31 @@ window.showToast = showToast;
 window.getUserPosition = getUserPosition;
 window.getDistanceBetween = getDistanceBetween;
 window.isNearShop = isNearShop;
-window.SHOPS = SHOPS;
-window.PRODUCTS = PRODUCTS;
-window.COLLECTIONS = COLLECTIONS;
-window.CURRENT_USER = CURRENT_USER;
-window.FLASH_DEALS = FLASH_DEALS;
+window.SHOPS = (typeof SHOPS !== 'undefined') ? SHOPS : [];
+window.PRODUCTS = (typeof PRODUCTS !== 'undefined') ? PRODUCTS : [];
+window.COLLECTIONS = (typeof COLLECTIONS !== 'undefined') ? COLLECTIONS : [];
+window.CURRENT_USER = (typeof CURRENT_USER !== 'undefined') ? CURRENT_USER : { id: null, username: '', points: 0, avatar: '', shopId: null, role: 'buyer' };
+window.FLASH_DEALS = (typeof FLASH_DEALS !== 'undefined') ? FLASH_DEALS : [];
+
+// Helper to resolve product image URL from API fields
+function getProductImage(product) {
+    if (!product) return '';
+    // Prefer explicit image_filename returned by API
+    if (product.image_filename) {
+        return '/backend/articles/' + product.image_filename;
+    }
+    // If product.image looks like an absolute URL or already a path, use it
+    if (product.image) {
+        try {
+            if (product.image.startsWith('/') || product.image.startsWith('http') || product.image.startsWith('data:')) {
+                return product.image;
+            }
+            // Otherwise assume it's a filename stored in DB
+            return '/backend/articles/' + product.image;
+        } catch (e) {
+            return product.image;
+        }
+    }
+    return '';
+}
+window.getProductImage = getProductImage;

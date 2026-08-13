@@ -1,5 +1,8 @@
-erreur : 
-Uncaught ReferenceError: SHOPS is not defined
+Erreur console : 
+shop-or-product.js:19 Uncaught ReferenceError: SHOPS is not defined
     at renderShopOrProduct (shop-or-product.js:19:24)
     at navigateTo (app.js:181:13)
     at HTMLButtonElement.onclick (Ag7Spot/:1:1)
+renderShopOrProduct	@	shop-or-product.js:19
+navigateTo	@	app.js:181
+onclick	@	Ag7Spot/:1
