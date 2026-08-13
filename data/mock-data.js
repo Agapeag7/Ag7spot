@@ -1,13 +1,13 @@
 // =========================================
 // DONNÉES SIMULÉES (remplacées par l'API plus tard)
 // =========================================
-const SHOPS = [
-    { id: 1, ownerId: 1, name: "Urban Wear Kinshasa", category: "fashion", lat: -4.325321, lng: 15.313543, avatar: "https://picsum.photos/seed/urban/100/100", cover: "https://picsum.photos/seed/urban/600/300", followed: true, status: 'open', address: 'Avenue de la Paix, Gombe, Kinshasa' },
-    { id: 2, ownerId: 2, name: "Librairie du Fleuve", category: "books", lat: -4.327650, lng: 15.305930, avatar: "https://picsum.photos/seed/librairie/100/100", cover: "https://picsum.photos/seed/librairie/600/300", followed: false, status: 'open', address: 'Boulevard du 30 Juin, Kinshasa' },
-    { id: 3, ownerId: 3, name: "ElectroTech Matadi", category: "tech", lat: -5.826872, lng: 13.456220, avatar: "https://picsum.photos/seed/electro/100/100", cover: "https://picsum.photos/seed/electro/600/300", followed: true, status: 'break', address: 'Avenue Molayi, Matadi' },
-    { id: 4, ownerId: 4, name: "Boulangerie Kisangani", category: "food", lat: 0.517245, lng: 25.191949, avatar: "https://picsum.photos/seed/boulangerie/100/100", cover: "https://picsum.photos/seed/boulangerie/600/300", followed: false, status: 'open', address: 'Rue du Commerce, Kisangani' },
-    { id: 5, ownerId: 5, name: "Beauty Kin", category: "beauty", lat: -4.395400, lng: 15.267800, avatar: "https://picsum.photos/seed/beauty/100/100", cover: "https://picsum.photos/seed/beauty/600/300", followed: false, status: 'closed', address: 'Quartier Lingwala, Kinshasa' }
-];
+// const SHOPS = [
+//     { id: 1, ownerId: 1, name: "Urban Wear Kinshasa", category: "fashion", lat: -4.325321, lng: 15.313543, avatar: "https://picsum.photos/seed/urban/100/100", cover: "https://picsum.photos/seed/urban/600/300", followed: true, status: 'open', address: 'Avenue de la Paix, Gombe, Kinshasa' },
+//     { id: 2, ownerId: 2, name: "Librairie du Fleuve", category: "books", lat: -4.327650, lng: 15.305930, avatar: "https://picsum.photos/seed/librairie/100/100", cover: "https://picsum.photos/seed/librairie/600/300", followed: false, status: 'open', address: 'Boulevard du 30 Juin, Kinshasa' },
+//     { id: 3, ownerId: 3, name: "ElectroTech Matadi", category: "tech", lat: -5.826872, lng: 13.456220, avatar: "https://picsum.photos/seed/electro/100/100", cover: "https://picsum.photos/seed/electro/600/300", followed: true, status: 'break', address: 'Avenue Molayi, Matadi' },
+//     { id: 4, ownerId: 4, name: "Boulangerie Kisangani", category: "food", lat: 0.517245, lng: 25.191949, avatar: "https://picsum.photos/seed/boulangerie/100/100", cover: "https://picsum.photos/seed/boulangerie/600/300", followed: false, status: 'open', address: 'Rue du Commerce, Kisangani' },
+//     { id: 5, ownerId: 5, name: "Beauty Kin", category: "beauty", lat: -4.395400, lng: 15.267800, avatar: "https://picsum.photos/seed/beauty/100/100", cover: "https://picsum.photos/seed/beauty/600/300", followed: false, status: 'closed', address: 'Quartier Lingwala, Kinshasa' }
+// ];
 
 const PRODUCTS = [
     { id: 101, shopId: 1, name: "Sweat Oversize X", price: 49.99, image: "https://source.unsplash.com/400x400/?congo,african-fashion", stock: 12, distance: 1.2 },

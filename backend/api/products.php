@@ -33,13 +33,59 @@ switch ($method) {
         break;
 
     case 'POST':
-        $data = json_decode(file_get_contents('php://input'), true);
-        $shopId = intval($data['shop_id'] ?? 0);
-        $name = trim($data['name'] ?? '');
-        $price = floatval($data['price'] ?? 0);
-        $stock = intval($data['stock'] ?? 0);
-        $description = trim($data['description'] ?? '');
-        $image = trim($data['image'] ?? '');
+        // Support multipart/form-data uploads as well as JSON body or regular POST
+        $shopId = 0;
+        $name = '';
+        $price = 0;
+        $stock = 0;
+        $description = '';
+        $image = '';
+
+        if (!empty($_FILES) && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            // Read other values from POST when using FormData
+            $shopId = intval($_POST['shop_id'] ?? 0);
+            $name = trim($_POST['name'] ?? '');
+            $price = floatval($_POST['price'] ?? 0);
+            $stock = intval($_POST['stock'] ?? 0);
+            $description = trim($_POST['description'] ?? '');
+
+            $uploadDir = __DIR__ . '/../articles';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $tmpPath = $_FILES['image']['tmp_name'];
+            $origName = basename($_FILES['image']['name']);
+            $ext = pathinfo($origName, PATHINFO_EXTENSION);
+            $filename = uniqid('art_', true) . ($ext ? '.' . $ext : '');
+            $dest = $uploadDir . '/' . $filename;
+
+            if (move_uploaded_file($tmpPath, $dest)) {
+                // Web-accessible path
+                $image = '/backend/articles/' . $filename;
+            } else {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'error' => 'Failed to move uploaded file']);
+                break;
+            }
+        } elseif (!empty($_POST)) {
+            // Form-encoded POST without file
+            $shopId = intval($_POST['shop_id'] ?? 0);
+            $name = trim($_POST['name'] ?? '');
+            $price = floatval($_POST['price'] ?? 0);
+            $stock = intval($_POST['stock'] ?? 0);
+            $description = trim($_POST['description'] ?? '');
+            $image = trim($_POST['image'] ?? '');
+        } else {
+            // JSON body
+            $data = json_decode(file_get_contents('php://input'), true);
+            $shopId = intval($data['shop_id'] ?? 0);
+            $name = trim($data['name'] ?? '');
+            $price = floatval($data['price'] ?? 0);
+            $stock = intval($data['stock'] ?? 0);
+            $description = trim($data['description'] ?? '');
+            $image = trim($data['image'] ?? '');
+        }
 
         if ($shopId <= 0 || $name === '' || $price <= 0) {
             http_response_code(400);
@@ -48,7 +94,7 @@ switch ($method) {
         }
 
         $productId = $spot->products->createProduct($shopId, $name, $price, $stock, $description, $image);
-        echo json_encode(['success' => true, 'product_id' => intval($productId)]);
+        echo json_encode(['success' => true, 'product_id' => intval($productId), 'image' => $image]);
         break;
 
     case 'PUT':

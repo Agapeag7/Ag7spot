@@ -222,10 +222,12 @@ function setupProductForm() {
     uploadArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
+            const file = this.files[0];
             uploadArea.classList.add('has-image');
+            const previewUrl = URL.createObjectURL(file);
             uploadArea.innerHTML = `
-                <i class="fas fa-check-circle" style="color:var(--success);"></i>
-                <span>${this.files[0].name}</span>
+                <img src="${previewUrl}" alt="preview" class="preview-img" />
+                <span>${file.name}</span>
             `;
         }
     });
@@ -244,17 +246,25 @@ function setupProductForm() {
             return;
         }
 
-        const image = 'https://picsum.photos/seed/' + Date.now() + '/400/400';
+        // Préparer l'upload : utiliser FormData si une image est sélectionnée
+        const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+        const formData = new FormData();
+        formData.append('shop_id', shopId);
+        formData.append('name', name);
+        formData.append('price', price);
+        formData.append('stock', stock);
+        formData.append('description', description);
+        if (file) {
+            formData.append('image', file);
+        } else {
+            const fallbackImage = 'https://picsum.photos/seed/' + Date.now() + '/400/400';
+            formData.append('image', fallbackImage);
+        }
 
         try {
-            const productId = await addProduct({
-                shop_id: shopId,
-                name,
-                price,
-                stock,
-                description,
-                image
-            });
+            const res = await addProduct(formData);
+            const productId = res && res.product_id ? res.product_id : null;
+            const imageUrl = res && res.image ? res.image : (formData.get('image') || '');
             if (productId) {
                 PRODUCTS.push({
                     id: productId,
@@ -263,7 +273,7 @@ function setupProductForm() {
                     price,
                     stock,
                     description,
-                    image,
+                    image: imageUrl,
                     distance: 0
                 });
                 showToast('Produit ajouté avec succès !', 'success');

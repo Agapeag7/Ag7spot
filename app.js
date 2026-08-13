@@ -59,11 +59,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     updateHeaderActionsVisibility();
 
-    // Vérifier si l'onboarding doit être affiché
-    const onboardingDone = localStorage.getItem('onboarding_done');
-    if (!onboardingDone) {
-        renderOnboarding();
-        document.getElementById('onboardingModal').classList.remove('hidden');
+    // Vérifier si l'onboarding doit être affiché (par utilisateur)
+    if (CURRENT_USER && CURRENT_USER.id) {
+        const onboardingKey = `onboarding_done_${CURRENT_USER.id}`;
+        const onboardingDone = localStorage.getItem(onboardingKey);
+        if (!onboardingDone) {
+            renderOnboarding();
+            document.getElementById('onboardingModal').classList.remove('hidden');
+        }
     }
 
     // Charger la page par défaut
@@ -90,8 +93,11 @@ async function logout() {
         console.warn('Logout API failed, clearing local state anyway');
     }
 
+    if (CURRENT_USER && CURRENT_USER.id) {
+        localStorage.removeItem(`onboarding_done_${CURRENT_USER.id}`);
+        localStorage.removeItem(`user_categories_${CURRENT_USER.id}`);
+    }
     localStorage.removeItem('ag7_current_user');
-    localStorage.removeItem('onboarding_done');
     CURRENT_USER.id = null;
     CURRENT_USER.username = '';
     CURRENT_USER.points = 0;
@@ -103,8 +109,13 @@ async function logout() {
 }
 
 function clearClientSession() {
+    if (window.CURRENT_USER && window.CURRENT_USER.id) {
+        try {
+            localStorage.removeItem(`onboarding_done_${window.CURRENT_USER.id}`);
+            localStorage.removeItem(`user_categories_${window.CURRENT_USER.id}`);
+        } catch (e) {}
+    }
     localStorage.removeItem('ag7_current_user');
-    localStorage.removeItem('onboarding_done');
     if (window.CURRENT_USER) {
         window.CURRENT_USER.id = null;
         window.CURRENT_USER.username = '';

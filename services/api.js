@@ -8,7 +8,6 @@ async function apiCall(endpoint, method = 'GET', data = null) {
     const options = {
         method: method,
         headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
@@ -16,7 +15,13 @@ async function apiCall(endpoint, method = 'GET', data = null) {
     };
 
     if (data && method !== 'GET') {
-        options.body = JSON.stringify(data);
+        // Support FormData (file uploads) — do not set Content-Type for FormData
+        if (typeof FormData !== 'undefined' && data instanceof FormData) {
+            options.body = data;
+        } else {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(data);
+        }
     }
 
     try {
@@ -111,7 +116,7 @@ function createShop(shopData) {
 }
 
 function addProduct(productData) {
-    return apiCall('products.php', 'POST', productData).then(response => response.product_id || null);
+    return apiCall('products.php', 'POST', productData).then(response => response || null);
 }
 
 function updateProduct(productId, productData) {
