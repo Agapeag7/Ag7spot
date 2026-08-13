@@ -1,8 +1,8 @@
-Erreur console : 
-shop-or-product.js:19 Uncaught ReferenceError: SHOPS is not defined
-    at renderShopOrProduct (shop-or-product.js:19:24)
-    at navigateTo (app.js:181:13)
-    at HTMLButtonElement.onclick (Ag7Spot/:1:1)
-renderShopOrProduct	@	shop-or-product.js:19
-navigateTo	@	app.js:181
-onclick	@	Ag7Spot/:1
+POST https://localhost/Ag7Spot/backend/api/products.php 400 (Bad Request)
+apiCall @ api.js:31
+addProduct @ api.js:119
+(anonymous) @ shop-or-product.js:268
+api.js:35 API Response: 400 application/json {"success":false,"error":"Missing product data"}
+api.js:89 API Error: Error: Erreur serveur (400) : {"success":false,"error":"Missing product data"}
+    at apiCall (api.js:69:27)
+    at async HTMLFormElement.<anonymous> (shop-or-product.js:268:25)

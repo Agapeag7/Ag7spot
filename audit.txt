@@ -1,3 +1,5 @@
-quand on a déjà une boutique , ce bouton doit nous diriger vers l'ajout des produits et non vers encore la creation de boutique : <button class="btn-primary w-full" onclick="navigateTo('add')">
-                                <i class="fas fa-plus-circle"></i> Ajouter un produit
-                            </button> 
+lors de l'ajout d'un protduit, retravaille le style de cette zone, pour que peut importe la taile de l'image qu'il puisse s'adapter au contenair sans le depasser :
+<div class="image-upload has-image" id="imageUploadArea">
+    <img src="" alt="preview" class="preview-img">
+    <span>05cb6e3fd47c4f878e4cfa2833eb12b6.jpg</span>
+</div>

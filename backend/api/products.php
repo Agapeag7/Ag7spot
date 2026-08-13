@@ -92,7 +92,9 @@ switch ($method) {
 
         if ($shopId <= 0 || $name === '' || $price <= 0) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Missing product data']);
+            // Provide debugging info to help development: what PHP received
+            $debug = ['_POST' => $_POST, '_FILES' => array_map(function($f){ return ['name'=>$f['name'],'size'=>$f['size'],'error'=>$f['error']]; }, $_FILES)];
+            echo json_encode(['success' => false, 'error' => 'Missing product data', 'debug' => $debug]);
             break;
         }
 

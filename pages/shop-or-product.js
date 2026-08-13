@@ -17,7 +17,10 @@ function renderShopOrProduct(container) {
     }
 
     const ownedShops = SHOPS.filter(shop => shop.ownerId === CURRENT_USER.id);
-    const hasShop = ownedShops.length > 0;
+    // Consider the user as having a shop if `CURRENT_USER.shopId` is set (authoritative),
+    // or if we find owned shops in the in-memory list. This prevents showing the
+    // shop-creation UI when the global `SHOPS` hasn't been populated yet.
+    const hasShop = (!!CURRENT_USER && !!CURRENT_USER.shopId) || ownedShops.length > 0;
     const forceShopCreation = !!window.forceShopCreation;
     const showShopCreation = !hasShop || forceShopCreation;
 
@@ -262,6 +265,13 @@ function setupProductForm() {
         }
 
         try {
+            // Debug: log FormData entries to help diagnose missing fields server-side
+            console.debug('submitProduct: values', { name, price, shopId, stock, description, file });
+            if (formData instanceof FormData) {
+                for (const pair of formData.entries()) {
+                    console.debug('formData', pair[0], pair[1]);
+                }
+            }
             const res = await addProduct(formData);
             const productId = res && res.product_id ? res.product_id : null;
             const imageUrl = (res && (res.image_url || res.image)) || (formData.get('image') || '');
