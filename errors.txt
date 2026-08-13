@@ -1,9 +1,33 @@
-c384ba34-4bbf-4a42-9049-5533bd558d07:669 [Violation] 'DOMContentLoaded' handler took 312ms
-An SSL certificate error occurred when fetching the script.
-app.js:83 SW erreur: SecurityError: Failed to register a ServiceWorker for scope ('https://localhost/Ag7Spot/') with script ('https://localhost/Ag7Spot/sw.js'): An SSL certificate error occurred when fetching the script.
-(anonymous) @ app.js:83
-Promise.catch
-(anonymous) @ app.js:83
-api.js:29 API Request: GET /Ag7Spot/backend/api/feed.php?lat=0.13673290154622914&lng=29.293170176711897&max_distance=5 null
-api.js:35 API Response: 200 application/json {"success":true,"feed":[{"id":2,"shop_id":1,"name":"sweet","price":"6.00","image":"art_6a7da35992c863.14941496.jpg","stock":5,"distance":0.06098896539271836,"description":"voila","created_at":"2026-08-13 12:58:33","updated_at":null,"shop_name":"mhy","lat":"0.1362000","lng":"29.2933000","category":"tech"},{"id":1,"shop_id":1,"name":"chemise","price":"7.00","image":"https:\/\/picsum.photos\/seed\/1786614160040\/400\/400","stock":5,"distance":0.06098896539271836,"description":"moins cher, taille x"
-art_6a7da35992c863.14941496.jpg:1  GET https://localhost/backend/articles/art_6a7da35992c863.14941496.jpg 404 (Not Found)
+Pour placer les boutiques sur la carte il suffit de prendre la lat et lng déjà stocker dans la bdd :
+
+API Error: Error: Réponse JSON invalide : <br />
+<b>Fatal error</b>:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\xampp\htdocs\Ag7spot\backend\spot.class.php:220
+Stack trace:
+#0 C:\xampp\htdocs\Ag7spot\backend\spot.class.php(220): PDOStatement-&gt;execute(Array)
+#1 C:\xampp\htdocs\Ag7spot\backend\api\shops.php(30): SpotShops-&gt;getNearbyShops(0.13673728155953, 29.293156335285, 8.0, Array)
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\Ag7spot\backend\spot.class.php</b> on line <b>220</b><br />
+
+    at apiCall (api.js:83:23)
+    at async loadShopsOnMap (map.js:135:17)
+apiCall @ api.js:89
+await in apiCall
+getNearbyShops @ api.js:98
+loadShopsOnMap @ map.js:135
+initMap @ map.js:64
+await in initMap
+(anonymous) @ map.js:19
+setTimeout
+renderMap @ map.js:19
+navigateTo @ app.js:175
+handleGlobalNavigationClick @ app.js:26
+map.js:141 Impossible de récupérer les boutiques via l'API, utilisation des données locales. Error: Réponse JSON invalide : <br />
+<b>Fatal error</b>:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\xampp\htdocs\Ag7spot\backend\spot.class.php:220
+Stack trace:
+#0 C:\xampp\htdocs\Ag7spot\backend\spot.class.php(220): PDOStatement-&gt;execute(Array)
+#1 C:\xampp\htdocs\Ag7spot\backend\api\shops.php(30): SpotShops-&gt;getNearbyShops(0.13673728155953, 29.293156335285, 8.0, Array)
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\Ag7spot\backend\spot.class.php</b> on line <b>220</b><br />
+
+    at apiCall (api.js:83:23)
+    at async loadShopsOnMap (map.js:135:17)

@@ -189,20 +189,23 @@ class SpotShops {
         $lat = floatval($lat);
         $lng = floatval($lng);
 
+        // Use distinct parameter names for repeated placeholders (PDO native prepares
+        // may not support reusing the same named parameter multiple times)
         $sql = 'SELECT s.*, (6371 * ACOS(
-            COS(RADIANS(:lat)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
-            SIN(RADIANS(:lat)) * SIN(RADIANS(s.lat))
+            COS(RADIANS(:lat1)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
+            SIN(RADIANS(:lat2)) * SIN(RADIANS(s.lat))
         )) AS distance
         FROM shops s';
 
-        $params = [':lat' => $lat, ':lng' => $lng];
+        // Use parameter names without leading ':' for PDO execute array keys
+        $params = ['lat1' => $lat, 'lat2' => $lat, 'lng' => $lng];
         $filters = [];
 
         if (!empty($categories)) {
             $categoryPlaceholders = [];
             foreach ($categories as $index => $category) {
-                $key = ':cat' . $index;
-                $categoryPlaceholders[] = $key;
+                $key = 'cat' . $index;
+                $categoryPlaceholders[] = ':' . $key;
                 $params[$key] = $category;
             }
             $filters[] = 's.category IN (' . implode(', ', $categoryPlaceholders) . ')';
@@ -213,7 +216,7 @@ class SpotShops {
         }
 
         $sql .= ' HAVING distance <= :radius ORDER BY distance ASC';
-        $params[':radius'] = $radius;
+        $params['radius'] = $radius;
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
