@@ -2,7 +2,7 @@
 // PAGE : PROFIL UTILISATEUR
 // =========================================
 async function renderProfile(container) {
-    console.debug('renderProfile: start', { CURRENT_USER });
+    // console.debug('renderProfile: start', { CURRENT_USER });
     container.innerHTML = `
         <div class="page active">
             <div class="loading-state">
@@ -13,7 +13,7 @@ async function renderProfile(container) {
 
     try {
         const data = await getProfile();
-        console.debug('renderProfile: api data', data);
+        // console.debug('renderProfile: api data', data);
         const user = data.user || CURRENT_USER;
         const myShop = user.role === 'seller' ? (data.shop || null) : null;
         const isSellerWithShop = user.role === 'seller' && !!myShop;
@@ -97,7 +97,7 @@ async function renderProfile(container) {
         Object.assign(CURRENT_USER || window.CURRENT_USER || {}, user);
         localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
     } catch (error) {
-        console.error('renderProfile: error', error);
+        // console.error('renderProfile: error', error);
         showToast(error.message || 'Impossible de charger le profil.', 'error');
         container.innerHTML = `
             <div class="page active">

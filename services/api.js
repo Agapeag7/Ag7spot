@@ -26,13 +26,13 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 
     try {
         const url = `${API_BASE}/${endpoint}`.replace(/([^:]\/\/)\//g, '$1');
-        console.debug('API Request:', method, url, data);
+        // console.debug('API Request:', method, url, data);
 
         const response = await fetch(url, options);
         const contentType = response.headers.get('content-type') || '';
         const text = await response.text();
 
-        console.debug('API Response:', response.status, contentType, text.slice(0, 500));
+        // console.debug('API Response:', response.status, contentType, text.slice(0, 500));
 
         if (!response.ok) {
             if (response.status === 401) {

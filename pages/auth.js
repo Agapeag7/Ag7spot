@@ -22,7 +22,7 @@ function renderAuth(container) {
                 <form id="authForm" class="auth-form" data-mode="login">
                     <div class="form-group auth-register-field hidden">
                         <label>Nom complet</label>
-                        <input type="text" id="authName" placeholder="Jean Mbemba" />
+                        <input type="text" id="authName" placeholder="Entrer votre nom complet" />
                     </div>
                     <div class="form-group">
                         <label id="authEmailLabel">Adresse e-mail</label>
