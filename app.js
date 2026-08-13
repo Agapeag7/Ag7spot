@@ -217,16 +217,23 @@ function getProductImage(product) {
     if (!product) return '';
     // Prefer explicit image_filename returned by API
     if (product.image_filename) {
-        return '/backend/articles/' + product.image_filename;
+        const base = (location.pathname.replace(/\/[^/]*$/, '')) || '';
+        return base + '/backend/articles/' + product.image_filename;
     }
     // If product.image looks like an absolute URL or already a path, use it
     if (product.image) {
         try {
             if (product.image.startsWith('/') || product.image.startsWith('http') || product.image.startsWith('data:')) {
+                // If path starts with '/' but doesn't include the app folder, adjust it
+                if (product.image.startsWith('/') && !product.image.startsWith(location.pathname.replace(/\/[^/]*$/, ''))) {
+                    const base = (location.pathname.replace(/\/[^/]*$/, '')) || '';
+                    return base + product.image;
+                }
                 return product.image;
             }
             // Otherwise assume it's a filename stored in DB
-            return '/backend/articles/' + product.image;
+            const base = (location.pathname.replace(/\/[^/]*$/, '')) || '';
+            return base + '/backend/articles/' + product.image;
         } catch (e) {
             return product.image;
         }

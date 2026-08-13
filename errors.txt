@@ -1,27 +1,9 @@
-shop-or-product.js:231 Uncaught (in promise) ReferenceError: ownedShops is not defined
-    at populateShopSelect (shop-or-product.js:231:27)
-    at setupProductForm (shop-or-product.js:253:7)
-    at renderShopOrProduct (shop-or-product.js:106:9)
-    at navigateTo (app.js:181:13)
-    at HTMLDocument.handleGlobalNavigationClick (app.js:26:9)
-populateShopSelect	@	shop-or-product.js:231
-setupProductForm	@	shop-or-product.js:253
-renderShopOrProduct	@	shop-or-product.js:106
-navigateTo	@	app.js:181
-handleGlobalNavigationClick	@	app.js:26
-
-api.js:31 
- POST https://localhost/Ag7Spot/backend/api/products.php 400 (Bad Request)
-apiCall	@	api.js:31
-addProduct	@	api.js:119
-(anonymous)	@	shop-or-product.js:305
-api.js:35 API Response: 400 application/json {"success":false,"error":"Missing product data","debug":{"_POST":{"shop_id":"NaN","name":"sweet","price":"5","stock":"5","description":"taille, large"},"_FILES":{"image":{"name":"05cb6e3fd47c4f878e4cfa2833eb12b6.jpg","size":236345,"error":0}}}}
-api.js:89 API Error: Error: Erreur serveur (400) : {"success":false,"error":"Missing product data","debug":{"_POST":{"shop_id":"NaN","name":"sweet","price":"5","stock":"5","description":"taille, large"},"_FILES":{"image":{"name":"05cb6e3fd47c4f878e4cfa2833eb12b6.jpg","size":236345,"error":0}}}}
-    at apiCall (api.js:69:27)
-    at async HTMLFormElement.<anonymous> (shop-or-product.js:305:25)
-apiCall	@	api.js:89
-await in apiCall		
-addProduct	@	api.js:119
-(anonymous)	@	shop-or-product.js:305
-
-﻿
+c384ba34-4bbf-4a42-9049-5533bd558d07:669 [Violation] 'DOMContentLoaded' handler took 312ms
+An SSL certificate error occurred when fetching the script.
+app.js:83 SW erreur: SecurityError: Failed to register a ServiceWorker for scope ('https://localhost/Ag7Spot/') with script ('https://localhost/Ag7Spot/sw.js'): An SSL certificate error occurred when fetching the script.
+(anonymous) @ app.js:83
+Promise.catch
+(anonymous) @ app.js:83
+api.js:29 API Request: GET /Ag7Spot/backend/api/feed.php?lat=0.13673290154622914&lng=29.293170176711897&max_distance=5 null
+api.js:35 API Response: 200 application/json {"success":true,"feed":[{"id":2,"shop_id":1,"name":"sweet","price":"6.00","image":"art_6a7da35992c863.14941496.jpg","stock":5,"distance":0.06098896539271836,"description":"voila","created_at":"2026-08-13 12:58:33","updated_at":null,"shop_name":"mhy","lat":"0.1362000","lng":"29.2933000","category":"tech"},{"id":1,"shop_id":1,"name":"chemise","price":"7.00","image":"https:\/\/picsum.photos\/seed\/1786614160040\/400\/400","stock":5,"distance":0.06098896539271836,"description":"moins cher, taille x"
+art_6a7da35992c863.14941496.jpg:1  GET https://localhost/backend/articles/art_6a7da35992c863.14941496.jpg 404 (Not Found)

@@ -68,9 +68,9 @@ async function loadFeed(maxDistance, productQuery = '') {
             const statusHtml = renderShopStatus({ status: p.status });
             const stockHtml = renderStockBadge(p);
 
-            return `
+                return `
                 <div class="product-card" onclick="showProductDetail(${p.id})">
-                    <img src="${p.image}" alt="${p.name}" loading="lazy" />
+                    <img src="${getProductImage(p)}" alt="${p.name}" loading="lazy" />
                     <div class="product-info">
                         <div class="shop-name">
                             <i class="fas fa-store"></i> ${p.shop_name || 'Boutique'}
