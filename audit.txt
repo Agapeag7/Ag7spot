@@ -1,5 +1,0 @@
-lors de l'ajout d'un protduit, retravaille le style de cette zone, pour que peut importe la taile de l'image qu'il puisse s'adapter au contenair sans le depasser :
-<div class="image-upload has-image" id="imageUploadArea">
-    <img src="" alt="preview" class="preview-img">
-    <span>05cb6e3fd47c4f878e4cfa2833eb12b6.jpg</span>
-</div>

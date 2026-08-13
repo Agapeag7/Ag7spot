@@ -222,6 +222,36 @@ function setupProductForm() {
     const uploadArea = document.getElementById('imageUploadArea');
     const fileInput = document.getElementById('fileInput');
 
+    // Compute owned shops locally from global SHOPS to avoid referencing outer-scope var
+    const ownedShopsLocal = (Array.isArray(window.SHOPS) ? window.SHOPS : []).filter(shop => shop.ownerId === (CURRENT_USER && CURRENT_USER.id));
+    const productShopSelect = document.getElementById('productShop');
+    (async function populateShopSelect() {
+        if (!productShopSelect) return;
+
+        if (ownedShopsLocal.length > 0) {
+            productShopSelect.innerHTML = ownedShopsLocal.map(shop => `<option value="${shop.id}">${shop.name}</option>`).join('');
+            return;
+        }
+
+        // If CURRENT_USER has shopId, fetch profile to get shop info
+        const uid = (CURRENT_USER && CURRENT_USER.shopId) ? CURRENT_USER.shopId : null;
+        if (uid) {
+            try {
+                const profileData = await getProfile();
+                const shop = profileData.shop || null;
+                if (shop && shop.id) {
+                    productShopSelect.innerHTML = `<option value="${shop.id}">${shop.name}</option>`;
+                    return;
+                }
+            } catch (e) {
+                console.warn('populateShopSelect: failed to fetch profile', e);
+            }
+        }
+
+        // Fallback: no shops available
+        productShopSelect.innerHTML = `<option value="">-- Aucune boutique trouvée --</option>`;
+    })();
+
     uploadArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -240,7 +270,11 @@ function setupProductForm() {
 
         const name = document.getElementById('productName').value.trim();
         const price = parseFloat(document.getElementById('productPrice').value);
-        const shopId = parseInt(document.getElementById('productShop').value, 10);
+        let shopId = parseInt(document.getElementById('productShop').value, 10);
+        if (!Number.isFinite(shopId)) {
+            // fallback to CURRENT_USER.shopId or first owned shop
+            shopId = (CURRENT_USER && CURRENT_USER.shopId) ? CURRENT_USER.shopId : (ownedShopsLocal[0] ? ownedShopsLocal[0].id : 0);
+        }
         const stock = parseInt(document.getElementById('productStock').value, 10) || 0;
         const description = document.getElementById('productDesc').value.trim();
 

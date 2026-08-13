@@ -1,8 +1,27 @@
-POST https://localhost/Ag7Spot/backend/api/products.php 400 (Bad Request)
-apiCall @ api.js:31
-addProduct @ api.js:119
-(anonymous) @ shop-or-product.js:268
-api.js:35 API Response: 400 application/json {"success":false,"error":"Missing product data"}
-api.js:89 API Error: Error: Erreur serveur (400) : {"success":false,"error":"Missing product data"}
+shop-or-product.js:231 Uncaught (in promise) ReferenceError: ownedShops is not defined
+    at populateShopSelect (shop-or-product.js:231:27)
+    at setupProductForm (shop-or-product.js:253:7)
+    at renderShopOrProduct (shop-or-product.js:106:9)
+    at navigateTo (app.js:181:13)
+    at HTMLDocument.handleGlobalNavigationClick (app.js:26:9)
+populateShopSelect	@	shop-or-product.js:231
+setupProductForm	@	shop-or-product.js:253
+renderShopOrProduct	@	shop-or-product.js:106
+navigateTo	@	app.js:181
+handleGlobalNavigationClick	@	app.js:26
+
+api.js:31 
+ POST https://localhost/Ag7Spot/backend/api/products.php 400 (Bad Request)
+apiCall	@	api.js:31
+addProduct	@	api.js:119
+(anonymous)	@	shop-or-product.js:305
+api.js:35 API Response: 400 application/json {"success":false,"error":"Missing product data","debug":{"_POST":{"shop_id":"NaN","name":"sweet","price":"5","stock":"5","description":"taille, large"},"_FILES":{"image":{"name":"05cb6e3fd47c4f878e4cfa2833eb12b6.jpg","size":236345,"error":0}}}}
+api.js:89 API Error: Error: Erreur serveur (400) : {"success":false,"error":"Missing product data","debug":{"_POST":{"shop_id":"NaN","name":"sweet","price":"5","stock":"5","description":"taille, large"},"_FILES":{"image":{"name":"05cb6e3fd47c4f878e4cfa2833eb12b6.jpg","size":236345,"error":0}}}}
     at apiCall (api.js:69:27)
-    at async HTMLFormElement.<anonymous> (shop-or-product.js:268:25)
+    at async HTMLFormElement.<anonymous> (shop-or-product.js:305:25)
+apiCall	@	api.js:89
+await in apiCall		
+addProduct	@	api.js:119
+(anonymous)	@	shop-or-product.js:305
+
+﻿
