@@ -1,3 +1,27 @@
+- Menu "Carte" dynamisé le compteur de nombre des boutiques de la section "Carte" sur le rayon de 10km de la position de l'utilisateur 
+
+- gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
+
+- création de regex de recherche des Boutiques et Marchandises sur le fil d'actualités et sur la carte
+
+- gestion du fil d'actualités ( chargée les informations par lot ( 5 publications ) au fur et à mesure que l'utilisateur scrolle ) selon les préférences de l'utilisateur 
+
+- gestion de chargement des produits sur le profil vendeur ( charger les produits sur le profil par lot ( de 5 produits ), au fur et à mesure que l'utilisateur scrolle les produits )
+
+- les produits sur le profil vendeur ne doivent pas déborder du conteneur, donc on ajoute un scrolle 
+
+- ajout du modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ). 
+
+- ajout du modale de confirmation de suppression d'un produit 
+
+- gestion des points pour acheteurs : 
+
+- stockage des préférences utilisateur, pour actualiser le fil d'actualités ( ajout d'algorithmes des préfèrences ) 
+
+- ajout de la possibilité de changer la position, le nom, catégorie de la boutique 
+
+
+ALGORITHME DE RECOMMANDATION :
 # Fonctionnement
 
 ## Collecte de données : 
