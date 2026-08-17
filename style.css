@@ -558,6 +558,7 @@ body {
     cursor: pointer;
     transition: var(--transition);
     display: inline-flex;
+    justify-content: center;
     align-items: center;
     gap: 6px;
     font-family: 'Inter', sans-serif;
