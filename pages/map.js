@@ -2,6 +2,19 @@
 // PAGE : CARTE
 // =========================================
 function renderMap(container) {
+    // Si une instance Leaflet existe encore (retour depuis une autre page), la détruire
+    try {
+        if (mapInstance) {
+            mapInstance.remove();
+            mapInstance = null;
+            mapMarkers = [];
+            userMarker = null;
+            routeLayer = null;
+        }
+    } catch (e) {
+        console.warn('Erreur lors de la suppression de l\'ancienne carte :', e);
+    }
+
     container.innerHTML = `
         <div class="page active">
             <div class="map-controls">
