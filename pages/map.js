@@ -71,7 +71,14 @@ async function initMap() {
                 html: '<i class="fas fa-circle" style="color:#6C3BFF;font-size:18px;"></i>',
                 iconSize: [18, 18]
             })
-        }).addTo(mapInstance).bindPopup('Vous êtes ici');
+        }).addTo(mapInstance).bindPopup('Vous êtes ici', {
+            autoClose: false,
+            closeOnClick: false,
+            closeButton: true
+        });
+
+        // Par défaut, le libellé "Vous êtes ici" reste visible sans clic.
+        userMarker.openPopup();
 
         // Charger les boutiques
         loadShopsOnMap(pos);
@@ -92,6 +99,7 @@ async function initMap() {
                 currentMapPosition = newPos;
                 if (userMarker) {
                     userMarker.setLatLng([newPos.lat, newPos.lng]);
+                    userMarker.openPopup();
                 }
                 mapInstance.setView([newPos.lat, newPos.lng], 15);
                 loadShopsOnMap(newPos, currentSearchQuery);

@@ -1,33 +1,193 @@
-Pour placer les boutiques sur la carte il suffit de prendre la lat et lng déjà stocker dans la bdd :
-
-API Error: Error: Réponse JSON invalide : <br />
-<b>Fatal error</b>:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\xampp\htdocs\Ag7spot\backend\spot.class.php:220
-Stack trace:
-#0 C:\xampp\htdocs\Ag7spot\backend\spot.class.php(220): PDOStatement-&gt;execute(Array)
-#1 C:\xampp\htdocs\Ag7spot\backend\api\shops.php(30): SpotShops-&gt;getNearbyShops(0.13673728155953, 29.293156335285, 8.0, Array)
-#2 {main}
-  thrown in <b>C:\xampp\htdocs\Ag7spot\backend\spot.class.php</b> on line <b>220</b><br />
-
-    at apiCall (api.js:83:23)
-    at async loadShopsOnMap (map.js:135:17)
-apiCall @ api.js:89
-await in apiCall
-getNearbyShops @ api.js:98
-loadShopsOnMap @ map.js:135
-initMap @ map.js:64
-await in initMap
-(anonymous) @ map.js:19
+An SSL certificate error occurred when fetching the script.
+[Violation] 'OMR' handler took 429ms
+app.js:177 SW erreur: SecurityError: Failed to register a ServiceWorker for scope ('https://localhost/Ag7Spot/') with script ('https://localhost/Ag7Spot/sw.js'): An SSL certificate error occurred when fetching the script.
+(anonymous) @ app.js:177
+Promise.catch
+(anonymous) @ app.js:177
+VM488:88  POST https://rdtds.net/siblings/find?place=2 net::ERR_CONNECTION_TIMED_OUT
+wrapper.<computed> @ 9a683699-2f21-4c9c-aa7d-332646e9645d:239
+eval @ VM488:88
+A @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+r @ VM488:83
+s @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+d @ VM488:88
+c @ VM488:88
+eval @ VM488:88
+A @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+r @ VM488:83
+s @ VM488:83
+Promise.then
+r @ VM488:83
+s @ VM488:83
+Promise.then
+r @ VM488:83
+s @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+eval @ VM488:88
+getScriptList @ VM488:88
+f @ VM488:88
 setTimeout
-renderMap @ map.js:19
-navigateTo @ app.js:175
-handleGlobalNavigationClick @ app.js:26
-map.js:141 Impossible de récupérer les boutiques via l'API, utilisation des données locales. Error: Réponse JSON invalide : <br />
-<b>Fatal error</b>:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\xampp\htdocs\Ag7spot\backend\spot.class.php:220
-Stack trace:
-#0 C:\xampp\htdocs\Ag7spot\backend\spot.class.php(220): PDOStatement-&gt;execute(Array)
-#1 C:\xampp\htdocs\Ag7spot\backend\api\shops.php(30): SpotShops-&gt;getNearbyShops(0.13673728155953, 29.293156335285, 8.0, Array)
-#2 {main}
-  thrown in <b>C:\xampp\htdocs\Ag7spot\backend\spot.class.php</b> on line <b>220</b><br />
-
-    at apiCall (api.js:83:23)
-    at async loadShopsOnMap (map.js:135:17)
+wrapper.<computed> @ 9a683699-2f21-4c9c-aa7d-332646e9645d:239
+eval @ VM488:88
+openPage @ VM488:88
+eval @ VM488:88
+Promise.then
+gn.onMessage @ VM488:88
+eval @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+s.emit @ VM488:86
+sendMessage @ VM488:88
+value @ VM488:88
+eval @ VM488:88
+eval @ VM488:88
+Promise.then
+a @ VM488:88
+149 @ VM488:88
+n @ VM488:88
+eval @ VM488:88
+e.contentScriptIndex @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+eval @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+value @ VM488:88
+eval @ VM488:88
+setTimeout
+wrapper.<computed> @ 9a683699-2f21-4c9c-aa7d-332646e9645d:239
+eval @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+value @ VM488:88
+value @ VM488:88
+t @ VM488:88
+eval @ VM488:88
+n @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+eval @ VM488:90
+eval @ VM488:91
+runCode @ 9a683699-2f21-4c9c-aa7d-332646e9645d:119
+buildCode @ 9a683699-2f21-4c9c-aa7d-332646e9645d:620
+run @ 9a683699-2f21-4c9c-aa7d-332646e9645d:632
+comm.load @ 9a683699-2f21-4c9c-aa7d-332646e9645d:645
+comm.checkLoad @ 9a683699-2f21-4c9c-aa7d-332646e9645d:650
+loadScript @ 9a683699-2f21-4c9c-aa7d-332646e9645d:665
+handleR @ 9a683699-2f21-4c9c-aa7d-332646e9645d:115
+post @ VM460 injected.js:228
+loadScript @ VM460 injected.js:1020
+Promise.then
+initCommunicator @ VM460 injected.js:1032
+(anonymous) @ VM460 injected.js:1035
+(anonymous) @ VM460 injected.js:1037
+VM488:88 TypeError: Failed to fetch
+    at wrapper.<computed> [as fetch] (9a683699-2f21-4c9c-aa7d-332646e9645d:239:25)
+    at eval (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:88:3032359)
+    at A (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:314291)
+    at Generator.eval (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:315618)
+    at Generator.eval [as next] (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:314701)
+    at r (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:1164)
+    at s (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:1367)
+    at eval (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:1426)
+    at new Promise (<anonymous>)
+    at eval (eval at buildCode (chrome-extension://ggdmdoodcfamjggeigifpjfnnjfbland/f723b277-7eb0-4cbc-8896-06b90b2edf8e:615:33), <anonymous>:83:1307)
+eval @ VM488:88
+Promise.catch
+eval @ VM488:88
+A @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+r @ VM488:83
+s @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+d @ VM488:88
+c @ VM488:88
+eval @ VM488:88
+A @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+r @ VM488:83
+s @ VM488:83
+Promise.then
+r @ VM488:83
+s @ VM488:83
+Promise.then
+r @ VM488:83
+s @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+eval @ VM488:88
+getScriptList @ VM488:88
+f @ VM488:88
+setTimeout
+wrapper.<computed> @ 9a683699-2f21-4c9c-aa7d-332646e9645d:239
+eval @ VM488:88
+openPage @ VM488:88
+eval @ VM488:88
+Promise.then
+gn.onMessage @ VM488:88
+eval @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+s.emit @ VM488:86
+sendMessage @ VM488:88
+value @ VM488:88
+eval @ VM488:88
+eval @ VM488:88
+Promise.then
+a @ VM488:88
+149 @ VM488:88
+n @ VM488:88
+eval @ VM488:88
+e.contentScriptIndex @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+eval @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+value @ VM488:88
+eval @ VM488:88
+setTimeout
+wrapper.<computed> @ 9a683699-2f21-4c9c-aa7d-332646e9645d:239
+eval @ VM488:88
+eval @ VM488:88
+value @ VM488:88
+value @ VM488:88
+value @ VM488:88
+value @ VM488:88
+t @ VM488:88
+eval @ VM488:88
+n @ VM488:83
+eval @ VM488:83
+eval @ VM488:83
+eval @ VM488:90
+eval @ VM488:91
+runCode @ 9a683699-2f21-4c9c-aa7d-332646e9645d:119
+buildCode @ 9a683699-2f21-4c9c-aa7d-332646e9645d:620
+run @ 9a683699-2f21-4c9c-aa7d-332646e9645d:632
+comm.load @ 9a683699-2f21-4c9c-aa7d-332646e9645d:645
+comm.checkLoad @ 9a683699-2f21-4c9c-aa7d-332646e9645d:650
+loadScript @ 9a683699-2f21-4c9c-aa7d-332646e9645d:665
+handleR @ 9a683699-2f21-4c9c-aa7d-332646e9645d:115
+post @ VM460 injected.js:228
+loadScript @ VM460 injected.js:1020
+Promise.then
+initCommunicator @ VM460 injected.js:1032
+(anonymous) @ VM460 injected.js:1035
+(anonymous) @ VM460 injected.js:1037
