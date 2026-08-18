@@ -391,6 +391,53 @@ body {
     border-radius: 16px;
 }
 
+.shop-status-toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.shop-status-toggle {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: #f8fafc;
+    color: var(--text-gray);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+}
+
+.shop-status-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(108, 59, 255, 0.35);
+}
+
+.shop-status-toggle.active {
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.shop-status-toggle[data-status="open"].active {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.shop-status-toggle[data-status="closed"].active {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.shop-status-toggle[data-status="break"].active {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
     position: absolute;

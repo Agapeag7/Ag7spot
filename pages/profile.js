@@ -50,6 +50,20 @@ async function renderProfile(container) {
                                 <span>Adresse</span>
                                 <span class="settings-value">${myShop.address}</span>
                             </div>
+                            <div class="settings-item" style="display:block;">
+                                <span>Statut boutique</span>
+                                <div class="shop-status-toggle-group" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+                                    <button class="shop-status-toggle ${myShop.status === 'open' ? 'active' : ''}" data-status="open" aria-pressed="${myShop.status === 'open'}" onclick="handleSellerShopStatusChange('open')">
+                                        <i class="fas fa-door-open"></i> Ouverte
+                                    </button>
+                                    <button class="shop-status-toggle ${myShop.status === 'closed' ? 'active' : ''}" data-status="closed" aria-pressed="${myShop.status === 'closed'}" onclick="handleSellerShopStatusChange('closed')">
+                                        <i class="fas fa-door-closed"></i> Fermée
+                                    </button>
+                                    <button class="shop-status-toggle ${myShop.status === 'break' ? 'active' : ''}" data-status="break" aria-pressed="${myShop.status === 'break'}" onclick="handleSellerShopStatusChange('break')">
+                                        <i class="fas fa-mug-hot"></i> Pause
+                                    </button>
+                                </div>
+                            </div>
                             <button class="btn-primary w-full" onclick="navigateTo('add')">
                                 <i class="fas fa-plus-circle"></i> Ajouter un produit
                             </button>
@@ -118,6 +132,36 @@ async function renderProfile(container) {
                 </div>
             </div>
         `;
+    }
+}
+
+async function handleSellerShopStatusChange(status) {
+    try {
+        const shopId = CURRENT_USER?.shopId || sellerProductsState?.myShop?.id || null;
+        if (!shopId) {
+            showToast('Aucune boutique associée à ton profil.', 'warning');
+            return;
+        }
+
+        const result = await updateShopStatus(shopId, status);
+        if (result && result.success) {
+            const shop = SHOPS.find(s => s.id === shopId);
+            if (shop) {
+                shop.status = status;
+            }
+            const currentContainer = document.getElementById('pageContainer');
+            if (currentContainer) {
+                await renderProfile(currentContainer);
+            }
+            const label = status === 'open' ? 'ouverte' : status === 'closed' ? 'fermée' : 'en pause';
+            showToast(`Boutique ${label}`, 'success');
+            return;
+        }
+
+        showToast('Impossible de modifier le statut de la boutique.', 'error');
+    } catch (error) {
+        console.error('handleSellerShopStatusChange error', error);
+        showToast('Erreur lors du changement de statut.', 'error');
     }
 }
 
