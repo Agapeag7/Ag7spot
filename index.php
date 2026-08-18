@@ -56,7 +56,7 @@ if (!$isLocalHost && !$isHttps) {
                 <button class="nav-item" data-page="map">
                     <i class="fas fa-map"></i>
                     <span>Carte</span>
-                    <span class="badge" id="dealBadge">3</span>
+                    <span class="badge" id="dealBadge"></span>
                 </button>
                 <button class="nav-item nav-center" data-page="add">
                     <i class="fas fa-plus"></i>

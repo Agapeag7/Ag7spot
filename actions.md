@@ -1,4 +1,5 @@
-- Menu "Carte" dynamisé le compteur de nombre des boutiques de la section "Carte" sur le rayon de 10km de la position de l'utilisateur 
+- Menu "Carte" dynamisé le compteur de nombre des boutiques de la section "Carte" sur le rayon de 10km de la position de l'utilisateur :
+<span class="badge" id="dealBadge">3</span>
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 

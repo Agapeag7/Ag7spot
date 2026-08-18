@@ -106,7 +106,7 @@ async function loadShopsOnMap(pos, query = '') {
     currentSearchQuery = query.trim();
     const normalizedQuery = currentSearchQuery.toLowerCase();
     const visibleShops = [];
-    const nearbyRadiusKm = 8;
+    const nearbyRadiusKm = 10;
 
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
     mapMarkers = [];
@@ -136,6 +136,20 @@ async function loadShopsOnMap(pos, query = '') {
         if (Array.isArray(shops) && shops.length > 0) {
             SHOPS.length = 0;
             shops.forEach(shop => SHOPS.push(shop));
+        }
+        // Met à jour le badge du menu 'Carte' avec le nombre de boutiques dans un rayon de 10km
+        try {
+            const badgeEl = document.getElementById('dealBadge');
+            if (badgeEl) {
+                const countNearby = (shops || []).reduce((acc, shop) => {
+                    const d = parseFloat(shop.distance) || getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
+                    return acc + (d <= 10 ? 1 : 0);
+                }, 0);
+                badgeEl.textContent = countNearby;
+                badgeEl.style.display = countNearby ? 'inline-block' : 'none';
+            }
+        } catch (e) {
+            console.warn('Erreur lors de la mise à jour du badge map:', e);
         }
     } catch (error) {
         console.warn('Impossible de récupérer les boutiques via l\'API, utilisation des données locales.', error);
