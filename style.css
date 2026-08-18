@@ -701,9 +701,15 @@ body {
     align-items: center;
     gap: 4px;
 }
+.shop-status i {
+    color: inherit;
+}
 .shop-status.open { color: var(--success); }
+.shop-status.open i { color: var(--success); }
 .shop-status.closed { color: var(--danger); }
-.shop-status.break { color: var(--warning); }
+.shop-status.closed i { color: var(--danger); }
+.shop-status.break { color: var(--secondary); }
+.shop-status.break i { color: var(--secondary); }
 
 /* ===== PAGE CARTE ===== */
 #map {
