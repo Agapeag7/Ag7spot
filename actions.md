@@ -6,10 +6,6 @@
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
-cette zone : <div id="sellerProductsList"> doit afficher max 3 de ce case : <div class="seller-product-item"> pour enfin afficher le scrolle
-                            
-            
-
 
 - ajout du modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ). 
 
@@ -17,11 +13,11 @@ cette zone : <div id="sellerProductsList"> doit afficher max 3 de ce case : <div
 
 - gestion des points pour acheteurs : 
 
-- stockage des préférences utilisateur, pour actualiser le fil d'actualités ( ajout d'algorithmes des préfèrences ) 
-
 - ajout de la possibilité de changer la position, le nom, catégorie de la boutique 
 
 
+
+- stockage des préférences utilisateur, pour actualiser le fil d'actualités ( ajout d'algorithmes des préfèrences ) 
 ALGORITHME DE RECOMMANDATION :
 # Fonctionnement
 
