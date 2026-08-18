@@ -822,6 +822,32 @@ body {
 
 @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
 
+/* Seller products scroll container */
+.seller-products-list {
+    position: relative;
+}
+.seller-products-container {
+    /* Affiche au maximum 3 éléments visibles avant d'activer le scroll interne */
+    max-height: 272px; /* ~ (64px image + 20px padding) * 3 + gaps */
+    overflow-y: auto;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.seller-product-item {
+    display:flex;
+    gap:12px;
+    align-items:center;
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    box-shadow: var(--shadow);
+    min-height: 120px;
+}
+.seller-product-thumbnail img { width:64px; height:64px; object-fit:cover; border-radius:8px; }
+.seller-product-info .price { font-weight:700; }
+
 /* ===== FORMULAIRES ===== */
 .form-card {
     background: white;

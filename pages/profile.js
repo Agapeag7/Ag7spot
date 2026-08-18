@@ -64,14 +64,15 @@ async function renderProfile(container) {
 
                 ${user.role === 'seller' && myShop ? `
                     <div class="settings-card">
-                        <div class="section-title">
-                            <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
-                            <a href="#" onclick="renderProfile(document.getElementById('pageContainer'))">Actualiser</a>
+                            <div class="section-title">
+                                <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
+                                <a href="#" onclick="renderProfile(document.getElementById('pageContainer'))">Actualiser</a>
+                            </div>
+                            <div id="sellerProductsList" class="seller-products-list">
+                                <div id="sellerProductsContainer" class="seller-products-container"></div>
+                                <div id="sellerProductsBatchSpinner" class="feed-batch-spinner hidden"><div class="spinner small"></div></div>
+                            </div>
                         </div>
-                        <div id="sellerProductsList">
-                            ${renderSellerProducts(products, myShop)}
-                        </div>
-                    </div>
                 ` : ''}
 
                 <div class="settings-card">
@@ -96,6 +97,11 @@ async function renderProfile(container) {
 
         Object.assign(CURRENT_USER || window.CURRENT_USER || {}, user);
         localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
+        // init seller products pagination if seller
+        if (user.role === 'seller' && myShop) {
+            // products variable from API response
+            try { initSellerProducts(products || [], myShop); } catch (e) { console.warn('initSellerProducts error', e); }
+        }
     } catch (error) {
         // console.error('renderProfile: error', error);
         showToast(error.message || 'Impossible de charger le profil.', 'error');
@@ -142,6 +148,92 @@ function renderSellerProducts(products, myShop) {
             </div>
         `;
     }).join('');
+}
+
+// Pagination state for seller products
+const sellerProductsState = {
+    allItems: [],
+    displayedCount: 0,
+    pageSize: 5,
+    loading: false,
+    end: false,
+    myShop: null
+};
+
+function initSellerProducts(products, myShop) {
+    sellerProductsState.allItems = products || [];
+    sellerProductsState.displayedCount = 0;
+    sellerProductsState.loading = false;
+    sellerProductsState.end = false;
+    sellerProductsState.myShop = myShop || null;
+
+    const container = document.getElementById('sellerProductsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // attach scroll handler to container
+    const listWrap = document.getElementById('sellerProductsList');
+    if (listWrap) {
+        if (window._sellerProductsScrollHandler) listWrap.removeEventListener('scroll', window._sellerProductsScrollHandler);
+        window._sellerProductsScrollHandler = function() {
+            if (sellerProductsState.loading || sellerProductsState.end) return;
+            const elem = listWrap.querySelector('.seller-products-container');
+            if (!elem) return;
+            const bottomDistance = elem.scrollHeight - elem.scrollTop - elem.clientHeight;
+            if (bottomDistance < 120) {
+                renderSellerProductsBatch();
+            }
+        };
+        listWrap.addEventListener('scroll', window._sellerProductsScrollHandler);
+    }
+
+    renderSellerProductsBatch();
+}
+
+function renderSellerProductsBatch() {
+    const container = document.getElementById('sellerProductsContainer');
+    if (!container) return;
+    if (sellerProductsState.loading && sellerProductsState.displayedCount > 0) return;
+    sellerProductsState.loading = true;
+    try { document.getElementById('sellerProductsBatchSpinner')?.classList.remove('hidden'); } catch(e){}
+
+    const start = sellerProductsState.displayedCount;
+    const end = Math.min(start + sellerProductsState.pageSize, sellerProductsState.allItems.length);
+    const slice = sellerProductsState.allItems.slice(start, end);
+
+    const html = slice.map(product => {
+        const shopName = sellerProductsState.myShop ? sellerProductsState.myShop.name : (SHOPS.find(s => s.id === product.shopId)?.name || 'Boutique');
+        return `
+            <div class="seller-product-item">
+                <div class="seller-product-thumbnail">
+                    <img src="${getProductImage(product)}" alt="${product.name}" loading="lazy" />
+                </div>
+                <div class="seller-product-info">
+                    <strong>${product.name}</strong>
+                    <p>${shopName} · ${product.stock} en stock</p>
+                    <p class="price">${parseFloat(product.price).toFixed(2)} $</p>
+                </div>
+                <div class="seller-product-actions">
+                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(${product.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProductAction(${product.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.insertAdjacentHTML('beforeend', html);
+    sellerProductsState.displayedCount = end;
+    sellerProductsState.loading = false;
+    try { document.getElementById('sellerProductsBatchSpinner')?.classList.add('hidden'); } catch(e){}
+
+    if (sellerProductsState.displayedCount >= sellerProductsState.allItems.length) {
+        sellerProductsState.end = true;
+        container.insertAdjacentHTML('beforeend', `<div class="end-of-feed" style="text-align:center;color:#6B7280;padding:12px 0;">Fin des produits</div>`);
+    }
 }
 
 function showProfileEditor() {

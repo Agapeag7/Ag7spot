@@ -6,9 +6,10 @@
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
-- gestion de chargement des produits sur le profil vendeur ( charger les produits sur le profil par lot ( de 5 produits ), au fur et à mesure que l'utilisateur scrolle les produits )
+cette zone : <div id="sellerProductsList"> doit afficher max 3 de ce case : <div class="seller-product-item"> pour enfin afficher le scrolle
+                            
+            
 
-- les produits sur le profil vendeur ne doivent pas déborder du conteneur, donc on ajoute un scrolle 
 
 - ajout du modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ). 
 
