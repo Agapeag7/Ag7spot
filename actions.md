@@ -1,7 +1,4 @@
-- remplacer la pagination côté client par une pagination côté API
-
-
-- gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
+- sur "Carte" les boutiques en Statut "Pause" doivent afficher l'icone de couleur : color: var(--secondary);
 
 - ajout du modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ). 
 
@@ -10,6 +7,8 @@
 - gestion des points pour acheteurs : 
 
 - ajout de la possibilité de changer la position, le nom, catégorie de la boutique 
+
+- gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
 
 

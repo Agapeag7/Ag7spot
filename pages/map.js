@@ -189,8 +189,11 @@ async function loadShopsOnMap(pos, query = '') {
             selected: window.routeWaypoints?.some(w => w.lat === shop.lat && w.lng === shop.lng)
         });
 
-        const isOpen = shop.status === 'open';
-        const statusColor = isOpen ? '#10B981' : '#EF4444';
+        const statusColor = shop.status === 'open'
+            ? 'var(--success)'
+            : shop.status === 'break'
+                ? 'var(--secondary)'
+                : 'var(--danger)';
         const selected = window.routeWaypoints?.some(w => w.lat === shop.lat && w.lng === shop.lng);
         const routeButton = selected
             ? `<button class="btn-outline btn-sm" disabled><i class="fas fa-check"></i> Ajouté au parcours</button>`
@@ -217,7 +220,7 @@ async function loadShopsOnMap(pos, query = '') {
                 className: 'shop-marker',
                 html: `<div style="display:flex;flex-direction:column;align-items:center;">
                     <span style="font-size:11px;font-weight:700;color:white;padding:2px 6px;border-radius:10px;background:${statusColor};margin-bottom:4px;box-shadow:0 1px 4px rgba(0,0,0,0.12);">${shop.name}</span>
-                    <i class="fas fa-store" style="color:white;font-size:14px;background:${statusColor};padding:6px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);"></i>
+                    <i class="fas fa-store" style="color:${statusColor};font-size:14px;background:rgba(255,255,255,0.9);padding:6px;border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);"></i>
                 </div>`,
                 iconSize: [90, 60],
                 className: 'shop-marker-with-label'
