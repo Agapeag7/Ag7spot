@@ -1,7 +1,3 @@
-ajoute :
-- une touche `Esc` pour vider le champ et restaurer le fil complet ?
-
-
 - sur profil vendeur ajout de gestion d'ouverture et fermeture de boutique car sur la carte les boutiques ouverts s'affiche en couleur verte et les boutiques fermer s'affiche en couleur rouge
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )

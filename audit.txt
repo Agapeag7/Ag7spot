@@ -1,5 +1,0 @@
-je me suis deconnecter d'un compte vendeur, et me connecté en tant que acheteur, je me suis egalement deconnecter en tant qu'acheteur et me reconnecter en tant que vendeur
-j'ai constaté que en cliquant sur ajouter produit je suis diriger vers encore creation de boutique
-quand le bouton est ajouter un produit, il doit à tout prix diriger l'utilisateur vers la section d'ajout de produit et non jamais et grand jamais vers la creation de boutique : <button class="btn-primary w-full" onclick="navigateTo('add')">
-                                <i class="fas fa-plus-circle"></i> Ajouter un produit
-                            </button>

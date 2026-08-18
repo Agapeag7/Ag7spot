@@ -16,7 +16,7 @@ function renderFeed(container) {
                 <span>Fil d'actualité</span>
                 <a href="#" data-nav="map">Voir la carte</a>
             </div>
-            <div class="feed-search" style="margin-bottom:12px;">
+            <div class="feed-search" style="margin-bottom:12px; margin-top:12px;">
                 <input type="search" id="feedSearchInput" placeholder="Rechercher produits ou boutiques..." />
             </div>
             ${renderDistanceFilter()}
