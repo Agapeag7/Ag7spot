@@ -1,7 +1,4 @@
-- Menu "Carte" dynamisé le compteur de nombre des boutiques de la section "Carte" sur le rayon de 10km de la position de l'utilisateur :
-<span class="badge" id="dealBadge">3</span>
-
-limite l'affichage du badge (ex: 99+) si >99
+- sur profil vendeur ajout de gestion d'ouverture et fermeture de boutique car sur la carte les boutiques ouverts s'affiche en couleur verte et les boutiques fermer s'affiche en couleur rouge
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
