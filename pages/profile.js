@@ -46,6 +46,10 @@ async function renderProfile(container) {
                                 <span>${myShop.name}</span>
                                 <span class="settings-value">${renderShopStatus(myShop)}</span>
                             </div>
+                            <div class="settings-item" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                                <span>Statut</span>
+                                <span class="settings-value">${renderShopStatus(myShop)}</span>
+                            </div>
                             <div class="settings-item">
                                 <span>Adresse</span>
                                 <span class="settings-value">${myShop.address}</span>
