@@ -31,7 +31,9 @@ function renderFeed(container) {
                 <input type="search" id="feedSearchInput" placeholder="Rechercher produits ou boutiques..." />
             </div>
             ${renderDistanceFilter()}
+            <div id="feedSpinner" class="feed-spinner hidden"><div class="spinner"></div></div>
             <div id="feedContainer"></div>
+            <div id="feedBatchSpinner" class="feed-batch-spinner hidden"><div class="spinner small"></div></div>
         </div>
     `;
 
@@ -97,6 +99,8 @@ async function loadFeed(maxDistance, productQuery = '') {
     feedState.displayedCount = 0;
     feedState.end = false;
     feedState.allItems = [];
+    // show initial spinner
+    try { document.getElementById('feedSpinner')?.classList.remove('hidden'); } catch(e){}
 
     try {
         const pos = await getUserPosition(true);
@@ -136,6 +140,8 @@ async function loadFeed(maxDistance, productQuery = '') {
         feedState.allItems = filtered;
         // render first batch
         container.innerHTML = '';
+        // hide initial spinner before rendering
+        try { document.getElementById('feedSpinner')?.classList.add('hidden'); } catch(e){}
         renderFeedBatch();
     } catch (error) {
         container.innerHTML = `
@@ -153,6 +159,8 @@ function renderFeedBatch() {
     if (!container) return;
     if (feedState.loading && feedState.displayedCount > 0) return;
     feedState.loading = true;
+    // show batch spinner
+    try { document.getElementById('feedBatchSpinner')?.classList.remove('hidden'); } catch(e){}
 
     const start = feedState.displayedCount;
     const end = Math.min(start + feedState.pageSize, feedState.allItems.length);
@@ -193,6 +201,8 @@ function renderFeedBatch() {
     container.insertAdjacentHTML('beforeend', html);
     feedState.displayedCount = end;
     feedState.loading = false;
+    // hide batch spinner
+    try { document.getElementById('feedBatchSpinner')?.classList.add('hidden'); } catch(e){}
 
     if (feedState.displayedCount >= feedState.allItems.length) {
         feedState.end = true;
