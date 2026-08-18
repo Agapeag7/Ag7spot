@@ -729,6 +729,13 @@ body {
     box-shadow: var(--shadow);
     margin-bottom: 16px;
 }
+
+/* Garder le filtre de distance fixe lors du scroll du fil */
+.page .distance-filter {
+    position: sticky;
+    top: 16px;
+    z-index: 40;
+}
 .distance-filter i {
     color: var(--primary);
     font-size: 18px;

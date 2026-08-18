@@ -324,11 +324,12 @@ function setupProductForm() {
         try {
             // Debug: log FormData entries to help diagnose missing fields server-side
             // console.debug('submitProduct: values', { name, price, shopId, stock, description, file });
-            if (formData instanceof FormData) {
-                for (const pair of formData.entries()) {
-                    console.debug('formData', pair[0], pair[1]);
-                }
-            }
+            // if (formData instanceof FormData) {
+            //     for (const pair of formData.entries()) {
+            //         console.debug('formData', pair[0], pair[1]);
+            //     }
+            // }
+            
             const res = await addProduct(formData);
             const productId = res && res.product_id ? res.product_id : null;
             const imageUrl = (res && (res.image_url || res.image)) || (formData.get('image') || '');

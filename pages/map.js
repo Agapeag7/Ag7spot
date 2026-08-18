@@ -158,7 +158,8 @@ async function loadShopsOnMap(pos, query = '') {
                     const d = parseFloat(shop.distance) || getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
                     return acc + (d <= 10 ? 1 : 0);
                 }, 0);
-                badgeEl.textContent = countNearby;
+                // Limiter l'affichage à 99+
+                badgeEl.textContent = countNearby > 99 ? '99+' : String(countNearby);
                 badgeEl.style.display = countNearby ? 'inline-block' : 'none';
             }
         } catch (e) {
