@@ -74,16 +74,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     appInitialized = true;
     updateHeaderActionsVisibility();
 
-    // Icône recherche : navigue vers le fil et focus le champ de recherche
+    // Icône recherche : bascule l'affichage du champ de recherche dans le fil
     const searchIconEl = document.getElementById('searchIcon');
     if (searchIconEl) {
         searchIconEl.addEventListener('click', (e) => {
             e.preventDefault();
-            navigateTo('feed');
-            setTimeout(() => {
-                const input = document.getElementById('feedSearchInput');
+            if (currentPage !== 'feed') {
+                navigateTo('feed');
+                setTimeout(() => {
+                    const wrap = document.querySelector('.feed-search');
+                    if (wrap) {
+                        wrap.classList.add('show');
+                        const input = document.getElementById('feedSearchInput');
+                        if (input) input.focus();
+                    }
+                }, 350);
+                return;
+            }
+
+            const wrap = document.querySelector('.feed-search');
+            if (!wrap) {
+                navigateTo('feed');
+                setTimeout(() => {
+                    const w = document.querySelector('.feed-search');
+                    if (w) {
+                        w.classList.add('show');
+                        const input = document.getElementById('feedSearchInput');
+                        if (input) input.focus();
+                    }
+                }, 350);
+                return;
+            }
+
+            const nowShown = wrap.classList.toggle('show');
+            const input = document.getElementById('feedSearchInput');
+            if (nowShown) {
                 if (input) input.focus();
-            }, 350);
+            } else {
+                // vider la recherche et recharger le fil complet
+                if (input) {
+                    input.value = '';
+                }
+                const dist = parseInt(document.getElementById('distanceRange')?.value || 5);
+                loadFeed(dist, '');
+            }
         });
     }
 

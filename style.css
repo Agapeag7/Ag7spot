@@ -753,6 +753,30 @@ body {
     text-align: right;
 }
 
+/* ===== CHAMP DE RECHERCHE DANS LE FIL ===== */
+.feed-search {
+    margin-bottom: 12px;
+}
+.feed-search input {
+    display: none;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    outline: none;
+    transition: all 180ms ease-in-out;
+}
+.feed-search input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+}
+.feed-search.show input {
+    display: block;
+}
+
 /* ===== FORMULAIRES ===== */
 .form-card {
     background: white;

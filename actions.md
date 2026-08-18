@@ -1,8 +1,10 @@
+ajoute :
+- une touche `Esc` pour vider le champ et restaurer le fil complet ?
+
+
 - sur profil vendeur ajout de gestion d'ouverture et fermeture de boutique car sur la carte les boutiques ouverts s'affiche en couleur verte et les boutiques fermer s'affiche en couleur rouge
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
-
-- création et mis à place de regex ou algorithme de recherche des Boutiques et Marchandises sur le fil d'actualités et sur la carte
 
 - gestion du fil d'actualités ( chargée les informations par lot ( 5 publications ainsi de suite ) au fur et à mesure que l'utilisateur scrolle ) selon les préférences de l'utilisateur :
 <div class="modal-content onboarding-modal">
