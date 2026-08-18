@@ -169,7 +169,8 @@ function renderFeedBatch() {
 
     const html = slice.map(p => {
         const dist = parseFloat(p.distance) || 0;
-        const statusHtml = renderShopStatus({ status: p.status });
+        const shopStatus = p.shop_status || p.status || 'closed';
+        const statusHtml = renderShopStatus({ status: shopStatus });
         const stockHtml = renderStockBadge(p);
         return `
             <div class="product-card" onclick="showProductDetail(${p.id})">

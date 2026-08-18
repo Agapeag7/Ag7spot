@@ -3,7 +3,6 @@
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
-
 - ajout du modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ). 
 
 - ajout du modale de confirmation de suppression d'un produit 

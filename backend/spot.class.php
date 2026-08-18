@@ -495,7 +495,7 @@ class SpotFeed {
     }
 
     public function getFeed($lat, $lng, $maxDistance) {
-        $sql = 'SELECT p.*, s.name AS shop_name, s.lat, s.lng, s.category, (6371 * ACOS(
+        $sql = 'SELECT p.*, s.name AS shop_name, s.status AS shop_status, s.lat, s.lng, s.category, (6371 * ACOS(
             COS(RADIANS(:lat1)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
             SIN(RADIANS(:lat2)) * SIN(RADIANS(s.lat))
         )) AS distance
