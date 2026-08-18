@@ -130,6 +130,11 @@ async function calculateRoute() {
         }, 800);
 
     } catch (e) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Calculer';
+            return;
+        }
         showToast('Erreur de calcul', 'error');
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sync-alt"></i> Calculer';

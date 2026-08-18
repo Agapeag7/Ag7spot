@@ -144,6 +144,7 @@ async function loadFeed(maxDistance, productQuery = '') {
         try { document.getElementById('feedSpinner')?.classList.add('hidden'); } catch(e){}
         renderFeedBatch();
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-exclamation-circle"></i>

@@ -104,6 +104,11 @@ async function renderProfile(container) {
         }
     } catch (error) {
         // console.error('renderProfile: error', error);
+        // If a session-clearing/navigation to auth is already in progress (API returned 401),
+        // avoid rendering the error page which would briefly show an unauthorized message.
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) {
+            return;
+        }
         showToast(error.message || 'Impossible de charger le profil.', 'error');
         container.innerHTML = `
             <div class="page active">

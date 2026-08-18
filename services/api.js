@@ -87,6 +87,11 @@ async function apiCall(endpoint, method = 'GET', data = null) {
         throw new Error('Réponse API inattendue: ' + text);
     } catch (error) {
         console.error('API Error:', error);
+        // If session clearing/navigation to auth is already in progress (401 handled),
+        // avoid showing additional toasts that confuse the user.
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) {
+            return Promise.reject(error);
+        }
         showToast(error.message || 'Erreur de connexion', 'error');
         throw error;
     }

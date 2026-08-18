@@ -51,6 +51,7 @@ async function loadCollections() {
             `;
         }).join('');
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-exclamation-circle"></i>
@@ -86,6 +87,7 @@ async function showCreateCollection() {
         loadCollections();
         showToast('✅ Collection créée !', 'success');
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Impossible de créer la collection.', 'error');
     }
 }

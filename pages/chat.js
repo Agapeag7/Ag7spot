@@ -77,6 +77,7 @@ async function sendChatMessage() {
             }
         }, 1500 + Math.random() * 1000);
     } catch (e) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Erreur d\'envoi', 'error');
     }
 }
@@ -102,6 +103,7 @@ async function loadChatMessages(shopId) {
         }).join('');
         container.scrollTop = container.scrollHeight;
     } catch (e) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         console.warn('Impossible de charger les messages', e);
     }
 }

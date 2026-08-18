@@ -210,6 +210,7 @@ async function editProduct(productId) {
             throw new Error('Échec mise à jour produit');
         }
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Erreur lors de la mise à jour du produit.', 'error');
     }
 }
@@ -237,6 +238,7 @@ async function deleteProductAction(productId) {
             throw new Error('Échec suppression produit');
         }
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Erreur lors de la suppression du produit.', 'error');
     }
 }
@@ -267,6 +269,7 @@ function setupProductForm() {
                     return;
                 }
             } catch (e) {
+                if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
                 console.warn('populateShopSelect: failed to fetch profile', e);
             }
         }
@@ -350,6 +353,7 @@ function setupProductForm() {
                 throw new Error('Erreur création produit');
             }
         } catch (error) {
+            if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
             showToast('Erreur lors de l\'ajout du produit.', 'error');
         }
     });
@@ -395,6 +399,7 @@ function setupShopForm() {
             mapInstance.on('moveend', updateCenterInputs);
             updateCenterInputs();
         } catch (error) {
+            if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
             console.warn('Impossible d\'initialiser la carte de boutique:', error);
             mapContainer.innerHTML = '<div class="empty-state"><i class="fas fa-location-dot"></i><p>Autorise la localisation pour placer votre boutique sur la carte.</p></div>';
             showToast('Autorise la localisation pour créer une boutique.', 'warning');
@@ -458,6 +463,7 @@ function setupShopForm() {
             showToast('Boutique créée ! Tu peux maintenant ajouter des produits.', 'success');
             renderShopOrProduct(document.getElementById('pageContainer'));
         } catch (error) {
+            if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
             showToast('Erreur lors de la création de la boutique.', 'error');
         }
     });

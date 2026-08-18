@@ -107,6 +107,7 @@ async function initMap() {
             filterMarkers(query);
         });
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         mapContainer.innerHTML = '<div class="empty-state"><i class="fas fa-location-dot"></i><p>Autorise la localisation pour afficher les boutiques autour de vous.</p></div>';
         showToast('Autorise la localisation pour afficher la carte.', 'warning');
     }
@@ -336,6 +337,7 @@ async function doCheckIn(shopId) {
             showToast(result.error || 'Échec du check-in', 'error');
         }
     } catch (error) {
+        if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Impossible de faire le check-in.', 'error');
     }
 }
