@@ -79,15 +79,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (searchIconEl) {
         searchIconEl.addEventListener('click', (e) => {
             e.preventDefault();
+            const showAndFix = (wrap) => {
+                wrap.classList.add('show');
+                wrap.classList.add('fixed');
+                const input = document.getElementById('feedSearchInput');
+                if (input) input.focus();
+
+                // installer gestionnaire Esc global pour fermer la recherche
+                if (!window._feedSearchEscHandler) {
+                    window._feedSearchEscHandler = function(ev) {
+                        if (ev.key === 'Escape' || ev.keyCode === 27) {
+                            const w = document.querySelector('.feed-search');
+                            if (w && w.classList.contains('show')) {
+                                w.classList.remove('show');
+                                w.classList.remove('fixed');
+                                const inp = document.getElementById('feedSearchInput');
+                                if (inp) {
+                                    inp.value = '';
+                                    inp.blur();
+                                }
+                                const dist = parseInt(document.getElementById('distanceRange')?.value || 5);
+                                if (typeof loadFeed === 'function') loadFeed(dist, '');
+                            }
+                        }
+                    };
+                    document.addEventListener('keydown', window._feedSearchEscHandler);
+                }
+            };
+
             if (currentPage !== 'feed') {
                 navigateTo('feed');
                 setTimeout(() => {
                     const wrap = document.querySelector('.feed-search');
-                    if (wrap) {
-                        wrap.classList.add('show');
-                        const input = document.getElementById('feedSearchInput');
-                        if (input) input.focus();
-                    }
+                    if (wrap) showAndFix(wrap);
                 }, 350);
                 return;
             }
@@ -97,11 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 navigateTo('feed');
                 setTimeout(() => {
                     const w = document.querySelector('.feed-search');
-                    if (w) {
-                        w.classList.add('show');
-                        const input = document.getElementById('feedSearchInput');
-                        if (input) input.focus();
-                    }
+                    if (w) showAndFix(w);
                 }, 350);
                 return;
             }
@@ -109,14 +129,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             const nowShown = wrap.classList.toggle('show');
             const input = document.getElementById('feedSearchInput');
             if (nowShown) {
+                wrap.classList.add('fixed');
                 if (input) input.focus();
+                if (!window._feedSearchEscHandler) {
+                    window._feedSearchEscHandler = function(ev) {
+                        if (ev.key === 'Escape' || ev.keyCode === 27) {
+                            const w = document.querySelector('.feed-search');
+                            if (w && w.classList.contains('show')) {
+                                w.classList.remove('show');
+                                w.classList.remove('fixed');
+                                const inp = document.getElementById('feedSearchInput');
+                                if (inp) {
+                                    inp.value = '';
+                                    inp.blur();
+                                }
+                                const dist = parseInt(document.getElementById('distanceRange')?.value || 5);
+                                if (typeof loadFeed === 'function') loadFeed(dist, '');
+                            }
+                        }
+                    };
+                    document.addEventListener('keydown', window._feedSearchEscHandler);
+                }
             } else {
                 // vider la recherche et recharger le fil complet
+                wrap.classList.remove('fixed');
                 if (input) {
                     input.value = '';
                 }
                 const dist = parseInt(document.getElementById('distanceRange')?.value || 5);
                 loadFeed(dist, '');
+
+                // enlever le gestionnaire Esc si présent
+                if (window._feedSearchEscHandler) {
+                    document.removeEventListener('keydown', window._feedSearchEscHandler);
+                    delete window._feedSearchEscHandler;
+                }
             }
         });
     }

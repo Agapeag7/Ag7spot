@@ -755,6 +755,7 @@ body {
 
 /* ===== CHAMP DE RECHERCHE DANS LE FIL ===== */
 .feed-search {
+    margin-top: 12px;
     margin-bottom: 12px;
 }
 .feed-search input {
@@ -775,6 +776,23 @@ body {
 }
 .feed-search.show input {
     display: block;
+}
+
+/* Quand le champ de recherche est affiché, le garder fixe à l'écran
+   jusqu'à la fermeture via la touche Esc. Utiliser .show pour forcer
+   position fixed afin qu'il ne suive pas le scroll du fil. */
+.feed-search.show {
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    z-index: 80;
+    max-width: calc(100% - 32px);
+    box-sizing: border-box;
+}
+
+.feed-search.fixed {
+    position: fixed; /* rétrocompatibilité */
 }
 
 /* ===== FORMULAIRES ===== */
