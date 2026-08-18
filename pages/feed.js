@@ -1,12 +1,23 @@
 // =========================================
 // PAGE : FIL D'ACTUALITÉ
 // =========================================
+// Petit utilitaire debounce pour limiter les appels lors de la saisie
+function debounce(fn, wait = 300) {
+    let t = null;
+    return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+    };
+}
 function renderFeed(container) {
     container.innerHTML = `
         <div class="page active">
             <div class="section-title">
                 <span>Fil d'actualité</span>
                 <a href="#" data-nav="map">Voir la carte</a>
+            </div>
+            <div class="feed-search" style="margin-bottom:12px;">
+                <input type="search" id="feedSearchInput" placeholder="Rechercher produits ou boutiques..." />
             </div>
             ${renderDistanceFilter()}
             <div id="feedContainer"></div>
@@ -19,6 +30,18 @@ function renderFeed(container) {
         slider.addEventListener('input', function() {
             document.getElementById('distanceValue').textContent = `${this.value} km`;
             loadFeed(parseInt(this.value));
+        });
+    }
+
+    // Recherche en live (debounced)
+    const searchInput = document.getElementById('feedSearchInput');
+    const debouncedSearch = debounce((q) => {
+        const dist = parseInt(document.getElementById('distanceRange')?.value || 5);
+        loadFeed(dist, q || '');
+    }, 300);
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            debouncedSearch(this.value.trim());
         });
     }
 
@@ -37,7 +60,7 @@ function renderDistanceFilter() {
 
 async function loadFeed(maxDistance, productQuery = '') {
     const container = document.getElementById('feedContainer');
-    const query = productQuery.trim().toLowerCase();
+    const query = (productQuery || '').trim();
 
     try {
         const pos = await getUserPosition(true);
@@ -47,9 +70,8 @@ async function loadFeed(maxDistance, productQuery = '') {
         const feed = await getFeed(pos.lat, pos.lng, maxDistance);
         const filtered = feed.filter(p => {
             if (!query) return true;
-            const shopName = p.shop_name?.toLowerCase() || '';
-            const category = p.category?.toLowerCase() || '';
-            return p.name.toLowerCase().includes(query) || shopName.includes(query) || category.includes(query);
+            const combined = `${p.name || ''} ${p.shop_name || ''} ${p.category || ''} ${p.description || ''}`;
+            return matchesQuery(combined, query);
         });
 
         if (filtered.length === 0) {

@@ -96,6 +96,7 @@ if (!$isLocalHost && !$isHttps) {
         <script src="services/storage.js"></script>
         <script src="services/geolocation.js"></script>
         <script src="services/api.js"></script>
+        <script src="services/search.js"></script>
         <script src="services/offline.js"></script>
 
         <!-- Données (mock) -->

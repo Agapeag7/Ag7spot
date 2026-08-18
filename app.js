@@ -74,6 +74,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     appInitialized = true;
     updateHeaderActionsVisibility();
 
+    // Icône recherche : navigue vers le fil et focus le champ de recherche
+    const searchIconEl = document.getElementById('searchIcon');
+    if (searchIconEl) {
+        searchIconEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('feed');
+            setTimeout(() => {
+                const input = document.getElementById('feedSearchInput');
+                if (input) input.focus();
+            }, 350);
+        });
+    }
+
     // Service Worker pour le hors-ligne
     const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
     const canRegisterSW = ('serviceWorker' in navigator) && (location.protocol === 'https:' || (location.protocol === 'http:' && isLocalhost));

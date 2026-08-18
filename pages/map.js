@@ -117,7 +117,6 @@ async function loadShopsOnMap(pos, query = '') {
 
     currentMapPosition = pos;
     currentSearchQuery = query.trim();
-    const normalizedQuery = currentSearchQuery.toLowerCase();
     const visibleShops = [];
     const nearbyRadiusKm = 10;
 
@@ -125,22 +124,20 @@ async function loadShopsOnMap(pos, query = '') {
     mapMarkers = [];
 
     const matchesShopQuery = (shop) => {
-        if (!normalizedQuery) return true;
-        const text = `${shop.name} ${shop.address} ${shop.category}`.toLowerCase();
-        const shopMatches = text.includes(normalizedQuery);
-        const productMatches = PRODUCTS.some(p => p.shopId === shop.id && p.name.toLowerCase().includes(normalizedQuery));
-        return shopMatches || productMatches;
+        if (!currentSearchQuery) return true;
+        const productNames = PRODUCTS.filter(p => p.shopId === shop.id).map(p => p.name).join(' ');
+        const combined = `${shop.name || ''} ${shop.address || ''} ${shop.category || ''} ${productNames}`;
+        return matchesQuery(combined, currentSearchQuery);
     };
 
     const matchesCollectionQuery = (col) => {
-        if (!normalizedQuery) return true;
-        if (`${col.name} ${col.description}`.toLowerCase().includes(normalizedQuery)) {
-            return true;
-        }
-        return col.shops.some(id => {
-            const shop = SHOPS.find(sh => sh.id === id);
-            return shop && `${shop.name} ${shop.address}`.toLowerCase().includes(normalizedQuery);
-        });
+        if (!currentSearchQuery) return true;
+        const shopNames = col.shops.map(id => {
+            const s = SHOPS.find(sh => sh.id === id);
+            return s ? s.name : '';
+        }).join(' ');
+        const combined = `${col.name || ''} ${col.description || ''} ${shopNames}`;
+        return matchesQuery(combined, currentSearchQuery);
     };
 
     let shops = SHOPS;
