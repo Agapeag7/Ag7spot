@@ -1,6 +1,19 @@
 // =========================================
 // PAGE : PROFIL UTILISATEUR
 // =========================================
+function productCanBeEdited(product) {
+    return product && (product.can_edit === true || Number(product.can_edit) === 1);
+}
+
+function renderProductEditButton(product) {
+    if (!productCanBeEdited(product)) return '';
+    return `
+        <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(${product.id})" aria-label="Modifier ${product.name}">
+            <i class="fas fa-edit"></i>
+        </button>
+    `;
+}
+
 async function renderProfile(container) {
     // console.debug('renderProfile: start', { CURRENT_USER });
     container.innerHTML = `
@@ -190,9 +203,7 @@ function renderSellerProducts(products, myShop) {
                     <p class="price">${parseFloat(product.price).toFixed(2)} $</p>
                 </div>
                 <div class="seller-product-actions">
-                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(${product.id})">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                    ${renderProductEditButton(product)}
                     <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProductAction(${product.id})">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -266,9 +277,7 @@ function renderSellerProductsBatch() {
                     <p class="price">${parseFloat(product.price).toFixed(2)} $</p>
                 </div>
                 <div class="seller-product-actions">
-                    <button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(${product.id})">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                    ${renderProductEditButton(product)}
                     <button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProductAction(${product.id})">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -314,6 +323,85 @@ async function updateProfile(username, email) {
         }
     } catch (error) {
         // showToast already handled
+    }
+}
+
+let productPendingEdit = null;
+
+function editProduct(productId) {
+    const product = sellerProductsState.allItems.find(item => Number(item.id) === Number(productId))
+        || (Array.isArray(PRODUCTS) ? PRODUCTS.find(item => Number(item.id) === Number(productId)) : null);
+    const modal = document.getElementById('editProductModal');
+    if (!modal || !product) return;
+
+    if (!productCanBeEdited(product)) {
+        showToast('Ce produit ne peut plus être modifié après 10 minutes.', 'warning');
+        return;
+    }
+
+    productPendingEdit = Number(productId);
+    document.getElementById('editProductName').value = product.name || '';
+    document.getElementById('editProductPrice').value = product.price ?? '';
+    document.getElementById('editProductStock').value = product.stock ?? 0;
+    document.getElementById('editProductDescription').value = product.description || '';
+    modal.classList.remove('hidden');
+    document.getElementById('editProductName').focus();
+}
+
+function closeEditProductModal() {
+    const modal = document.getElementById('editProductModal');
+    const button = document.getElementById('confirmEditProductButton');
+    productPendingEdit = null;
+    if (modal) modal.classList.add('hidden');
+    if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+    }
+}
+
+async function confirmEditProduct(event) {
+    event.preventDefault();
+    if (!productPendingEdit) return;
+
+    const productId = productPendingEdit;
+    const name = document.getElementById('editProductName').value.trim();
+    const price = Number.parseFloat(document.getElementById('editProductPrice').value);
+    const stock = Number.parseInt(document.getElementById('editProductStock').value, 10);
+    const description = document.getElementById('editProductDescription').value.trim();
+    const button = document.getElementById('confirmEditProductButton');
+
+    if (!name || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
+        showToast('Vérifie les informations du produit.', 'warning');
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Enregistrement...';
+    }
+
+    try {
+        const product = sellerProductsState.allItems.find(item => Number(item.id) === productId)
+            || (Array.isArray(PRODUCTS) ? PRODUCTS.find(item => Number(item.id) === productId) : null);
+        const success = await updateProduct(productId, {
+            name,
+            price,
+            stock,
+            description,
+            image: product?.image || ''
+        });
+        if (!success) throw new Error('La modification a échoué.');
+
+        closeEditProductModal();
+        showToast('Produit modifié.', 'success');
+        const container = document.getElementById('pageContainer');
+        if (container) await renderProfile(container);
+    } catch (error) {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+        }
+        showToast(error.message || 'Impossible de modifier le produit.', 'error');
     }
 }
 
@@ -375,6 +463,8 @@ async function confirmDeleteProduct() {
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && productPendingDeletion !== null) {
         closeDeleteProductModal();
+    } else if (event.key === 'Escape' && productPendingEdit !== null) {
+        closeEditProductModal();
     }
 });
 

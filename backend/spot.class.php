@@ -271,7 +271,7 @@ class SpotProducts {
     }
 
     public function getProductsByShop($shopId) {
-        $stmt = $this->db->prepare('SELECT * FROM products WHERE shop_id = ? ORDER BY created_at DESC');
+        $stmt = $this->db->prepare('SELECT p.*, (p.created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)) AS can_edit FROM products p WHERE p.shop_id = ? ORDER BY p.created_at DESC');
         $stmt->execute([intval($shopId)]);
         return $stmt->fetchAll();
     }
@@ -304,7 +304,7 @@ class SpotProducts {
     }
 
     public function updateProduct($productId, $name, $price, $stock, $description, $image) {
-        $stmt = $this->db->prepare('UPDATE products SET name = ?, price = ?, stock = ?, description = ?, image = ? WHERE id = ?');
+        $stmt = $this->db->prepare('UPDATE products SET name = ?, price = ?, stock = ?, description = ?, image = ? WHERE id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)');
         return $stmt->execute([
             trim($name),
             floatval($price),

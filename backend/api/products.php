@@ -141,6 +141,13 @@ switch ($method) {
             break;
         }
 
+        $product = $spot->products->getProductById($productId);
+        if (!$product || strtotime($product['created_at']) < time() - 600) {
+            http_response_code(410);
+            echo json_encode(['success' => false, 'error' => 'Product can no longer be edited']);
+            break;
+        }
+
         $success = $spot->products->updateProduct($productId, $name, $price, $stock, $description, $image);
         echo json_encode(['success' => $success]);
         break;

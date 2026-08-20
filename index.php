@@ -105,6 +105,40 @@ if (!$isLocalHost && !$isHttps) {
                     </div>
                 </div>
             </div>
+
+            <!-- ===== MODALE D'EDITION DE PRODUIT ===== -->
+            <div id="editProductModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editProductTitle">
+                <div class="modal-content edit-product-modal">
+                    <button class="modal-close" type="button" aria-label="Fermer" onclick="closeEditProductModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h3 id="editProductTitle">Modifier le produit</h3>
+                    <form id="editProductForm" onsubmit="confirmEditProduct(event)">
+                        <div class="form-group">
+                            <label for="editProductName">Nom du produit</label>
+                            <input id="editProductName" type="text" required maxlength="150" />
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductPrice">Prix ($)</label>
+                            <input id="editProductPrice" type="number" min="0.01" step="0.01" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductStock">Quantité en stock</label>
+                            <input id="editProductStock" type="number" min="0" step="1" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductDescription">Description</label>
+                            <textarea id="editProductDescription"></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-outline" type="button" onclick="closeEditProductModal()">Annuler</button>
+                            <button id="confirmEditProductButton" class="btn-primary" type="submit">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- ===== SCRIPTS ===== -->

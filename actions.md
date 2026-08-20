@@ -4,12 +4,6 @@ sur profil vendeur du produit après clic sur :
     <i class="fas fa-edit"></i>
 </button>
 
-- ajout de toute la logique et du modale de confirmation de suppression d'un produit.
-sur profil vendeur du produit après clic sur :
-<button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProductAction(4)">
-    <i class="fas fa-trash"></i>
-</button>
-
 - gestion des points pour acheteurs : 
 
 - ajout de la possibilité de changer la position, le nom, catégorie de la boutique 
