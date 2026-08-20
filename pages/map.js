@@ -18,7 +18,7 @@ function renderMap(container) {
     container.innerHTML = `
         <div class="page active">
             <div class="map-controls">
-                <input type="text" placeholder="Rechercher un produit ou une boutique..." id="searchMap" />
+                <input type="text" placeholder="Rechercher une boutique..." id="searchMap" />
                 <button class="btn-outline" id="routeBtn"><i class="fas fa-route"></i></button>
                 <button class="btn-outline" id="locateBtn"><i class="fas fa-location-arrow"></i></button>
             </div>

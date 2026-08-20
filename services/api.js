@@ -185,6 +185,10 @@ function updateShopStatus(shopId, status) {
     return apiCall('shops.php', 'PUT', { shop_id: shopId, status });
 }
 
+function updateShop(shopId, shopData) {
+    return apiCall('shops.php', 'PUT', Object.assign({ shop_id: shopId }, shopData));
+}
+
 function followShop(shopId) {
     return apiCall('follow.php', 'POST', { shop_id: shopId });
 }

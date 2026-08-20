@@ -1,12 +1,10 @@
-- ajout de toute logique et modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ).
-sur profil vendeur du produit après clic sur :
-<button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(6)">
-    <i class="fas fa-edit"></i>
-</button>
-
 - gestion des points pour acheteurs : 
 
-- ajout de la possibilité de changer la position, le nom, catégorie de la boutique 
+- pour profil vendeur ajout la logique et possibilité de changer la position, le nom, catégorie de la boutique 
+
+<button class="btn-outline profile-edit-btn" onclick="showProfileEditor()">
+    <i class="fas fa-edit"></i> Modifier le profil
+</button>
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 

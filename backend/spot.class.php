@@ -246,6 +246,22 @@ class SpotShops {
         return $stmt->execute([trim($status), intval($shopId)]);
     }
 
+    public function updateStatusForOwner($shopId, $ownerId, $status) {
+        $stmt = $this->db->prepare('UPDATE shops SET status = ? WHERE id = ? AND owner_id = ?');
+        return $stmt->execute([trim($status), intval($shopId), intval($ownerId)]);
+    }
+
+    public function updateShop($shopId, $ownerId, $name, $category, $lat, $lng, $address) {
+        $stmt = $this->db->prepare(
+            'UPDATE shops SET name = ?, category = ?, lat = ?, lng = ?, address = ?
+             WHERE id = ? AND owner_id = ?'
+        );
+        return $stmt->execute([
+            trim($name), trim($category), floatval($lat), floatval($lng), trim($address),
+            intval($shopId), intval($ownerId)
+        ]);
+    }
+
     public function createShop($ownerId, $name, $category, $lat, $lng, $avatar, $cover, $address) {
         $stmt = $this->db->prepare('INSERT INTO shops (owner_id, name, category, lat, lng, avatar, cover, followed, status, address) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)');
         $stmt->execute([

@@ -139,6 +139,41 @@ if (!$isLocalHost && !$isHttps) {
                     </form>
                 </div>
             </div>
+
+            <div id="shopEditModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="shopEditTitle">
+                <div class="modal-content edit-product-modal">
+                    <button class="modal-close" type="button" aria-label="Fermer" onclick="closeShopEditor()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h3 id="shopEditTitle">Modifier ma boutique</h3>
+                    <form onsubmit="submitShopEditor(event)">
+                        <input id="editShopId" type="hidden" />
+                        <div class="form-group">
+                            <label for="editShopName">Nom de la boutique</label>
+                            <input id="editShopName" type="text" maxlength="150" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="editShopCategory">Catégorie</label>
+                            <select id="editShopCategory" required>
+                                <option value="fashion">Vêtements et chaussures</option>
+                                <option value="home">Maison et déco</option>
+                                <option value="tech">High-tech et électronique</option>
+                                <option value="beauty">Santé et beauté</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Position sur la carte</label>
+                            <div id="editShopMap" class="shop-create-map"></div>
+                            <input id="editShopLat" type="hidden" />
+                            <input id="editShopLng" type="hidden" />
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-outline" type="button" onclick="closeShopEditor()">Annuler</button>
+                            <button id="saveShopEditorButton" class="btn-primary" type="submit"><i class="fas fa-save"></i> Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- ===== SCRIPTS ===== -->

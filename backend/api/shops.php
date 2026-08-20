@@ -59,16 +59,51 @@ switch ($method) {
     case 'PUT':
         $data = json_decode(file_get_contents('php://input'), true);
         $shopId = intval($data['shop_id'] ?? 0);
-        $status = trim($data['status'] ?? '');
+        $ownerId = intval($_SESSION['user_id'] ?? 0);
 
-        if (!$shopId || !in_array($status, ['open', 'closed', 'break'], true)) {
+        if (!$shopId || !$ownerId) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Invalid shop_id or status']);
+            echo json_encode(['success' => false, 'error' => 'Invalid shop_id or session']);
             break;
         }
 
-        $success = $spot->shops->updateStatus($shopId, $status);
-        echo json_encode(['success' => $success]);
+        if (array_key_exists('status', $data)) {
+            $status = trim($data['status'] ?? '');
+            if (!in_array($status, ['open', 'closed', 'break'], true)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Invalid status']);
+                break;
+            }
+            $success = $spot->shops->updateStatusForOwner($shopId, $ownerId, $status);
+            echo json_encode(['success' => $success]);
+            break;
+        }
+
+        $name = trim($data['name'] ?? '');
+        $category = trim($data['category'] ?? '');
+        $lat = filter_var($data['lat'] ?? null, FILTER_VALIDATE_FLOAT);
+        $lng = filter_var($data['lng'] ?? null, FILTER_VALIDATE_FLOAT);
+        $address = trim($data['address'] ?? '');
+
+        if ($name === '' || strlen($name) > 150 || $category === '' || strlen($category) > 50
+            || $lat === false || $lng === false || $lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Invalid shop data']);
+            break;
+        }
+
+        if ($address === '') {
+            $address = sprintf('Coordonnées %.4f, %.4f', $lat, $lng);
+        }
+
+        $success = $spot->shops->updateShop($shopId, $ownerId, $name, $category, $lat, $lng, $address);
+        if ($success) {
+            echo json_encode(['success' => true, 'shop' => $spot->shops->getShopById($shopId)]);
+            break;
+        }
+
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Shop not found or not owned by user']);
         break;
 
     default:

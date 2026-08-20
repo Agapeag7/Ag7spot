@@ -66,6 +66,9 @@ async function renderProfile(container) {
                                 <span>Adresse</span>
                                 <span class="settings-value">${myShop.address}</span>
                             </div>
+                            <button class="btn-outline w-full" type="button" onclick="showShopEditor(${Number(myShop.id)})">
+                                <i class="fas fa-pen-to-square"></i> Modifier ma boutique
+                            </button>
                             <div class="settings-item" style="display:block;">
                                 <span>Statut boutique</span>
                                 <div class="shop-status-toggle-group" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
@@ -305,6 +308,83 @@ function showProfileEditor() {
     if (email === null) return;
 
     updateProfile(username.trim(), email.trim());
+}
+
+let shopEditMap = null;
+
+function showShopEditor(shopId) {
+    const shop = (Array.isArray(SHOPS) ? SHOPS.find(item => Number(item.id) === Number(shopId)) : null)
+        || sellerProductsState.myShop;
+    const modal = document.getElementById('shopEditModal');
+    if (!modal || !shop) return;
+
+    document.getElementById('editShopId').value = shop.id;
+    document.getElementById('editShopName').value = shop.name || '';
+    document.getElementById('editShopCategory').value = shop.category || '';
+    document.getElementById('editShopLat').value = Number(shop.lat).toFixed(6);
+    document.getElementById('editShopLng').value = Number(shop.lng).toFixed(6);
+    modal.classList.remove('hidden');
+
+    setTimeout(() => {
+        const mapContainer = document.getElementById('editShopMap');
+        if (!mapContainer || typeof L === 'undefined') return;
+        const lat = parseFloat(document.getElementById('editShopLat').value);
+        const lng = parseFloat(document.getElementById('editShopLng').value);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        if (shopEditMap) shopEditMap.remove();
+        shopEditMap = L.map(mapContainer, { attributionControl: false }).setView([lat, lng], 18);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(shopEditMap);
+        const marker = L.marker([lat, lng], { draggable: true }).addTo(shopEditMap);
+        marker.on('dragend', () => {
+            const position = marker.getLatLng();
+            document.getElementById('editShopLat').value = position.lat.toFixed(6);
+            document.getElementById('editShopLng').value = position.lng.toFixed(6);
+        });
+        shopEditMap.invalidateSize();
+    }, 100);
+}
+
+function closeShopEditor() {
+    const modal = document.getElementById('shopEditModal');
+    if (shopEditMap) {
+        shopEditMap.remove();
+        shopEditMap = null;
+    }
+    if (modal) modal.classList.add('hidden');
+}
+
+async function submitShopEditor(event) {
+    event.preventDefault();
+    const shopId = Number(document.getElementById('editShopId').value);
+    const name = document.getElementById('editShopName').value.trim();
+    const category = document.getElementById('editShopCategory').value;
+    const lat = Number(document.getElementById('editShopLat').value);
+    const lng = Number(document.getElementById('editShopLng').value);
+    if (!shopId || !name || !category || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+        showToast('Remplis tous les champs de la boutique.', 'warning');
+        return;
+    }
+
+    const button = document.getElementById('saveShopEditorButton');
+    if (button) button.disabled = true;
+    try {
+        const response = await updateShop(shopId, {
+            name, category, lat, lng, address: `Coordonnées ${lat.toFixed(4)}, ${lng.toFixed(4)}`
+        });
+        if (!response || !response.success) throw new Error('Mise à jour impossible');
+        const updatedShop = response.shop;
+        const index = SHOPS.findIndex(shop => Number(shop.id) === shopId);
+        if (index >= 0) SHOPS[index] = updatedShop;
+        CURRENT_USER.shopId = shopId;
+        closeShopEditor();
+        showToast('Boutique mise à jour.', 'success');
+        await renderProfile(document.getElementById('pageContainer'));
+    } catch (error) {
+        showToast(error.message || 'Impossible de modifier la boutique.', 'error');
+    } finally {
+        if (button) button.disabled = false;
+    }
 }
 
 async function updateProfile(username, email) {
