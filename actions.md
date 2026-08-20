@@ -1,10 +1,5 @@
 - gestion des points pour acheteurs : 
 
-- pour profil vendeur ajout la logique et possibilité de changer la position, le nom, catégorie de la boutique 
-
-<button class="btn-outline profile-edit-btn" onclick="showProfileEditor()">
-    <i class="fas fa-edit"></i> Modifier le profil
-</button>
 
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
