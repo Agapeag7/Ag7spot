@@ -317,6 +317,67 @@ async function updateProfile(username, email) {
     }
 }
 
+let productPendingDeletion = null;
+
+function deleteProductAction(productId) {
+    const product = sellerProductsState.allItems.find(item => Number(item.id) === Number(productId));
+    const modal = document.getElementById('deleteProductModal');
+    const message = document.getElementById('deleteProductMessage');
+    if (!modal) return;
+
+    productPendingDeletion = Number(productId);
+    if (message) {
+        message.textContent = product
+            ? `Le produit "${product.name}" sera définitivement supprimé.`
+            : 'Cette action est définitive.';
+    }
+    modal.classList.remove('hidden');
+}
+
+function closeDeleteProductModal() {
+    const modal = document.getElementById('deleteProductModal');
+    const button = document.getElementById('confirmDeleteProductButton');
+    productPendingDeletion = null;
+    if (modal) modal.classList.add('hidden');
+    if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-trash"></i> Supprimer';
+    }
+}
+
+async function confirmDeleteProduct() {
+    if (!productPendingDeletion) return;
+
+    const productId = productPendingDeletion;
+    const button = document.getElementById('confirmDeleteProductButton');
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Suppression...';
+    }
+
+    try {
+        const deleted = await deleteProduct(productId);
+        if (!deleted) throw new Error('La suppression a échoué.');
+
+        closeDeleteProductModal();
+        showToast('Produit supprimé.', 'success');
+        const container = document.getElementById('pageContainer');
+        if (container) await renderProfile(container);
+    } catch (error) {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-trash"></i> Supprimer';
+        }
+        showToast(error.message || 'Impossible de supprimer le produit.', 'error');
+    }
+}
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && productPendingDeletion !== null) {
+        closeDeleteProductModal();
+    }
+});
+
 function preloadOfflineMap() {
     showToast('Téléchargement de la carte en cours...', 'info');
     getUserPosition().then(pos => {

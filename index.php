@@ -87,6 +87,24 @@ if (!$isLocalHost && !$isHttps) {
                     <div id="onboardingContainer"></div>
                 </div>
             </div>
+
+            <!-- ===== MODALE DE CONFIRMATION DE SUPPRESSION ===== -->
+            <div id="deleteProductModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteProductTitle">
+                <div class="modal-content delete-product-modal">
+                    <button class="modal-close" type="button" aria-label="Fermer" onclick="closeDeleteProductModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="delete-product-icon"><i class="fas fa-trash"></i></div>
+                    <h3 id="deleteProductTitle">Supprimer ce produit ?</h3>
+                    <p id="deleteProductMessage">Cette action est définitive.</p>
+                    <div class="modal-actions">
+                        <button class="btn-outline" type="button" onclick="closeDeleteProductModal()">Annuler</button>
+                        <button id="confirmDeleteProductButton" class="btn-danger" type="button" onclick="confirmDeleteProduct()">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ===== SCRIPTS ===== -->

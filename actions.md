@@ -1,6 +1,14 @@
-- ajout du modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ). 
+- ajout de toute logique et modale pour modifier un produit ( la modification d'un produit, doit se faire dans l'intervalle de 10 minutes après ajout sinon, le bouton de modification n'apparaît plus ).
+sur profil vendeur du produit après clic sur :
+<button class="btn-outline btn-sm" onclick="event.stopPropagation(); editProduct(6)">
+    <i class="fas fa-edit"></i>
+</button>
 
-- ajout du modale de confirmation de suppression d'un produit 
+- ajout de toute la logique et du modale de confirmation de suppression d'un produit.
+sur profil vendeur du produit après clic sur :
+<button class="btn-outline btn-sm delete" onclick="event.stopPropagation(); deleteProductAction(4)">
+    <i class="fas fa-trash"></i>
+</button>
 
 - gestion des points pour acheteurs : 
 

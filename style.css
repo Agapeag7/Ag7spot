@@ -274,6 +274,82 @@ body {
 .hidden {
     display: none !important;
 }
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.48);
+}
+.modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+.delete-product-modal {
+    padding: 28px 24px 24px;
+    text-align: center;
+}
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-gray);
+    cursor: pointer;
+    font-size: 16px;
+}
+.delete-product-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 14px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--danger-bg);
+    color: var(--danger);
+    font-size: 20px;
+}
+.delete-product-modal h3 {
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+.delete-product-modal p {
+    color: var(--text-gray);
+    line-height: 1.5;
+}
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+.modal-actions button {
+    flex: 1;
+}
+.btn-danger {
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 16px;
+    background: var(--danger);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-danger:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
 .auth-mode-toggle {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
