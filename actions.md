@@ -1,11 +1,7 @@
-- gestion des points pour acheteurs : 
-
-
 - gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
 
-
-
 - stockage des préférences utilisateur, pour actualiser le fil d'actualités ( ajout d'algorithmes des préfèrences ) 
+
 ALGORITHME DE RECOMMANDATION :
 # Fonctionnement
 
@@ -30,7 +26,6 @@ Les contenus récents sont favorisés pour garder le fil vivant.
 
 ## La relation : 
 Les interactions régulières avec certaines boutiques renforcent leur visibilité.
-
 
 
 

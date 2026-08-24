@@ -46,9 +46,10 @@ async function renderProfile(container) {
                         ${user.role === 'seller' ? `<div><strong>${products.length}</strong> <span>Mes produits</span></div>` : ''}
                         <div><strong>${user.points}</strong> <span>Points</span></div>
                     </div>
-                    <button class="btn-outline profile-edit-btn" onclick="showProfileEditor()">
+
+                    <!-- <button class="btn-outline profile-edit-btn" onclick="showProfileEditor()">
                         <i class="fas fa-edit"></i> Modifier le profil
-                    </button>
+                    </button> -->
                 </div>
 
                 ${user.role === 'seller' ? `
@@ -333,14 +334,26 @@ function showShopEditor(shopId) {
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
         if (shopEditMap) shopEditMap.remove();
-        shopEditMap = L.map(mapContainer, { attributionControl: false }).setView([lat, lng], 18);
+        mapContainer.querySelector('.center-map-pin')?.remove();
+        shopEditMap = L.map(mapContainer, {
+            zoomControl: true,
+            attributionControl: false
+        }).setView([lat, lng], 18);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(shopEditMap);
-        const marker = L.marker([lat, lng], { draggable: true }).addTo(shopEditMap);
-        marker.on('dragend', () => {
-            const position = marker.getLatLng();
-            document.getElementById('editShopLat').value = position.lat.toFixed(6);
-            document.getElementById('editShopLng').value = position.lng.toFixed(6);
-        });
+
+        const centerPin = document.createElement('div');
+        centerPin.className = 'center-map-pin';
+        centerPin.innerHTML = '<i class="fas fa-map-marker-alt"></i>';
+        mapContainer.appendChild(centerPin);
+
+        const updateCenterInputs = () => {
+            const center = shopEditMap.getCenter();
+            document.getElementById('editShopLat').value = center.lat.toFixed(4);
+            document.getElementById('editShopLng').value = center.lng.toFixed(4);
+        };
+
+        shopEditMap.on('moveend', updateCenterInputs);
+        updateCenterInputs();
         shopEditMap.invalidateSize();
     }, 100);
 }
