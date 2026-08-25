@@ -19,9 +19,11 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
 
     if ($method === 'GET') {
+        $limit = intval($_GET['limit'] ?? 20);
+        $offset = intval($_GET['offset'] ?? 0);
         echo json_encode([
             'success' => true,
-            'notifications' => $spot->notifications->getForUser($userId),
+            'notifications' => $spot->notifications->getForUser($userId, $limit, $offset),
             'unread_count' => $spot->notifications->getUnreadCount($userId)
         ]);
         exit;

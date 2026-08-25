@@ -197,8 +197,8 @@ function unfollowShop(shopId) {
     return apiCall('follow.php', 'DELETE', { shop_id: shopId });
 }
 
-function getNotifications() {
-    return apiCall('notifications.php');
+function getNotifications(limit = 20, offset = 0) {
+    return apiCall(`notifications.php?limit=${limit}&offset=${offset}`);
 }
 
 function markNotificationRead(notificationId = null) {
@@ -223,4 +223,8 @@ function showToast(message, type = 'info') {
         toast.style.transform = 'translateY(-10px)';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+function getFollowedShops(limit = 10, offset = 0) {
+    return apiCall(`profile.php?follow_limit=${limit}&follow_offset=${offset}`);
 }

@@ -11,18 +11,44 @@ function renderFavorites(container) {
         </div>
     `;
 
-    loadFavorites();
+    setupFavoritesScroll();
+    loadFavorites(true);
 }
 
-async function loadFavorites() {
+const favoritesState = { offset: 0, limit: 10, loading: false, hasMore: true };
+
+function setupFavoritesScroll() {
+    const mainContent = document.getElementById('mainContent');
+    if (!mainContent) return;
+    if (window._favoritesScrollHandler) mainContent.removeEventListener('scroll', window._favoritesScrollHandler);
+    window._favoritesScrollHandler = () => {
+        if (favoritesState.loading || !favoritesState.hasMore) return;
+        if (mainContent.scrollHeight - mainContent.scrollTop - mainContent.clientHeight < 180) loadFavoritesBatch();
+    };
+    mainContent.addEventListener('scroll', window._favoritesScrollHandler);
+}
+
+async function loadFavorites(reset = false) {
     const container = document.getElementById('favContainer');
     if (!container) return;
-    container.innerHTML = '<div class="loading-state"><p>Chargement de tes boutiques suivies...</p></div>';
+    if (reset) {
+        favoritesState.offset = 0;
+        favoritesState.hasMore = true;
+        container.innerHTML = '<div class="loading-state"><p>Chargement de tes boutiques suivies...</p></div>';
+    }
+    await loadFavoritesBatch(reset);
+}
 
-    let followed = SHOPS.filter(s => s.followed);
+async function loadFavoritesBatch(reset = false) {
+    const container = document.getElementById('favContainer');
+    if (!container || favoritesState.loading || (!reset && !favoritesState.hasMore)) return;
+    favoritesState.loading = true;
+    let followed = [];
     try {
-        const profile = await getProfile();
+        const profile = await getFollowedShops(favoritesState.limit, favoritesState.offset);
         followed = profile.followedShops || [];
+        favoritesState.offset += followed.length;
+        favoritesState.hasMore = profile.followedHasMore === true;
         followed.forEach(shop => {
             shop.followed = true;
             const localShop = SHOPS.find(item => Number(item.id) === Number(shop.id));
@@ -31,9 +57,11 @@ async function loadFavorites() {
         });
     } catch (error) {
         showToast('Impossible de charger les boutiques suivies.', 'error');
+        favoritesState.hasMore = false;
     }
 
-    if (followed.length === 0) {
+    if (reset && followed.length === 0) {
+        favoritesState.loading = false;
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-heart-broken"></i>
@@ -44,7 +72,9 @@ async function loadFavorites() {
         return;
     }
 
-    container.innerHTML = `<div class="follow-list">` + followed.map(shop => `
+    if (reset) container.innerHTML = '<div class="follow-list"></div>';
+    const list = container.querySelector('.follow-list');
+    if (list) list.insertAdjacentHTML('beforeend', followed.map(shop => `
         <div class="follow-item">
             <img src="${shop.avatar}" alt="${shop.name}" />
             <div class="name">${shop.name}</div>
@@ -53,7 +83,8 @@ async function loadFavorites() {
                 <i class="fas fa-times"></i>
             </button>
         </div>
-    `).join('') + `</div>`;
+    `).join(''));
+    favoritesState.loading = false;
 }
 
 async function toggleFollow(shopId) {

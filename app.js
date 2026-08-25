@@ -61,6 +61,9 @@ async function openNotifications() {
     try {
         const response = await getNotifications();
         const notifications = response.notifications || [];
+        let notificationOffset = notifications.length;
+        let notificationLoading = false;
+        let notificationHasMore = notifications.length === 20;
         updateNotificationBadge(response.unread_count || 0);
         const modal = document.createElement('div');
         modal.className = 'modal notification-modal';
@@ -94,6 +97,31 @@ async function openNotifications() {
         document.body.appendChild(modal);
         const close = () => modal.remove();
         modal.querySelector('.modal-close').addEventListener('click', close);
+        const notificationList = modal.querySelector('.notification-list');
+        const appendNotifications = (items) => {
+            notificationList.insertAdjacentHTML('beforeend', items.map(notification => `
+                <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
+                    <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
+                    <span class="notification-item-content">
+                        <strong>${escapeNotificationText(notification.title)}</strong>
+                        <span>${escapeNotificationText(notification.body)}</span>
+                        <small>${escapeNotificationText(notification.created_at)}</small>
+                    </span>
+                    ${notification.read_at ? '' : '<span class="notification-unread-dot" aria-label="Non lue"></span>'}
+                </button>`).join(''));
+        };
+        notificationList.addEventListener('scroll', async () => {
+            if (notificationLoading || !notificationHasMore || notificationList.scrollHeight - notificationList.scrollTop - notificationList.clientHeight > 80) return;
+            notificationLoading = true;
+            try {
+                const next = await getNotifications(20, notificationOffset);
+                appendNotifications(next.notifications || []);
+                notificationOffset += (next.notifications || []).length;
+                notificationHasMore = (next.notifications || []).length === 20;
+            } finally {
+                notificationLoading = false;
+            }
+        });
         modal.addEventListener('click', async event => {
             if (event.target === modal) close();
             const item = event.target.closest('[data-notification-id]');

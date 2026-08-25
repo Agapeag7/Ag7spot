@@ -124,8 +124,10 @@ class SpotNotifications {
         $this->db = $database;
     }
 
-    public function getForUser($userId) {
-        $stmt = $this->db->prepare('SELECT id, type, title, body, data_json, read_at, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50');
+    public function getForUser($userId, $limit = 20, $offset = 0) {
+        $limit = max(1, min(50, intval($limit)));
+        $offset = max(0, intval($offset));
+        $stmt = $this->db->prepare("SELECT id, type, title, body, data_json, read_at, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT {$limit} OFFSET {$offset}");
         $stmt->execute([intval($userId)]);
         $notifications = $stmt->fetchAll();
         foreach ($notifications as &$notification) {
@@ -687,13 +689,16 @@ class SpotFollows {
         }
     }
 
-    public function getFollowedShops($userId) {
+    public function getFollowedShops($userId, $limit = 10, $offset = 0) {
+        $limit = max(1, min(50, intval($limit)));
+        $offset = max(0, intval($offset));
         $stmt = $this->db->prepare(
-            'SELECT s.*, 1 AS followed
+            "SELECT s.*, 1 AS followed
              FROM shop_follows sf
              JOIN shops s ON s.id = sf.shop_id
              WHERE sf.user_id = ?
-             ORDER BY sf.created_at DESC'
+             ORDER BY sf.created_at DESC
+             LIMIT {$limit} OFFSET {$offset}"
         );
         $stmt->execute([intval($userId)]);
         return $stmt->fetchAll();

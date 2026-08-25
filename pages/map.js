@@ -266,7 +266,9 @@ async function loadShopsOnMap(pos, query = '') {
             ? `<button class="btn-outline btn-sm" disabled><i class="fas fa-check"></i> Ajouté au parcours</button>`
             : `<button class="btn-outline btn-sm" onclick="addRoutePoint(${shop.id})"><i class="fas fa-route"></i> Ajouter au parcours</button>`;
 
-        const products = PRODUCTS.filter(p => p.shopId === shop.id);
+        const products = PRODUCTS.filter(p => p.shopId === shop.id)
+            .sort((first, second) => new Date(second.created_at || 0) - new Date(first.created_at || 0))
+            .slice(0, 3);
         const deals = FLASH_DEALS.filter(d => d.shopId === shop.id);
 
         const marker = L.marker([shop.lat, shop.lng], {

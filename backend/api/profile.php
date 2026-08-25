@@ -79,7 +79,9 @@ try {
     }
 
     $followedShops = $spot->follows->getFollowedShopIds($userId);
-    $followedShopDetails = $spot->follows->getFollowedShops($userId);
+    $followedLimit = intval($_GET['follow_limit'] ?? 10);
+    $followedOffset = intval($_GET['follow_offset'] ?? 0);
+    $followedShopDetails = $spot->follows->getFollowedShops($userId, $followedLimit, $followedOffset);
 
     unset($user['password']);
 
@@ -89,7 +91,8 @@ try {
         'shop' => $shop,
         'products' => $products,
         'followCount' => count($followedShops),
-        'followedShops' => $followedShopDetails
+        'followedShops' => $followedShopDetails,
+        'followedHasMore' => count($followedShopDetails) >= max(1, min(50, $followedLimit))
     ]);
 } catch (Exception $e) {
     jsonResponse(['success' => false, 'error' => $e->getMessage()], 500);
