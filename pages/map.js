@@ -38,6 +38,7 @@ let userMarker = null;
 let currentMapPosition = null;
 let currentSearchQuery = '';
 let routeLayer = null;
+let mapProductsByShop = new Map();
 
 function escapeMapPopupText(value) {
     const element = document.createElement('div');
@@ -195,13 +196,14 @@ async function loadShopsOnMap(pos, query = '') {
     currentSearchQuery = query.trim();
     const visibleShops = [];
     const nearbyRadiusKm = 10;
+    mapProductsByShop = new Map();
 
     mapMarkers.forEach(m => mapInstance.removeLayer(m));
     mapMarkers = [];
 
     const matchesShopQuery = (shop) => {
         if (!currentSearchQuery) return true;
-        const productNames = PRODUCTS.filter(p => p.shopId === shop.id).map(p => p.name).join(' ');
+        const productNames = (mapProductsByShop.get(Number(shop.id)) || []).map(product => product.name).join(' ');
         const combined = `${shop.name || ''} ${shop.address || ''} ${shop.category || ''} ${productNames}`;
         return matchesQuery(combined, currentSearchQuery);
     };
@@ -243,7 +245,17 @@ async function loadShopsOnMap(pos, query = '') {
         shops = SHOPS;
     }
 
-    shops.forEach(shop => {
+    await Promise.all(shops.map(async shop => {
+        try {
+            const products = await getShopProducts(shop.id);
+            mapProductsByShop.set(Number(shop.id), Array.isArray(products) ? products : []);
+        } catch (error) {
+            console.warn(`Impossible de récupérer les produits de la boutique ${shop.id}.`, error);
+            mapProductsByShop.set(Number(shop.id), []);
+        }
+    }));
+
+    for (const shop of shops) {
         if (!shop.owner_id && !shop.ownerId) return;
         const dist = parseFloat(shop.distance) || getDistanceBetween(pos.lat, pos.lng, shop.lat, shop.lng);
         if (dist > nearbyRadiusKm || !matchesShopQuery(shop)) return;
@@ -266,7 +278,7 @@ async function loadShopsOnMap(pos, query = '') {
             ? `<button class="btn-outline btn-sm" disabled><i class="fas fa-check"></i> Ajouté au parcours</button>`
             : `<button class="btn-outline btn-sm" onclick="addRoutePoint(${shop.id})"><i class="fas fa-route"></i> Ajouter au parcours</button>`;
 
-        const products = PRODUCTS.filter(p => p.shopId === shop.id)
+        const products = (mapProductsByShop.get(Number(shop.id)) || [])
             .sort((first, second) => new Date(second.created_at || 0) - new Date(first.created_at || 0))
             .slice(0, 3);
         const deals = FLASH_DEALS.filter(d => d.shopId === shop.id);
@@ -290,7 +302,7 @@ async function loadShopsOnMap(pos, query = '') {
         });
 
         mapMarkers.push(marker);
-    });
+    }
 
     COLLECTIONS.forEach(col => {
         if (!matchesCollectionQuery(col)) return;
