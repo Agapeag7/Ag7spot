@@ -268,8 +268,19 @@ class SpotShops {
         $sql = str_replace('SELECT s.*,', 'SELECT s.*, (sf.id IS NOT NULL) AS followed,', $sql);
         $params['radius'] = $radius;
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+        } catch (PDOException $e) {
+            if ($e->getCode() !== '42S02') {
+                throw $e;
+            }
+            $sql = str_replace('SELECT s.*, (sf.id IS NOT NULL) AS followed,', 'SELECT s.*, 0 AS followed,', $sql);
+            $sql = str_replace('LEFT JOIN shop_follows sf ON sf.shop_id = s.id AND sf.user_id = :userId', '', $sql);
+            unset($params['userId']);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+        }
         return $stmt->fetchAll();
     }
 
@@ -579,23 +590,35 @@ class SpotFeed {
         $this->db = $database;
     }
 
-    public function getFeed($lat, $lng, $maxDistance) {
-        $sql = 'SELECT p.*, s.name AS shop_name, s.status AS shop_status, s.lat, s.lng, s.category, (6371 * ACOS(
+    public function getFeed($lat, $lng, $maxDistance, $userId = null) {
+        $sql = 'SELECT p.*, s.name AS shop_name, s.owner_id AS shop_owner_id, s.status AS shop_status, (sf.id IS NOT NULL) AS followed, s.lat, s.lng, s.category, (6371 * ACOS(
             COS(RADIANS(:lat1)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
             SIN(RADIANS(:lat2)) * SIN(RADIANS(s.lat))
         )) AS distance
         FROM products p
         JOIN shops s ON p.shop_id = s.id
+        LEFT JOIN shop_follows sf ON sf.shop_id = s.id AND sf.user_id = :userId
         HAVING distance <= :maxDistance
         ORDER BY distance ASC, p.created_at DESC';
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
+        $params = [
             ':lat1' => floatval($lat),
             ':lng' => floatval($lng),
             ':lat2' => floatval($lat),
-            ':maxDistance' => floatval($maxDistance)
-        ]);
+            ':maxDistance' => floatval($maxDistance),
+            ':userId' => intval($userId)
+        ];
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+        } catch (PDOException $e) {
+            if ($e->getCode() !== '42S02') throw $e;
+            $sql = str_replace('s.owner_id AS shop_owner_id, (sf.id IS NOT NULL) AS followed, ', 's.owner_id AS shop_owner_id, 0 AS followed, ', $sql);
+            $sql = str_replace('LEFT JOIN shop_follows sf ON sf.shop_id = s.id AND sf.user_id = :userId', '', $sql);
+            unset($params[':userId']);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+        }
         return $stmt->fetchAll();
     }
 }

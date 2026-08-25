@@ -172,6 +172,12 @@ function renderFeedBatch() {
         const shopStatus = p.shop_status || p.status || 'closed';
         const statusHtml = renderShopStatus({ status: shopStatus });
         const stockHtml = renderStockBadge(p);
+        const isShopOwner = Number(p.shop_owner_id) === Number(CURRENT_USER?.id);
+        const followLabel = Number(p.followed) === 1 || p.followed === true ? 'Suivi(e)' : 'Suivre';
+        const followButton = isShopOwner ? '' : `
+                        <button class="btn-outline btn-sm follow-shop-button" onclick="event.stopPropagation(); toggleFeedFollow(${Number(p.shop_id)}, ${followLabel === 'Suivi(e)'}, this)">
+                            <i class="fas fa-heart"></i> ${followLabel}
+                        </button>`;
         return `
             <div class="product-card" onclick="showProductDetail(${p.id})">
                 <img src="${getProductImage(p)}" alt="${p.name}" loading="lazy" />
@@ -180,6 +186,7 @@ function renderFeedBatch() {
                         <i class="fas fa-store"></i> ${p.shop_name || 'Boutique'}
                         <span class="distance-badge"><i class="fas fa-location-dot"></i> ${dist.toFixed(1)} km</span>
                         ${statusHtml}
+                        ${followButton}
                     </div>
                     <h3>${p.name}</h3>
                     <div class="meta">

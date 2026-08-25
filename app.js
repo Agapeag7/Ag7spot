@@ -32,6 +32,24 @@ function updateNotificationBadge(count) {
     badge.classList.toggle('hidden', !count);
 }
 
+async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
+    if (!shopId) {
+        showToast('Boutique introuvable.', 'error');
+        return;
+    }
+    try {
+        const response = isFollowed ? await unfollowShop(shopId) : await followShop(shopId);
+        if (!response.success) throw new Error('Impossible de suivre cette boutique.');
+        if (button) {
+            button.innerHTML = `<i class="fas fa-heart"></i> ${isFollowed ? 'Suivre' : 'Suivi(e)'}`;
+            button.setAttribute('onclick', `event.stopPropagation(); toggleFeedFollow(${Number(shopId)}, ${!isFollowed}, this)`);
+        }
+        showToast(isFollowed ? 'Boutique retirée des suivis' : 'Boutique suivie', 'success');
+    } catch (error) {
+        showToast(error.message || 'Impossible de suivre cette boutique.', 'error');
+    }
+}
+
 async function openNotifications() {
     try {
         const response = await getNotifications();

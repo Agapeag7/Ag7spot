@@ -10,6 +10,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
+session_start();
+
 function jsonResponse(array $data, int $status = 200) {
     if (!headers_sent()) {
         header('Content-Type: application/json');
@@ -38,7 +40,8 @@ try {
     $lng = floatval($_GET['lng'] ?? 0);
     $maxDistance = floatval($_GET['max_distance'] ?? 5);
 
-    $feed = $spot->feed->getFeed($lat, $lng, $maxDistance);
+    $userId = intval($_SESSION['user_id'] ?? 0);
+    $feed = $spot->feed->getFeed($lat, $lng, $maxDistance, $userId);
     jsonResponse(['success' => true, 'feed' => $feed]);
 } catch (Exception $e) {
     jsonResponse(['success' => false, 'error' => $e->getMessage()], 500);

@@ -1,3 +1,5 @@
+Pour accéder à la section "Carte" cela affiche des erreurs en console :
+
 API Error: Error: Réponse JSON invalide : <br />
 <b>Fatal error</b>:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'ag7spot.shop_follows' doesn't exist in C:\xampp\htdocs\Ag7spot\backend\spot.class.php:54
 Stack trace:
