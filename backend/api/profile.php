@@ -79,6 +79,7 @@ try {
     }
 
     $followedShops = $spot->follows->getFollowedShopIds($userId);
+    $followedShopDetails = $spot->follows->getFollowedShops($userId);
 
     unset($user['password']);
 
@@ -87,7 +88,8 @@ try {
         'user' => $user,
         'shop' => $shop,
         'products' => $products,
-        'followCount' => count($followedShops)
+        'followCount' => count($followedShops),
+        'followedShops' => $followedShopDetails
     ]);
 } catch (Exception $e) {
     jsonResponse(['success' => false, 'error' => $e->getMessage()], 500);

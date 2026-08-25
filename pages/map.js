@@ -39,6 +39,73 @@ let currentMapPosition = null;
 let currentSearchQuery = '';
 let routeLayer = null;
 
+function escapeMapPopupText(value) {
+    const element = document.createElement('div');
+    element.textContent = value == null ? '' : String(value);
+    return element.innerHTML;
+}
+
+function renderMapShopPopup(shop, products, deals, routeButton) {
+    const isOwner = Number(shop.owner_id || shop.ownerId) === Number(CURRENT_USER?.id);
+    const isFollowed = Number(shop.followed) === 1 || shop.followed === true;
+    const followButton = isOwner ? '' : `
+        <button class="btn-outline btn-sm map-follow-button" onclick="toggleMapFollow(${Number(shop.id)}, ${isFollowed}, this)">
+            <i class="fas fa-heart"></i> <span>${isFollowed ? 'Suivi(e)' : 'Suivre'}</span>
+        </button>`;
+    const productList = products.length
+        ? products.map(product => `
+            <div class="map-popup-product">
+                <span>${escapeMapPopupText(product.name)}</span>
+                <strong>${parseFloat(product.price).toFixed(2)} $</strong>
+            </div>`).join('')
+        : '<p class="map-popup-empty">Aucun produit disponible</p>';
+    const dealsHtml = deals.length ? `
+        <div class="map-popup-deals">
+            <strong><i class="fas fa-bolt"></i> Offres flash</strong>
+            <div>${deals.map(deal => `<span class="map-popup-deal">-${Number(deal.discount)}%</span>`).join('')}</div>
+        </div>` : '';
+
+    return `
+        <div class="map-shop-popup">
+            <div class="map-popup-heading">
+                <div>
+                    <p class="map-popup-kicker"><i class="fas fa-store"></i> Boutique</p>
+                    <h4>${escapeMapPopupText(shop.name)}</h4>
+                </div>
+                <span class="map-popup-distance"><i class="fas fa-location-dot"></i> ${parseFloat(shop.distance || 0).toFixed(1)} km</span>
+            </div>
+            <p class="map-popup-address"><i class="fas fa-location-dot"></i> ${escapeMapPopupText(shop.address || 'Adresse non renseignée')}</p>
+            <div class="map-popup-status">${renderShopStatus(shop)}</div>
+            ${dealsHtml}
+            <div class="map-popup-section">
+                <div class="map-popup-section-title"><strong>Produits</strong><span>${products.length}</span></div>
+                <div class="map-popup-products">${productList}</div>
+            </div>
+            <div class="map-popup-actions">
+                ${followButton}
+                <button class="btn-outline btn-sm" onclick="getDirectionsStatic(${Number(shop.lat)}, ${Number(shop.lng)})"><i class="fas fa-route"></i> Itinéraire</button>
+                <button class="btn-outline btn-sm" onclick="doCheckIn(${Number(shop.id)})"><i class="fas fa-check"></i> Check-in</button>
+                ${routeButton}
+            </div>
+        </div>`;
+}
+
+async function toggleMapFollow(shopId, isFollowed, button) {
+    try {
+        const response = isFollowed ? await unfollowShop(shopId) : await followShop(shopId);
+        if (!response.success) throw new Error('Impossible de modifier le suivi.');
+        const shop = SHOPS.find(item => Number(item.id) === Number(shopId));
+        if (shop) shop.followed = !isFollowed;
+        if (button) {
+            button.querySelector('span').textContent = isFollowed ? 'Suivre' : 'Suivi(e)';
+            button.setAttribute('onclick', `toggleMapFollow(${Number(shopId)}, ${!isFollowed}, this)`);
+        }
+        showToast(isFollowed ? 'Boutique retirée des suivis' : 'Boutique suivie', 'success');
+    } catch (error) {
+        showToast(error.message || 'Impossible de modifier le suivi.', 'error');
+    }
+}
+
 async function initMap() {
     const mapContainer = document.getElementById('map');
     if (!mapContainer) return;
@@ -200,20 +267,7 @@ async function loadShopsOnMap(pos, query = '') {
             : `<button class="btn-outline btn-sm" onclick="addRoutePoint(${shop.id})"><i class="fas fa-route"></i> Ajouter au parcours</button>`;
 
         const products = PRODUCTS.filter(p => p.shopId === shop.id);
-        const productList = products.map(p => 
-            `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;">
-                <span>${p.name}</span>
-                <span style="font-weight:600;">${parseFloat(p.price).toFixed(2)} $</span>
-            </div>`
-        ).join('');
-
         const deals = FLASH_DEALS.filter(d => d.shopId === shop.id);
-        const dealsHtml = deals.length ? `
-            <div style="margin:8px 0;padding:8px;background:#f9fafb;border-radius:12px;">
-                <strong>Flash deals :</strong>
-                ${deals.map(d => `<span style="display:inline-block;margin-top:4px;padding:4px 6px;background:#fde68a;border-radius:12px;font-size:12px;">-${d.discount}%</span>`).join(' ')}
-            </div>
-        ` : '';
 
         const marker = L.marker([shop.lat, shop.lng], {
             icon: L.divIcon({
@@ -227,27 +281,11 @@ async function loadShopsOnMap(pos, query = '') {
             })
         }).addTo(mapInstance);
 
-        marker.bindPopup(`
-            <div style="min-width:220px;">
-                <h4 style="margin:0 0 4px 0;">${shop.name}</h4>
-                <p style="margin:0 0 8px 0;font-size:12px;color:#6B7280;">${shop.address}</p>
-                ${renderShopStatus(shop)}
-                ${dealsHtml}
-                <div style="margin:8px 0;">
-                    <strong>Produits :</strong>
-                    ${productList || 'Aucun produit'}
-                </div>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
-                    <button class="btn-outline btn-sm" onclick="getDirectionsStatic(${shop.lat}, ${shop.lng})">
-                        <i class="fas fa-map-pin"></i> Itinéraire
-                    </button>
-                    <button class="btn-outline btn-sm" onclick="doCheckIn(${shop.id})">
-                        <i class="fas fa-check"></i> Check-in
-                    </button>
-                    ${routeButton}
-                </div>
-            </div>
-        `);
+        marker.bindPopup(renderMapShopPopup(shop, products, deals, routeButton), {
+            maxWidth: 340,
+            minWidth: 250,
+            className: 'map-shop-leaflet-popup'
+        });
 
         mapMarkers.push(marker);
     });

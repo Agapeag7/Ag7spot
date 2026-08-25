@@ -14,9 +14,24 @@ function renderFavorites(container) {
     loadFavorites();
 }
 
-function loadFavorites() {
+async function loadFavorites() {
     const container = document.getElementById('favContainer');
-    const followed = SHOPS.filter(s => s.followed);
+    if (!container) return;
+    container.innerHTML = '<div class="loading-state"><p>Chargement de tes boutiques suivies...</p></div>';
+
+    let followed = SHOPS.filter(s => s.followed);
+    try {
+        const profile = await getProfile();
+        followed = profile.followedShops || [];
+        followed.forEach(shop => {
+            shop.followed = true;
+            const localShop = SHOPS.find(item => Number(item.id) === Number(shop.id));
+            if (localShop) localShop.followed = true;
+            else SHOPS.push(shop);
+        });
+    } catch (error) {
+        showToast('Impossible de charger les boutiques suivies.', 'error');
+    }
 
     if (followed.length === 0) {
         container.innerHTML = `
@@ -30,7 +45,7 @@ function loadFavorites() {
     }
 
     container.innerHTML = `<div class="follow-list">` + followed.map(shop => `
-        <div class="follow-item" onclick="showShopDetail(${shop.id})">
+        <div class="follow-item">
             <img src="${shop.avatar}" alt="${shop.name}" />
             <div class="name">${shop.name}</div>
             ${renderShopStatus(shop)}
@@ -57,15 +72,4 @@ async function toggleFollow(shopId) {
     } catch (error) {
         showToast(error.message || 'Impossible de modifier le suivi.', 'error');
     }
-}
-
-function showShopDetail(shopId) {
-    const shop = SHOPS.find(s => s.id === shopId);
-    if (!shop) return;
-    const products = PRODUCTS.filter(p => p.shopId === shopId);
-    let msg = `🏪 ${shop.name}\n📍 ${shop.address}\n${renderShopStatus(shop)}\n\n Produits:\n`;
-    products.forEach(p => {
-        msg += `- ${p.name} : ${p.price.toFixed(2)} $ (${p.stock} en stock)\n`;
-    });
-    alert(msg);
 }

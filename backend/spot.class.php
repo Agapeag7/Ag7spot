@@ -686,4 +686,16 @@ class SpotFollows {
             throw $e;
         }
     }
+
+    public function getFollowedShops($userId) {
+        $stmt = $this->db->prepare(
+            'SELECT s.*, 1 AS followed
+             FROM shop_follows sf
+             JOIN shops s ON s.id = sf.shop_id
+             WHERE sf.user_id = ?
+             ORDER BY sf.created_at DESC'
+        );
+        $stmt->execute([intval($userId)]);
+        return $stmt->fetchAll();
+    }
 }
