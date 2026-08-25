@@ -37,7 +37,10 @@ if (!$isLocalHost && !$isHttps) {
                 </div>
                 <div class="header-actions">
                     <i class="fas fa-search" id="searchIcon" title="Recherche"></i>
-                    <i class="fas fa-bell" id="notifIcon" title="Notifications"></i>
+                    <span class="notification-trigger">
+                        <i class="fas fa-bell" id="notifIcon" title="Notifications"></i>
+                        <span class="badge hidden" id="notifBadge"></span>
+                    </span>
                 </div>
             </header>
 

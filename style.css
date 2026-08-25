@@ -126,6 +126,51 @@ body {
 .header-actions i:hover {
     color: var(--primary);
 }
+.notification-trigger {
+    position: relative;
+    display: inline-flex;
+}
+.notification-trigger .badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--danger);
+    color: white;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+}
+.notification-trigger .badge.hidden {
+    display: none;
+}
+.notification-list {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0;
+}
+.notification-item {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-align: left;
+}
+.notification-item.unread {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+.notification-item span,
+.notification-item small {
+    color: var(--text-gray);
+}
 
 /* ===== MAIN CONTENT ===== */
 .main-content {

@@ -27,7 +27,8 @@ switch ($method) {
             $categories = array_filter(array_map('trim', explode(',', $_GET['categories'])));
         }
 
-        $shops = $spot->shops->getNearbyShops($lat, $lng, $radius, $categories);
+        $userId = intval($_SESSION['user_id'] ?? 0);
+        $shops = $spot->shops->getNearbyShops($lat, $lng, $radius, $categories, $userId);
         echo json_encode(['success' => true, 'shops' => $shops]);
         break;
 

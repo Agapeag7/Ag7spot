@@ -113,7 +113,7 @@ async function renderProfile(container) {
                     <h4><i class="fas fa-cog"></i> Paramètres</h4>
                     <div class="settings-item">
                         <span>Notifications push</span>
-                        <span class="settings-value">Activées</span>
+                        <span class="settings-value">Non configurées</span>
                     </div>
                     <div class="settings-item">
                         <span>Mode sombre</span>

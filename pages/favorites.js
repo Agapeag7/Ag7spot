@@ -41,12 +41,22 @@ function loadFavorites() {
     `).join('') + `</div>`;
 }
 
-function toggleFollow(shopId) {
+async function toggleFollow(shopId) {
     const shop = SHOPS.find(s => s.id === shopId);
     if (!shop) return;
-    shop.followed = !shop.followed;
-    loadFavorites();
-    showToast(shop.followed ? 'Boutique suivie' : 'Boutique retirée', 'info');
+
+    const wasFollowed = !!shop.followed;
+    try {
+        const response = wasFollowed ? await unfollowShop(shopId) : await followShop(shopId);
+        if (!response.success) {
+            throw new Error('Le suivi de la boutique a échoué.');
+        }
+        shop.followed = !wasFollowed;
+        loadFavorites();
+        showToast(shop.followed ? 'Boutique suivie' : 'Boutique retirée', 'info');
+    } catch (error) {
+        showToast(error.message || 'Impossible de modifier le suivi.', 'error');
+    }
 }
 
 function showShopDetail(shopId) {

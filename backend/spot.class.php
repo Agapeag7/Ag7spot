@@ -70,18 +70,64 @@ class Spot {
     public $checkins;
     public $feed;
     public $follows;
+    public $notifications;
 
     public function __construct() {
         $this->db = new Database();
+        $this->notifications = new SpotNotifications($this->db);
         $this->users = new SpotUsers($this->db);
-        $this->shops = new SpotShops($this->db);
-        $this->products = new SpotProducts($this->db);
+        $this->shops = new SpotShops($this->db, $this->notifications);
+        $this->products = new SpotProducts($this->db, $this->notifications);
         $this->flashDeals = new SpotFlashDeals($this->db);
         $this->collections = new SpotCollections($this->db);
         $this->messages = new SpotMessages($this->db);
         $this->checkins = new SpotCheckins($this->db);
         $this->feed = new SpotFeed($this->db);
         $this->follows = new SpotFollows($this->db);
+    }
+}
+
+class SpotNotifications {
+    private $db;
+
+    public function __construct($database) {
+        $this->db = $database;
+    }
+
+    public function getForUser($userId) {
+        $stmt = $this->db->prepare('SELECT id, type, title, body, data_json, read_at, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50');
+        $stmt->execute([intval($userId)]);
+        $notifications = $stmt->fetchAll();
+        foreach ($notifications as &$notification) {
+            $notification['data'] = $notification['data_json'] ? json_decode($notification['data_json'], true) : [];
+            unset($notification['data_json']);
+        }
+        return $notifications;
+    }
+
+    public function getUnreadCount($userId) {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM notifications WHERE user_id = ? AND read_at IS NULL');
+        $stmt->execute([intval($userId)]);
+        return intval($stmt->fetchColumn());
+    }
+
+    public function markRead($userId, $notificationId = null) {
+        $sql = 'UPDATE notifications SET read_at = CURRENT_TIMESTAMP WHERE user_id = ? AND read_at IS NULL';
+        $params = [intval($userId)];
+        if ($notificationId) {
+            $sql .= ' AND id = ?';
+            $params[] = intval($notificationId);
+        }
+        return $this->db->prepare($sql)->execute($params);
+    }
+
+    public function notifyShopFollowers($shopId, $type, $title, $body, array $data = []) {
+        $stmt = $this->db->prepare('SELECT sf.user_id FROM shop_follows sf JOIN shops s ON s.id = sf.shop_id WHERE sf.shop_id = ? AND sf.user_id <> s.owner_id');
+        $stmt->execute([intval($shopId)]);
+        $insert = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
+        foreach ($stmt->fetchAll() as $follower) {
+            $insert->execute([intval($follower['user_id']), trim($type), trim($title), trim($body), json_encode($data)]);
+        }
     }
 }
 
@@ -179,12 +225,14 @@ class SpotUsers {
 
 class SpotShops {
     private $db;
+    private $notifications;
 
-    public function __construct($database) {
+    public function __construct($database, $notifications = null) {
         $this->db = $database;
+        $this->notifications = $notifications;
     }
 
-    public function getNearbyShops($lat, $lng, $radius, $categories = []) {
+    public function getNearbyShops($lat, $lng, $radius, $categories = [], $userId = null) {
         $radius = floatval($radius);
         $lat = floatval($lat);
         $lng = floatval($lng);
@@ -195,10 +243,11 @@ class SpotShops {
             COS(RADIANS(:lat1)) * COS(RADIANS(s.lat)) * COS(RADIANS(s.lng) - RADIANS(:lng)) +
             SIN(RADIANS(:lat2)) * SIN(RADIANS(s.lat))
         )) AS distance
-        FROM shops s';
+        FROM shops s
+        LEFT JOIN shop_follows sf ON sf.shop_id = s.id AND sf.user_id = :userId';
 
         // Use parameter names without leading ':' for PDO execute array keys
-        $params = ['lat1' => $lat, 'lat2' => $lat, 'lng' => $lng];
+        $params = ['lat1' => $lat, 'lat2' => $lat, 'lng' => $lng, 'userId' => intval($userId)];
         $filters = [];
 
         if (!empty($categories)) {
@@ -216,6 +265,7 @@ class SpotShops {
         }
 
         $sql .= ' HAVING distance <= :radius ORDER BY distance ASC';
+        $sql = str_replace('SELECT s.*,', 'SELECT s.*, (sf.id IS NOT NULL) AS followed,', $sql);
         $params['radius'] = $radius;
 
         $stmt = $this->db->prepare($sql);
@@ -248,7 +298,13 @@ class SpotShops {
 
     public function updateStatusForOwner($shopId, $ownerId, $status) {
         $stmt = $this->db->prepare('UPDATE shops SET status = ? WHERE id = ? AND owner_id = ?');
-        return $stmt->execute([trim($status), intval($shopId), intval($ownerId)]);
+        $success = $stmt->execute([trim($status), intval($shopId), intval($ownerId)]);
+        if ($success && $this->notifications) {
+            $labels = ['open' => 'ouverte', 'closed' => 'fermée', 'break' => 'en pause'];
+            $label = $labels[$status] ?? 'mise à jour';
+            $this->notifications->notifyShopFollowers($shopId, 'shop_status', 'Statut de boutique', 'Une boutique que tu suis est maintenant ' . $label . '.', ['shop_id' => intval($shopId), 'status' => $status]);
+        }
+        return $success;
     }
 
     public function updateShop($shopId, $ownerId, $name, $category, $lat, $lng, $address) {
@@ -256,14 +312,18 @@ class SpotShops {
             'UPDATE shops SET name = ?, category = ?, lat = ?, lng = ?, address = ?
              WHERE id = ? AND owner_id = ?'
         );
-        return $stmt->execute([
+        $success = $stmt->execute([
             trim($name), trim($category), floatval($lat), floatval($lng), trim($address),
             intval($shopId), intval($ownerId)
         ]);
+        if ($success && $this->notifications) {
+            $this->notifications->notifyShopFollowers($shopId, 'shop_updated', 'Boutique mise à jour', 'Une boutique que tu suis vient d’être mise à jour.', ['shop_id' => intval($shopId)]);
+        }
+        return $success;
     }
 
     public function createShop($ownerId, $name, $category, $lat, $lng, $avatar, $cover, $address) {
-        $stmt = $this->db->prepare('INSERT INTO shops (owner_id, name, category, lat, lng, avatar, cover, followed, status, address) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)');
+        $stmt = $this->db->prepare('INSERT INTO shops (owner_id, name, category, lat, lng, avatar, cover, status, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([
             intval($ownerId),
             trim($name),
@@ -281,9 +341,11 @@ class SpotShops {
 
 class SpotProducts {
     private $db;
+    private $notifications;
 
-    public function __construct($database) {
+    public function __construct($database, $notifications = null) {
         $this->db = $database;
+        $this->notifications = $notifications;
     }
 
     public function getProductsByShop($shopId) {
@@ -351,7 +413,14 @@ class SpotProducts {
             intval($stock),
             trim($description)
         ]);
-        return $this->db->lastInsertId();
+        $productId = $this->db->lastInsertId();
+        if ($this->notifications) {
+            $shopStmt = $this->db->prepare('SELECT name FROM shops WHERE id = ?');
+            $shopStmt->execute([intval($shopId)]);
+            $shopName = $shopStmt->fetchColumn() ?: 'Une boutique';
+            $this->notifications->notifyShopFollowers($shopId, 'new_product', 'Nouveau produit', $shopName . ' vient de publier « ' . trim($name) . ' ».', ['shop_id' => intval($shopId), 'product_id' => intval($productId)]);
+        }
+        return $productId;
     }
 }
 

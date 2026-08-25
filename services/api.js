@@ -197,6 +197,14 @@ function unfollowShop(shopId) {
     return apiCall('follow.php', 'DELETE', { shop_id: shopId });
 }
 
+function getNotifications() {
+    return apiCall('notifications.php');
+}
+
+function markNotificationRead(notificationId = null) {
+    return apiCall('notifications.php', 'PUT', notificationId ? { notification_id: notificationId } : {});
+}
+
 // Mock fallback pour le développement (si l'API n'est pas prête)
 function useMockData() {
     return localStorage.getItem('use_mock') === 'true';

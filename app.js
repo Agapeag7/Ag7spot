@@ -19,6 +19,67 @@ function attachNavigationHandlers() {
     document.addEventListener('click', handleGlobalNavigationClick);
 }
 
+function escapeNotificationText(value) {
+    const element = document.createElement('div');
+    element.textContent = value == null ? '' : String(value);
+    return element.innerHTML;
+}
+
+function updateNotificationBadge(count) {
+    const badge = document.getElementById('notifBadge');
+    if (!badge) return;
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.classList.toggle('hidden', !count);
+}
+
+async function openNotifications() {
+    try {
+        const response = await getNotifications();
+        const notifications = response.notifications || [];
+        updateNotificationBadge(response.unread_count || 0);
+        const modal = document.createElement('div');
+        modal.className = 'modal notification-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="modal-close" type="button" aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <h3>Notifications</h3>
+                <div class="notification-list">
+                    ${notifications.length ? notifications.map(notification => `
+                        <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
+                            <strong>${escapeNotificationText(notification.title)}</strong>
+                            <span>${escapeNotificationText(notification.body)}</span>
+                            <small>${escapeNotificationText(notification.created_at)}</small>
+                        </button>
+                    `).join('') : '<p class="empty-state small">Aucune notification.</p>'}
+                </div>
+                ${notifications.some(notification => !notification.read_at) ? '<button class="btn-outline w-full" data-mark-all-read>Tout marquer comme lu</button>' : ''}
+            </div>`;
+        document.body.appendChild(modal);
+        const close = () => modal.remove();
+        modal.querySelector('.modal-close').addEventListener('click', close);
+        modal.addEventListener('click', async event => {
+            if (event.target === modal) close();
+            const item = event.target.closest('[data-notification-id]');
+            if (item) {
+                const wasUnread = item.classList.contains('unread');
+                await markNotificationRead(Number(item.dataset.notificationId));
+                item.classList.remove('unread');
+                if (wasUnread) {
+                    updateNotificationBadge(Math.max(0, Number(response.unread_count || 0) - 1));
+                }
+            }
+            if (event.target.closest('[data-mark-all-read]')) {
+                await markNotificationRead();
+                updateNotificationBadge(0);
+                modal.querySelectorAll('.notification-item').forEach(element => element.classList.remove('unread'));
+                event.target.closest('[data-mark-all-read]').remove();
+            }
+        });
+    } catch (error) {
+        showToast('Impossible de charger les notifications.', 'error');
+    }
+}
+
 function handleGlobalNavigationClick(event) {
     const navButton = event.target.closest('.nav-item');
     if (navButton) {
@@ -166,6 +227,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
         });
+    }
+
+    const notifIconEl = document.getElementById('notifIcon');
+    if (notifIconEl) {
+        notifIconEl.addEventListener('click', openNotifications);
+        getNotifications().then(response => updateNotificationBadge(response.unread_count || 0)).catch(() => {});
     }
 
     // Service Worker pour le hors-ligne
