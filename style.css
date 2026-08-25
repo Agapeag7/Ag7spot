@@ -170,11 +170,179 @@ body {
 }
 .notification-item span,
 .notification-item small {
-    color: var(--text-gray);
+    color: var(--primary-light);
 }
 .follow-shop-button {
     margin-left: auto;
     white-space: nowrap;
+}
+
+/* ===== NOTIFICATIONS ===== */
+.notification-modal {
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(6px);
+}
+.notification-modal .notification-panel {
+    max-width: 460px;
+    max-height: min(680px, 88vh);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2);
+}
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--primary-light), var(--card-bg));
+}
+.notification-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.notification-heading-icon,
+.notification-item-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #fff;
+}
+.notification-heading-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+}
+.notification-header h3 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 21px;
+    line-height: 1.2;
+}
+.notification-header p {
+    margin: 4px 0 0;
+    color: var(--text-gray);
+    font-size: 12px;
+}
+.notification-header .modal-close {
+    position: static;
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.7);
+}
+.notification-header .modal-close:hover {
+    background: var(--card-bg);
+    color: var(--text-main);
+}
+.notification-modal .notification-list {
+    max-height: 450px;
+    overflow-y: auto;
+    gap: 0;
+    margin: 0;
+    padding: 12px 20px;
+}
+.notification-modal .notification-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-height: 78px;
+    padding: 14px 14px;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    transition: background var(--transition);
+    border-radius: 20px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+.notification-modal .notification-item:last-child {
+    border-bottom: 0;
+}
+.notification-modal .notification-item:hover,
+.notification-modal .notification-item.unread {
+    background: var(--primary-light);
+}
+.notification-item-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--primary);
+    font-size: 14px;
+    color: var(--primary-light);
+}
+.notification-item-content {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+    padding-right: 12px;
+    text-align: left;
+}
+.notification-item-content strong {
+    color: var(--text-main);
+    font-size: 14px;
+}
+.notification-item-content span {
+    color: var(--text-gray);
+    font-size: 14px;
+    line-height: 1.4;
+}
+.notification-item-content small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+.notification-unread-dot {
+    width: 7px;
+    height: 7px;
+    margin: 7px 2px 0 auto;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--primary);
+}
+.notification-mark-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 44px);
+    margin: 10px 22px 20px;
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--primary-dark);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+.notification-mark-all:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+.notification-modal .empty-state {
+    width: 100%;
+    margin: 18px 0;
+    padding: 28px 12px;
+}
+@media (max-width: 480px) {
+    .notification-modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+    .notification-modal .notification-panel {
+        max-width: none;
+        max-height: 86vh;
+        border-radius: 20px 20px 20px 20px;
+    }
+    .notification-header {
+        padding: 20px 18px 16px;
+    }
 }
 
 /* ===== MAIN CONTENT ===== */

@@ -65,19 +65,31 @@ async function openNotifications() {
         const modal = document.createElement('div');
         modal.className = 'modal notification-modal';
         modal.innerHTML = `
-            <div class="modal-content">
-                <button class="modal-close" type="button" aria-label="Fermer"><i class="fas fa-times"></i></button>
-                <h3>Notifications</h3>
+            <div class="modal-content notification-panel" role="dialog" aria-modal="true" aria-labelledby="notificationTitle">
+                <div class="notification-header">
+                    <div class="notification-heading">
+                        <span class="notification-heading-icon"><i class="fas fa-bell"></i></span>
+                        <div>
+                            <h3 id="notificationTitle">Notifications</h3>
+                            <p>${response.unread_count ? `${Number(response.unread_count)} non lue${Number(response.unread_count) > 1 ? 's' : ''}` : 'Tout est à jour'}</p>
+                        </div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Fermer"><i class="fas fa-times"></i></button>
+                </div>
                 <div class="notification-list">
                     ${notifications.length ? notifications.map(notification => `
                         <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
-                            <strong>${escapeNotificationText(notification.title)}</strong>
-                            <span>${escapeNotificationText(notification.body)}</span>
-                            <small>${escapeNotificationText(notification.created_at)}</small>
+                            <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
+                            <span class="notification-item-content">
+                                <strong>${escapeNotificationText(notification.title)}</strong>
+                                <span>${escapeNotificationText(notification.body)}</span>
+                                <small>${escapeNotificationText(notification.created_at)}</small>
+                            </span>
+                            ${notification.read_at ? '' : '<span class="notification-unread-dot" aria-label="Non lue"></span>'}
                         </button>
                     `).join('') : '<p class="empty-state small">Aucune notification.</p>'}
                 </div>
-                ${notifications.some(notification => !notification.read_at) ? '<button class="btn-outline w-full" data-mark-all-read>Tout marquer comme lu</button>' : ''}
+                ${notifications.some(notification => !notification.read_at) ? '<button class="notification-mark-all" data-mark-all-read><i class="fas fa-check-double"></i> Tout marquer comme lu</button>' : ''}
             </div>`;
         document.body.appendChild(modal);
         const close = () => modal.remove();
