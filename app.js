@@ -32,6 +32,13 @@ function updateNotificationBadge(count) {
     badge.classList.toggle('hidden', !count);
 }
 
+function refreshNotificationBadge() {
+    if (!CURRENT_USER || !CURRENT_USER.id || typeof getNotifications !== 'function') return;
+    getNotifications()
+        .then(response => updateNotificationBadge(response.unread_count || 0))
+        .catch(() => {});
+}
+
 async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
     if (!shopId) {
         showToast('Boutique introuvable.', 'error');
@@ -247,10 +254,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const notifIconEl = document.getElementById('notifIcon');
-    if (notifIconEl) {
-        notifIconEl.addEventListener('click', openNotifications);
-        getNotifications().then(response => updateNotificationBadge(response.unread_count || 0)).catch(() => {});
+    const notificationTrigger = document.getElementById('notificationTrigger');
+    if (notificationTrigger) {
+        notificationTrigger.addEventListener('click', openNotifications);
+        notificationTrigger.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openNotifications();
+            }
+        });
+        refreshNotificationBadge();
+        window.clearInterval(window.notificationBadgeInterval);
+        window.notificationBadgeInterval = window.setInterval(refreshNotificationBadge, 30000);
     }
 
     // Service Worker pour le hors-ligne

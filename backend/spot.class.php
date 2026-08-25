@@ -74,6 +74,7 @@ class Spot {
 
     public function __construct() {
         $this->db = new Database();
+        $this->ensureFollowAndNotificationTables();
         $this->notifications = new SpotNotifications($this->db);
         $this->users = new SpotUsers($this->db);
         $this->shops = new SpotShops($this->db, $this->notifications);
@@ -84,6 +85,35 @@ class Spot {
         $this->checkins = new SpotCheckins($this->db);
         $this->feed = new SpotFeed($this->db);
         $this->follows = new SpotFollows($this->db);
+    }
+
+    private function ensureFollowAndNotificationTables() {
+        $connection = $this->db->getConnection();
+        $connection->exec('CREATE TABLE IF NOT EXISTS shop_follows (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id INT UNSIGNED NOT NULL,
+            shop_id INT UNSIGNED NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uk_shop_follows_user_shop (user_id, shop_id),
+            KEY idx_shop_follows_user_id (user_id),
+            KEY idx_shop_follows_shop_id (shop_id),
+            CONSTRAINT fk_runtime_shop_follows_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+            CONSTRAINT fk_runtime_shop_follows_shop FOREIGN KEY (shop_id) REFERENCES shops (id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+        $connection->exec('CREATE TABLE IF NOT EXISTS notifications (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id INT UNSIGNED NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            title VARCHAR(150) NOT NULL,
+            body VARCHAR(500) NOT NULL,
+            data_json JSON NULL,
+            read_at TIMESTAMP NULL DEFAULT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_notifications_user_read (user_id, read_at),
+            CONSTRAINT fk_runtime_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
     }
 }
 
@@ -122,11 +152,15 @@ class SpotNotifications {
     }
 
     public function notifyShopFollowers($shopId, $type, $title, $body, array $data = []) {
-        $stmt = $this->db->prepare('SELECT sf.user_id FROM shop_follows sf JOIN shops s ON s.id = sf.shop_id WHERE sf.shop_id = ? AND sf.user_id <> s.owner_id');
-        $stmt->execute([intval($shopId)]);
-        $insert = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
-        foreach ($stmt->fetchAll() as $follower) {
-            $insert->execute([intval($follower['user_id']), trim($type), trim($title), trim($body), json_encode($data)]);
+        try {
+            $stmt = $this->db->prepare('SELECT sf.user_id FROM shop_follows sf JOIN shops s ON s.id = sf.shop_id WHERE sf.shop_id = ? AND sf.user_id <> s.owner_id');
+            $stmt->execute([intval($shopId)]);
+            $insert = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
+            foreach ($stmt->fetchAll() as $follower) {
+                $insert->execute([intval($follower['user_id']), trim($type), trim($title), trim($body), json_encode($data)]);
+            }
+        } catch (PDOException $e) {
+            if ($e->getCode() !== '42S02') throw $e;
         }
     }
 }
