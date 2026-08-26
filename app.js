@@ -39,6 +39,56 @@ function refreshNotificationBadge() {
         .catch(() => {});
 }
 
+function handleNotificationRoute(notification) {
+    if (!notification) return;
+
+    const type = String(notification.type || '').toLowerCase();
+    const data = notification.data || {};
+
+    if (type === 'shop_status') {
+        return;
+    }
+
+    if (type === 'shop_updated') {
+        navigateTo('map');
+        return;
+    }
+
+    if (type === 'new_message') {
+        const productId = Number(data.product_id || data.productId || notification.product_id || 0);
+        if (productId) {
+            navigateTo('feed');
+            setTimeout(() => {
+                if (typeof openChat === 'function') {
+                    openChat(productId);
+                }
+            }, 350);
+            return;
+        }
+    }
+
+    const query = (
+        data.product_name ||
+        data.shop_name ||
+        notification.title ||
+        notification.body ||
+        ''
+    ).toString().trim();
+
+    if (!query) {
+        navigateTo('feed');
+        return;
+    }
+
+    navigateTo('feed');
+    setTimeout(() => {
+        const searchInput = document.getElementById('feedSearchInput');
+        if (!searchInput) return;
+        searchInput.value = query;
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }, 350);
+}
+
 async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
     if (!shopId) {
         showToast('Boutique introuvable.', 'error');
@@ -70,6 +120,7 @@ async function openNotifications() {
     try {
         const response = await getNotifications();
         const notifications = response.notifications || [];
+        const notificationMap = new Map(notifications.map(item => [String(Number(item.id)), item]));
         let notificationOffset = notifications.length;
         let notificationLoading = false;
         let notificationHasMore = notifications.length === 20;
@@ -135,12 +186,18 @@ async function openNotifications() {
             if (event.target === modal) close();
             const item = event.target.closest('[data-notification-id]');
             if (item) {
+                const notificationId = Number(item.dataset.notificationId);
+                const notification = notificationMap.get(String(notificationId));
                 const wasUnread = item.classList.contains('unread');
-                await markNotificationRead(Number(item.dataset.notificationId));
+                await markNotificationRead(notificationId);
                 item.classList.remove('unread');
                 if (wasUnread) {
                     updateNotificationBadge(Math.max(0, Number(response.unread_count || 0) - 1));
                 }
+                if (notification) {
+                    handleNotificationRoute(notification);
+                }
+                close();
             }
             if (event.target.closest('[data-mark-all-read]')) {
                 await markNotificationRead();

@@ -133,7 +133,7 @@ async function calculateRoute() {
                         <strong>${totalDist.toFixed(1)} km</strong>
                         <span class="text-muted"> · ${totalTime} min</span>
                         <br>
-                        <span class="text-muted">${routeWaypoints.length} boutiques visitées</span>
+                        <span class="text-muted">${routeWaypoints.length} boutiques à visitées</span>
                     </div>
                     <button class="btn-primary btn-sm" onclick="startNavigation()">
                         <i class="fas fa-play"></i> Démarrer

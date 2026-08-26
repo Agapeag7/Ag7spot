@@ -376,7 +376,7 @@ class SpotShops {
                 'shop_status',
                 'Statut de boutique',
                 'La boutique "' . $shopName . '" est maintenant ' . $label . '.',
-                ['shop_id' => intval($shopId), 'status' => $status]
+                ['shop_id' => intval($shopId), 'status' => $status, 'shop_name' => $shopName]
             );
         }
         return $success;
@@ -493,7 +493,13 @@ class SpotProducts {
             $shopStmt = $this->db->prepare('SELECT name FROM shops WHERE id = ?');
             $shopStmt->execute([intval($shopId)]);
             $shopName = $shopStmt->fetchColumn() ?: 'Une boutique';
-            $this->notifications->notifyShopFollowers($shopId, 'new_product', 'Nouveau produit', $shopName . ' vient de publier « ' . trim($name) . ' ».', ['shop_id' => intval($shopId), 'product_id' => intval($productId)]);
+            $this->notifications->notifyShopFollowers(
+                $shopId,
+                'new_product',
+                'Nouveau produit',
+                $shopName . ' vient de publier « ' . trim($name) . ' ».',
+                ['shop_id' => intval($shopId), 'product_id' => intval($productId), 'shop_name' => $shopName, 'product_name' => trim($name)]
+            );
         }
         return $productId;
     }
@@ -624,7 +630,7 @@ class SpotMessages {
                 'new_message',
                 'Nouveau message',
                 'Un client souhaite réserver « ' . $shop['product_name'] . ' » dans ' . $shop['name'] . '.',
-                ['shop_id' => intval($shopId), 'product_id' => intval($productId), 'message_id' => intval($messageId)]
+                ['shop_id' => intval($shopId), 'product_id' => intval($productId), 'message_id' => intval($messageId), 'shop_name' => trim($shop['name']), 'product_name' => trim($shop['product_name'])]
             );
         }
         return $messageId;
