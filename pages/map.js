@@ -19,6 +19,11 @@ function renderMap(container) {
         <div class="page active">
             <div class="map-controls">
                 <input type="text" placeholder="Rechercher une boutique..." id="searchMap" />
+                <div class="map-layer-toggle" aria-label="Choix du fond de carte">
+                    <button type="button" class="map-layer-btn active" data-layer="osm">Plan</button>
+                    <button type="button" class="map-layer-btn" data-layer="satellite">Satellite</button>
+                    <button type="button" class="map-layer-btn" data-layer="hybrid">Hybride</button>
+                </div>
                 <button class="btn-outline" id="routeBtn"><i class="fas fa-route"></i></button>
                 <button class="btn-outline" id="locateBtn"><i class="fas fa-location-arrow"></i></button>
             </div>
@@ -39,6 +44,33 @@ let currentMapPosition = null;
 let currentSearchQuery = '';
 let routeLayer = null;
 let mapProductsByShop = new Map();
+let baseMapLayers = {};
+let activeBaseLayer = 'osm';
+
+function setMapLayer(layerName) {
+    if (!mapInstance || !baseMapLayers[layerName]) return;
+
+    activeBaseLayer = layerName;
+    Object.entries(baseMapLayers).forEach(([key, layer]) => {
+        if (key === layerName) {
+            if (!mapInstance.hasLayer(layer)) {
+                mapInstance.addLayer(layer);
+            }
+        } else if (mapInstance.hasLayer(layer)) {
+            mapInstance.removeLayer(layer);
+        }
+    });
+
+    document.querySelectorAll('.map-layer-btn').forEach(button => {
+        button.classList.toggle('active', button.dataset.layer === layerName);
+    });
+}
+
+function setupMapLayerButtons() {
+    document.querySelectorAll('.map-layer-btn').forEach(button => {
+        button.addEventListener('click', () => setMapLayer(button.dataset.layer));
+    });
+}
 
 function escapeMapPopupText(value) {
     const element = document.createElement('div');
@@ -127,10 +159,31 @@ async function initMap() {
 
         mapInstance = L.map('map').setView([pos.lat, pos.lng], 15);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19
-        }).addTo(mapInstance);
+        });
+
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri',
+            maxZoom: 19
+        });
+
+        const satelliteLabelLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Labels &copy; Esri',
+            maxZoom: 19,
+            opacity: 0.7
+        });
+
+        const hybridLayer = L.layerGroup([satelliteLayer, satelliteLabelLayer]);
+        baseMapLayers = {
+            osm: osmLayer,
+            satellite: satelliteLayer,
+            hybrid: hybridLayer
+        };
+
+        setupMapLayerButtons();
+        setMapLayer(activeBaseLayer);
 
         // Marqueur utilisateur
         userMarker = L.marker([pos.lat, pos.lng], {

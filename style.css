@@ -1205,6 +1205,7 @@ body {
     gap: 10px;
     margin-bottom: 12px;
     flex-wrap: wrap;
+    align-items: center;
 }
 .map-controls input {
     flex: 1;
@@ -1220,6 +1221,30 @@ body {
 .map-controls input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(108, 59, 255, 0.1);
+}
+.map-layer-toggle {
+    display: inline-flex;
+    background: rgba(108, 59, 255, 0.06);
+    border: 1px solid rgba(108, 59, 255, 0.1);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 4px;
+}
+.map-layer-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-gray);
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.map-layer-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
 }
 .map-hint {
     margin-top: 10px;
