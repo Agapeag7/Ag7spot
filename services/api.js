@@ -107,6 +107,14 @@ function getShopProducts(shopId) {
     return apiCall(`products.php?shop_id=${shopId}`).then(response => response.products || []);
 }
 
+function getProduct(productId) {
+    return apiCall(`products.php?product_id=${productId}`).then(response => response.product || null);
+}
+
+function getShop(shopId) {
+    return apiCall(`shops.php?shop_id=${shopId}`).then(response => response.shop || null);
+}
+
 function getProfile() {
     return apiCall('profile.php');
 }

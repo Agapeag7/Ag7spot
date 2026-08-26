@@ -4,6 +4,7 @@ USE `ag7spot`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `collection_shops`;
+DROP TABLE IF EXISTS `messages`;
 DROP TABLE IF EXISTS `notifications`;
 DROP TABLE IF EXISTS `shop_follows`;
 DROP TABLE IF EXISTS `checkins`;
@@ -126,6 +127,22 @@ CREATE TABLE `notifications` (
   PRIMARY KEY (`id`),
   KEY `idx_notifications_user_read` (`user_id`, `read_at`),
   CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `messages` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sender_id` INT UNSIGNED NOT NULL,
+  `shop_id` INT UNSIGNED NOT NULL,
+  `product_id` INT UNSIGNED NOT NULL,
+  `content` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_messages_sender_id` (`sender_id`),
+  KEY `idx_messages_shop_id` (`shop_id`),
+  KEY `idx_messages_product_id` (`product_id`),
+  CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_messages_shop` FOREIGN KEY (`shop_id`) REFERENCES `shops` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_messages_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `avatar`, `points`, `shop_id`) VALUES

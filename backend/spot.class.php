@@ -81,7 +81,7 @@ class Spot {
         $this->products = new SpotProducts($this->db, $this->notifications);
         $this->flashDeals = new SpotFlashDeals($this->db);
         $this->collections = new SpotCollections($this->db);
-        $this->messages = new SpotMessages($this->db);
+        $this->messages = new SpotMessages($this->db, $this->notifications);
         $this->checkins = new SpotCheckins($this->db);
         $this->feed = new SpotFeed($this->db);
         $this->follows = new SpotFollows($this->db);
@@ -113,6 +113,21 @@ class Spot {
             PRIMARY KEY (id),
             KEY idx_notifications_user_read (user_id, read_at),
             CONSTRAINT fk_runtime_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+        $connection->exec('CREATE TABLE IF NOT EXISTS messages (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            sender_id INT UNSIGNED NOT NULL,
+            shop_id INT UNSIGNED NOT NULL,
+            product_id INT UNSIGNED NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_messages_shop_id (shop_id),
+            KEY idx_messages_sender_id (sender_id),
+            KEY idx_messages_product_id (product_id),
+            CONSTRAINT fk_runtime_messages_sender FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+            CONSTRAINT fk_runtime_messages_shop FOREIGN KEY (shop_id) REFERENCES shops (id) ON DELETE CASCADE,
+            CONSTRAINT fk_runtime_messages_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
     }
 }
@@ -164,6 +179,11 @@ class SpotNotifications {
         } catch (PDOException $e) {
             if ($e->getCode() !== '42S02') throw $e;
         }
+    }
+
+    public function notifyUser($userId, $type, $title, $body, array $data = []) {
+        $stmt = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
+        return $stmt->execute([intval($userId), trim($type), trim($title), trim($body), json_encode($data)]);
     }
 }
 
@@ -561,21 +581,45 @@ class SpotCollections {
 
 class SpotMessages {
     private $db;
+    private $notifications;
 
-    public function __construct($database) {
+    public function __construct($database, $notifications = null) {
         $this->db = $database;
+        $this->notifications = $notifications;
     }
 
-    public function getMessagesByShop($shopId) {
-        $stmt = $this->db->prepare('SELECT * FROM messages WHERE shop_id = ? ORDER BY created_at ASC');
-        $stmt->execute([intval($shopId)]);
+    public function getMessagesByShop($shopId, $userId) {
+        $stmt = $this->db->prepare(
+            'SELECT m.* FROM messages m
+             JOIN shops s ON s.id = m.shop_id
+             WHERE m.shop_id = ? AND (m.sender_id = ? OR s.owner_id = ?)
+             ORDER BY m.created_at ASC'
+        );
+        $stmt->execute([intval($shopId), intval($userId), intval($userId)]);
         return $stmt->fetchAll();
     }
 
     public function createMessage($senderId, $shopId, $productId, $content) {
+        $shopStmt = $this->db->prepare('SELECT s.name, s.owner_id, p.name AS product_name FROM shops s JOIN products p ON p.shop_id = s.id WHERE s.id = ? AND p.id = ?');
+        $shopStmt->execute([intval($shopId), intval($productId)]);
+        $shop = $shopStmt->fetch();
+        if (!$shop) {
+            throw new InvalidArgumentException('Boutique ou produit introuvable.');
+        }
+
         $stmt = $this->db->prepare('INSERT INTO messages (sender_id, shop_id, product_id, content) VALUES (?, ?, ?, ?)');
         $stmt->execute([intval($senderId), intval($shopId), intval($productId), trim($content)]);
-        return $this->db->lastInsertId();
+        $messageId = $this->db->lastInsertId();
+        if ($this->notifications && intval($shop['owner_id']) !== intval($senderId)) {
+            $this->notifications->notifyUser(
+                $shop['owner_id'],
+                'new_message',
+                'Nouveau message',
+                'Un client souhaite réserver « ' . $shop['product_name'] . ' » dans ' . $shop['name'] . '.',
+                ['shop_id' => intval($shopId), 'product_id' => intval($productId), 'message_id' => intval($messageId)]
+            );
+        }
+        return $messageId;
     }
 }
 

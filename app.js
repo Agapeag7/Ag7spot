@@ -82,7 +82,7 @@ async function openNotifications() {
                 <div class="notification-list">
                     ${notifications.length ? notifications.map(notification => `
                         <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
-                            <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
+                            <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_message' ? 'comment' : notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
                             <span class="notification-item-content">
                                 <strong>${escapeNotificationText(notification.title)}</strong>
                                 <span>${escapeNotificationText(notification.body)}</span>
@@ -101,7 +101,7 @@ async function openNotifications() {
         const appendNotifications = (items) => {
             notificationList.insertAdjacentHTML('beforeend', items.map(notification => `
                 <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
-                    <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
+                    <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_message' ? 'comment' : notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
                     <span class="notification-item-content">
                         <strong>${escapeNotificationText(notification.title)}</strong>
                         <span>${escapeNotificationText(notification.body)}</span>

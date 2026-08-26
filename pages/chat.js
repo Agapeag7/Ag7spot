@@ -4,11 +4,18 @@
 let currentChatShop = null;
 let currentChatProduct = null;
 
-function openChat(productId) {
-    const product = PRODUCTS.find(p => p.id === productId);
-    if (!product) return;
-    const shop = SHOPS.find(s => s.id === product.shopId);
-    if (!shop) return;
+async function openChat(productId) {
+    let product;
+    let shop;
+    try {
+        product = await getProduct(productId);
+        if (!product) throw new Error('Produit introuvable.');
+        shop = await getShop(product.shop_id);
+        if (!shop) throw new Error('Boutique introuvable.');
+    } catch (error) {
+        showToast(error.message || 'Impossible d’ouvrir la réservation.', 'error');
+        return;
+    }
 
     currentChatProduct = product;
     currentChatShop = shop;
@@ -24,7 +31,7 @@ function openChat(productId) {
             <button onclick="closeChat()"><i class="fas fa-times"></i></button>
         </div>
         <div class="chat-messages" id="chatMessages">
-            <div class="message system">${product.name} - ${product.price.toFixed(2)} $</div>
+            <div class="message system">${product.name} - ${parseFloat(product.price).toFixed(2)} $</div>
             <div class="message system">Envoie un message pour réserver</div>
         </div>
         <div class="chat-input">
@@ -60,22 +67,15 @@ async function sendChatMessage() {
 
     input.value = '';
 
-    // Ajouter le message dans l'UI
-    addChatMessage('Vous', message, 'sent');
-
     // Envoyer via API
     try {
         const result = await sendMessage(currentChatShop.id, currentChatProduct.id, message);
-        // Simuler une réponse du commerçant
-        setTimeout(() => {
-            if (Math.random() > 0.3) {
-                addChatMessage('Boutique', '✅ Commande réservée ! On vous attend.', 'received');
-                showToast('✅ Pré-commande acceptée !', 'success');
-            } else {
-                addChatMessage('Boutique', '❌ Désolé, plus disponible.', 'received');
-                showToast('❌ Pré-commande refusée', 'error');
-            }
-        }, 1500 + Math.random() * 1000);
+        if (result && result.success) {
+            addChatMessage('Vous', message, 'sent');
+            showToast('Message envoyé à la boutique.', 'success');
+        } else {
+            throw new Error('Le message n’a pas pu être envoyé.');
+        }
     } catch (e) {
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Erreur d\'envoi', 'error');
@@ -86,7 +86,10 @@ function addChatMessage(sender, message, type) {
     const container = document.getElementById('chatMessages');
     const div = document.createElement('div');
     div.className = `message ${type}`;
-    div.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    const senderElement = document.createElement('strong');
+    senderElement.textContent = `${sender}:`;
+    div.appendChild(senderElement);
+    div.appendChild(document.createTextNode(` ${message}`));
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }
@@ -96,11 +99,13 @@ async function loadChatMessages(shopId) {
         const messages = await getMessages(shopId);
         const container = document.getElementById('chatMessages');
         if (!container) return;
-        container.innerHTML = messages.map(msg => {
-            const type = msg.sender_id === CURRENT_USER.id ? 'sent' : 'received';
-            const sender = msg.sender_id === CURRENT_USER.id ? 'Vous' : 'Boutique';
-            return `<div class="message ${type}"><strong>${sender}:</strong> ${msg.content}</div>`;
-        }).join('');
+        container.innerHTML = '';
+        messages.forEach(msg => {
+            const isCurrentUser = Number(msg.sender_id) === Number(CURRENT_USER.id);
+            const type = isCurrentUser ? 'sent' : 'received';
+            const sender = isCurrentUser ? 'Vous' : 'Boutique';
+            addChatMessage(sender, msg.content, type);
+        });
         container.scrollTop = container.scrollHeight;
     } catch (e) {
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;

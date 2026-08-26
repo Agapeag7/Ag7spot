@@ -19,6 +19,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
+        $shopId = intval($_GET['shop_id'] ?? 0);
+        if ($shopId > 0) {
+            $shop = $spot->shops->getShopById($shopId);
+            echo json_encode(['success' => true, 'shop' => $shop]);
+            break;
+        }
         $lat = floatval($_GET['lat'] ?? 0);
         $lng = floatval($_GET['lng'] ?? 0);
         $radius = floatval($_GET['radius'] ?? 5);

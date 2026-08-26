@@ -21,13 +21,13 @@ $userId = $_SESSION['user_id'] ?? null;
 switch ($method) {
     case 'GET':
         $shopId = intval($_GET['shop_id'] ?? 0);
-        if ($shopId <= 0) {
+        if ($shopId <= 0 || !$userId) {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => 'Invalid shop_id']);
             break;
         }
 
-        $messages = $spot->messages->getMessagesByShop($shopId);
+        $messages = $spot->messages->getMessagesByShop($shopId, $userId);
         echo json_encode(['success' => true, 'messages' => $messages]);
         break;
 
@@ -37,13 +37,19 @@ switch ($method) {
         $productId = intval($data['product_id'] ?? 0);
         $content = trim($data['content'] ?? '');
 
+        if (!$userId) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            break;
+        }
+
         if ($shopId <= 0 || $productId <= 0 || $content === '') {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => 'Missing message parameters']);
             break;
         }
 
-        $senderId = $userId ?: intval($data['sender_id'] ?? 0);
+        $senderId = intval($userId);
         if ($senderId <= 0) {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => 'Missing sender_id']);
