@@ -367,9 +367,17 @@ class SpotShops {
         $stmt = $this->db->prepare('UPDATE shops SET status = ? WHERE id = ? AND owner_id = ?');
         $success = $stmt->execute([trim($status), intval($shopId), intval($ownerId)]);
         if ($success && $this->notifications) {
+            $shop = $this->getShopById($shopId);
+            $shopName = $shop && !empty($shop['name']) ? trim($shop['name']) : 'Cette boutique';
             $labels = ['open' => 'ouverte', 'closed' => 'fermée', 'break' => 'en pause'];
             $label = $labels[$status] ?? 'mise à jour';
-            $this->notifications->notifyShopFollowers($shopId, 'shop_status', 'Statut de boutique', 'Une boutique que tu suis est maintenant ' . $label . '.', ['shop_id' => intval($shopId), 'status' => $status]);
+            $this->notifications->notifyShopFollowers(
+                $shopId,
+                'shop_status',
+                'Statut de boutique',
+                'La boutique "' . $shopName . '" est maintenant ' . $label . '.',
+                ['shop_id' => intval($shopId), 'status' => $status]
+            );
         }
         return $success;
     }
