@@ -4,6 +4,15 @@
 let selectedForRoute = [];
 let routeWaypoints = [];
 
+function sortWaypointsByDistanceFromUser(waypoints, userPos) {
+    if (!Array.isArray(waypoints) || !userPos) return [...waypoints];
+    return [...waypoints].sort((a, b) => {
+        const distA = getDistanceBetween(userPos.lat, userPos.lng, a.lat, a.lng);
+        const distB = getDistanceBetween(userPos.lat, userPos.lng, b.lat, b.lng);
+        return distA - distB;
+    });
+}
+
 function renderParcours(container, initialWaypoints = null) {
     if (initialWaypoints) {
         routeWaypoints = initialWaypoints;
@@ -102,6 +111,8 @@ async function calculateRoute() {
 
     try {
         const pos = await getUserPosition();
+        routeWaypoints = sortWaypointsByDistanceFromUser(routeWaypoints, pos);
+        window.routeWaypoints = routeWaypoints;
         const allPoints = [{ lat: pos.lat, lng: pos.lng, name: 'Départ' }, ...routeWaypoints];
 
         // Simulation de calcul (remplacer par appel API)

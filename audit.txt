@@ -1,52 +1,8 @@
-Bouton concerné :
-<button class="btn-outline btn-sm" disabled=""><i class="fas fa-check"></i> Ajouté au parcours</button>
+- après clic sur : 
+<button class="btn-primary w-full" id="calculateRouteBtn"><i class="fas fa-sync-alt"></i> Recalculer</button>
 
-
-Section concerné :
-<main class="main-content" id="mainContent">
-                <!-- Les pages sont injectées dynamiquement par JavaScript -->
-                <div id="pageContainer">
-        <div class="page active">
-            <div class="section-title">
-                <span><i class="fas fa-route"></i> Mode Parcours</span>
-                <a href="#" onclick="navigateTo('map')">Retour</a>
-            </div>
-            <div class="route-selector">
-                <label><input type="radio" name="transport" value="walking" checked=""> <i class="fas fa-walking"></i> À pied</label>
-                <label><input type="radio" name="transport" value="driving"> <i class="fas fa-car"></i> Voiture</label>
-            </div>
-            <div id="routeShopList">
-        <div class="follow-item" style="margin-bottom:8px;">
-            <span style="font-weight:700;color:var(--primary);min-width:24px;">1</span>
-            <div class="name">ag7 art</div>
-            <button class="btn-outline btn-sm" onclick="removeRoutePoint(0)">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    
-        <div class="follow-item" style="margin-bottom:8px;">
-            <span style="font-weight:700;color:var(--primary);min-width:24px;">2</span>
-            <div class="name">mhy</div>
-            <button class="btn-outline btn-sm" onclick="removeRoutePoint(1)">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
-            <button class="btn-primary w-full" id="calculateRouteBtn"><i class="fas fa-sync-alt"></i> Recalculer</button>
-            <div id="routeResult">
-                <div class="route-summary">
-                    <div class="route-icon"><i class="fas fa-route"></i></div>
-                    <div class="route-info">
-                        <strong>0.1 km</strong>
-                        <span class="text-muted"> · 2 min</span>
-                        <br>
-                        <span class="text-muted">2 boutiques visitées</span>
-                    </div>
-                    <button class="btn-primary btn-sm" onclick="startNavigation()">
-                        <i class="fas fa-play"></i> Démarrer
-                    </button>
-                </div>
-                <div style="margin-top:12px;background:white;border-radius:16px;padding:16px;box-shadow:var(--shadow);">
+Cette liste de parcours doit se classer par ordre selon : de la boutique la plus proche de la position de l'utilisateur à la boutique eloigner :
+<div style="margin-top:12px;background:white;border-radius:16px;padding:16px;box-shadow:var(--shadow);">
                     <p style="font-weight:600;margin-bottom:8px;"><i class="fas fa-list-ul"></i> Ordre optimal :</p>
                     
                         <div style="display:flex;align-items:center;gap:8px;padding:4px 0;color:var(--primary);">
@@ -57,7 +13,7 @@ Section concerné :
                     
                         <div style="display:flex;align-items:center;gap:8px;padding:4px 0;">
                             <span style="font-weight:700;min-width:24px;">2</span>
-                            <span>ag7 art</span>
+                            <span>le rocher</span>
                             <i class="fas fa-arrow-right" style="color:var(--text-gray);font-size:12px;"></i>
                         </div>
                     
@@ -68,7 +24,3 @@ Section concerné :
                         </div>
                     
                 </div>
-            </div>
-        </div>
-    </div>
-</main>
