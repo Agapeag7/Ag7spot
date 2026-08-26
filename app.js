@@ -319,13 +319,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Service Worker pour le hors-ligne
     const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-    const canRegisterSW = ('serviceWorker' in navigator) && (location.protocol === 'https:' || (location.protocol === 'http:' && isLocalhost));
+    const secureContextAllowed = location.protocol === 'https:' && window.isSecureContext;
+    const canRegisterSW = ('serviceWorker' in navigator) && (secureContextAllowed || (location.protocol === 'http:' && isLocalhost));
     if (canRegisterSW) {
         navigator.serviceWorker.register('sw.js')
             .then(() => console.log('SW enregistré'))
-            .catch(err => console.warn('SW erreur:', err));
+            .catch(err => {
+                console.info('SW non enregistré en mode local sans certificat valide.', location.protocol, location.hostname);
+            });
     } else if ('serviceWorker' in navigator) {
-        console.warn('SW non enregistré : service worker nécessite soit https, soit http sur localhost', location.protocol, location.hostname);
+        console.info('SW non enregistré : certificat ou contexte de sécurité insuffisant.', location.protocol, location.hostname);
     }
 });
 

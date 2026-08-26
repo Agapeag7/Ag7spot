@@ -22,26 +22,26 @@ function renderAuth(container) {
                 <form id="authForm" class="auth-form" data-mode="login">
                     <div class="form-group auth-register-field hidden">
                         <label>Nom complet</label>
-                        <input type="text" id="authName" placeholder="Entrer votre nom complet" />
+                        <input type="text" id="authName" name="name" autocomplete="name" placeholder="Entrer votre nom complet" />
                     </div>
                     <div class="form-group">
                         <label id="authEmailLabel">Adresse e-mail</label>
-                        <input type="text" id="authEmail" placeholder="exemple@domaine.com" required />
+                        <input type="text" id="authEmail" name="email" autocomplete="username" placeholder="exemple@domaine.com" required />
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
-                        <select id="authAccountType" class="auth-select">
+                        <select id="authAccountType" class="auth-select" autocomplete="off">
                             <option value="buyer">Acheteur</option>
                             <option value="seller">Vendeur</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Mot de passe</label>
-                        <input type="password" id="authPassword" placeholder="••••••••" required />
+                        <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" required />
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
-                        <input type="password" id="authConfirmPassword" placeholder="••••••••" />
+                        <input type="password" id="authConfirmPassword" name="new-password" autocomplete="new-password" placeholder="••••••••" />
                     </div>
                     <div class="form-group auth-register-field hidden privacy-group">
                         <label class="checkbox-label">
