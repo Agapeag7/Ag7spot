@@ -20,6 +20,107 @@ const feedState = {
     currentQuery: '',
     currentDist: 5
 };
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
+function getUserRecommendationProfile() {
+    const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
+    if (typeof getRecommendationProfile === 'function') {
+        return getRecommendationProfile(userId);
+    }
+    return {
+        preferred_categories: [],
+        followed_shops: [],
+        recent_interactions: [],
+        stats: { views: 0, reservations: 0, follows: 0, clicks: 0 }
+    };
+}
+
+function getFeedRecommendationScore(item, userPos = null) {
+    const profile = getUserRecommendationProfile();
+    const categories = Array.isArray(profile.preferred_categories) ? profile.preferred_categories : [];
+    const preferredSet = categories.map(cat => String(cat).trim().toLowerCase());
+    const productCategory = String(item.category || '').trim().toLowerCase();
+    const shopId = Number(item.shop_id);
+    const shopFollowed = Array.isArray(profile.followed_shops) && profile.followed_shops.some(id => Number(id) === Number(shopId));
+
+    const categoryMatch = preferredSet.length > 0
+        ? (productCategory && preferredSet.includes(productCategory) ? 1 : 0.4)
+        : 0.35;
+
+    const engagementScore = Array.isArray(profile.recent_interactions) && profile.recent_interactions.length > 0
+        ? clamp(
+            profile.recent_interactions.reduce((sum, entry) => {
+                if (!entry) return sum;
+                let match = 0;
+                if (entry.product_id && Number(entry.product_id) === Number(item.id)) match += 1;
+                if (entry.shop_id && Number(entry.shop_id) === Number(shopId)) match += 1;
+                if (entry.category && String(entry.category).trim().toLowerCase() === productCategory) match += 0.5;
+                if (match <= 0) return sum;
+                return sum + (Number(entry.weight) || 1) * match;
+            }, 0) / 12,
+            0,
+            1
+        )
+        : 0.15;
+
+    const distance = Number(item.distance) || (
+        userPos && item.lat && item.lng
+            ? getDistanceBetween(userPos.lat, userPos.lng, Number(item.lat), Number(item.lng))
+            : 999
+    );
+    const proximityScore = clamp(1 - (distance / 10), 0, 1);
+
+    const createdAt = item.created_at ? new Date(item.created_at) : new Date();
+    const ageDays = Math.max(0, (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    const recencyScore = clamp(1 - (ageDays / 20), 0, 1);
+
+    const stockScore = Number(item.stock) > 0 ? 1 : 0.2;
+    const closedPenalty = String(item.shop_status || item.status || '').toLowerCase() === 'closed' ? 1 : 0;
+    const popularityScore = clamp((Number(item.popularity) || 0) / 10, 0, 1);
+
+    const score = (
+        35 * categoryMatch +
+        20 * engagementScore +
+        20 * popularityScore +
+        15 * proximityScore +
+        10 * recencyScore +
+        10 * stockScore +
+        10 * (shopFollowed ? 1 : 0)
+        - 15 * closedPenalty
+    );
+
+    return {
+        score,
+        categoryMatch,
+        engagementScore,
+        popularityScore,
+        proximityScore,
+        recencyScore,
+        stockScore,
+        shopFollowed,
+        closedPenalty,
+        distance
+    };
+}
+
+function applyFeedRecommendation(items, userPos = null) {
+    return items.map(item => {
+        const recommendation = getFeedRecommendationScore(item, userPos);
+        return {
+            ...item,
+            score: recommendation.score,
+            recommendation
+        };
+    }).sort((a, b) => {
+        const scoreDelta = (b.score || 0) - (a.score || 0);
+        if (Math.abs(scoreDelta) > 0.0001) return scoreDelta;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
+}
+
 function renderFeed(container) {
     container.innerHTML = `
         <div class="page active">
@@ -109,16 +210,9 @@ async function loadFeed(maxDistance, productQuery = '') {
         }
         const feed = await getFeed(pos.lat, pos.lng, maxDistance);
 
-        // Appliquer les préférences utilisateur si présentes
-        let categories = [];
-        try {
-            const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
-            const stored = userId ? localStorage.getItem(`user_categories_${userId}`) : localStorage.getItem('user_categories');
-            if (stored) categories = JSON.parse(stored) || [];
-        } catch (e) { categories = []; }
+        const dataByRank = applyFeedRecommendation(feed || [], pos);
 
-        const filtered = (feed || []).filter(p => {
-            if (categories.length > 0 && p.category && !categories.includes(p.category)) return false;
+        const filtered = dataByRank.filter(p => {
             if (!query) return true;
             const combined = `${p.name || ''} ${p.shop_name || ''} ${p.category || ''} ${p.description || ''}`;
             return matchesQuery(combined, query);
@@ -224,6 +318,13 @@ function showProductDetail(productId) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (!product) return;
     const shop = SHOPS.find(s => s.id === product.shopId);
+    if (typeof recordUserInteraction === 'function') {
+        recordUserInteraction('view_detail', {
+            product_id: productId,
+            shop_id: shop && shop.id,
+            category: product.category || shop?.category || ''
+        }, window.CURRENT_USER?.id || null);
+    }
     alert(`🛍️ ${product.name}\n📍 ${shop.name}\n💰 ${product.price} $\n Stock: ${product.stock} unités`);
 }
 

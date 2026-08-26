@@ -46,11 +46,11 @@ async function finishOnboarding() {
         const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
         if (userId) {
             localStorage.setItem(`onboarding_done_${userId}`, 'true');
-            localStorage.setItem(`user_categories_${userId}`, JSON.stringify(categories));
+            saveUserCategories(categories, userId);
         } else {
             // fallback global flag
             localStorage.setItem('onboarding_done', 'true');
-            localStorage.setItem('user_categories', JSON.stringify(categories));
+            saveUserCategories(categories, null);
         }
 
         // Charger les boutiques recommandées

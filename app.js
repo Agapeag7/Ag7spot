@@ -47,6 +47,15 @@ async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
     try {
         const response = isFollowed ? await unfollowShop(shopId) : await followShop(shopId);
         if (!response.success) throw new Error('Impossible de suivre cette boutique.');
+        if (typeof recordUserInteraction === 'function') {
+            recordUserInteraction('follow_shop', { shop_id: shopId }, window.CURRENT_USER?.id || null);
+        }
+        if (!isFollowed && typeof addFollowedShop === 'function') {
+            addFollowedShop(shopId, window.CURRENT_USER?.id || null);
+        }
+        if (isFollowed && typeof removeFollowedShop === 'function') {
+            removeFollowedShop(shopId, window.CURRENT_USER?.id || null);
+        }
         if (button) {
             button.innerHTML = `<i class="fas fa-heart"></i> ${isFollowed ? 'Suivre' : 'Suivi(e)'}`;
             button.setAttribute('onclick', `event.stopPropagation(); toggleFeedFollow(${Number(shopId)}, ${!isFollowed}, this)`);
