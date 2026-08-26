@@ -1,6 +1,3 @@
-// =========================================
-// COMPOSANT : ONBOARDING "À LA TINDER"
-// =========================================
 function renderOnboarding() {
     const categories = [
         { id: 'fashion', icon: 'fa-tshirt', label: 'Vêtements' },
