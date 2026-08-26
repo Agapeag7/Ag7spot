@@ -8,6 +8,7 @@ function renderParcours(container, initialWaypoints = null) {
     if (initialWaypoints) {
         routeWaypoints = initialWaypoints;
     }
+    window.routeWaypoints = routeWaypoints;
 
     container.innerHTML = `
         <div class="page active">
@@ -34,6 +35,8 @@ function renderParcours(container, initialWaypoints = null) {
 
 function renderRouteShopList() {
     const container = document.getElementById('routeShopList');
+    if (!container) return;
+
     if (routeWaypoints.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
@@ -63,14 +66,26 @@ function addRoutePoint(shopId) {
         showToast('Déjà dans le parcours', 'warning');
         return;
     }
+
     routeWaypoints.push({ lat: shop.lat, lng: shop.lng, name: shop.name });
-    renderRouteShopList();
+    window.routeWaypoints = routeWaypoints;
+
+    const routeList = document.getElementById('routeShopList');
+    if (routeList) {
+        renderRouteShopList();
+    }
 }
 
 function removeRoutePoint(index) {
     routeWaypoints.splice(index, 1);
-    renderRouteShopList();
-    document.getElementById('routeResult').innerHTML = '';
+    window.routeWaypoints = routeWaypoints;
+    const routeResult = document.getElementById('routeResult');
+    if (routeResult) {
+        routeResult.innerHTML = '';
+    }
+    if (document.getElementById('routeShopList')) {
+        renderRouteShopList();
+    }
 }
 
 async function calculateRoute() {
@@ -152,7 +167,8 @@ function startNavigation() {
 
 // Fonction pour lancer le parcours depuis une collection
 function startParcours(waypoints) {
-    routeWaypoints = waypoints;
+    routeWaypoints = Array.isArray(waypoints) ? waypoints : [];
+    window.routeWaypoints = routeWaypoints;
     navigateTo('parcours');
 }
 

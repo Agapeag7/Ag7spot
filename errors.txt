@@ -1,0 +1,7 @@
+parcours.js:48 Uncaught TypeError: Cannot set properties of null (setting 'innerHTML')
+    at renderRouteShopList (parcours.js:48:25)
+    at addRoutePoint (parcours.js:67:5)
+    at HTMLButtonElement.onclick (Ag7Spot/:1:1)
+renderRouteShopList	@	parcours.js:48
+addRoutePoint	@	parcours.js:67
+onclick	@	Ag7Spot/:1

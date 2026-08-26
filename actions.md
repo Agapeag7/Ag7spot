@@ -1,5 +1,3 @@
-- gestion de la fonction Followers ( pour qu'on soit capable de suivre des boutiques )
-
 - stockage des préférences utilisateur, pour actualiser le fil d'actualités ( ajout d'algorithmes des préfèrences ) 
 
 ALGORITHME DE RECOMMANDATION :
