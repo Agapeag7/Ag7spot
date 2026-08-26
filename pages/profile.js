@@ -339,7 +339,7 @@ function showShopEditor(shopId) {
             zoomControl: true,
             attributionControl: false
         }).setView([lat, lng], 18);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(shopEditMap);
+        attachMapLayerControls(mapContainer, shopEditMap, 'osm');
 
         const centerPin = document.createElement('div');
         centerPin.className = 'center-map-pin';

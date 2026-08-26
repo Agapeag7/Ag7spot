@@ -47,19 +47,59 @@ let mapProductsByShop = new Map();
 let baseMapLayers = {};
 let activeBaseLayer = 'osm';
 
+function createLeafletBaseLayers(map) {
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+    });
+
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 19
+    });
+
+    const satelliteLabelLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Labels &copy; Esri',
+        maxZoom: 19,
+        opacity: 0.7
+    });
+
+    const hybridLayer = L.layerGroup([satelliteLayer, satelliteLabelLayer]);
+
+    return {
+        osm: osmLayer,
+        satellite: satelliteLayer,
+        hybrid: hybridLayer
+    };
+}
+
+function setLeafletMapLayer(map, layers, layerName) {
+    if (!map || !layers || !layers[layerName]) return;
+
+    Object.entries(layers).forEach(([key, layer]) => {
+        if (key === layerName) {
+            if (!map.hasLayer(layer)) {
+                map.addLayer(layer);
+            }
+        } else if (map.hasLayer(layer)) {
+            map.removeLayer(layer);
+        }
+    });
+
+    const container = map._container;
+    if (container) {
+        const buttons = container.querySelectorAll('.map-layer-btn');
+        buttons.forEach(button => {
+            button.classList.toggle('active', button.dataset.layer === layerName);
+        });
+    }
+}
+
 function setMapLayer(layerName) {
     if (!mapInstance || !baseMapLayers[layerName]) return;
 
     activeBaseLayer = layerName;
-    Object.entries(baseMapLayers).forEach(([key, layer]) => {
-        if (key === layerName) {
-            if (!mapInstance.hasLayer(layer)) {
-                mapInstance.addLayer(layer);
-            }
-        } else if (mapInstance.hasLayer(layer)) {
-            mapInstance.removeLayer(layer);
-        }
-    });
+    setLeafletMapLayer(mapInstance, baseMapLayers, layerName);
 
     document.querySelectorAll('.map-layer-btn').forEach(button => {
         button.classList.toggle('active', button.dataset.layer === layerName);
@@ -70,6 +110,34 @@ function setupMapLayerButtons() {
     document.querySelectorAll('.map-layer-btn').forEach(button => {
         button.addEventListener('click', () => setMapLayer(button.dataset.layer));
     });
+}
+
+function attachMapLayerControls(mapContainer, map, defaultLayer = 'osm') {
+    if (!mapContainer || !map) return;
+
+    const existing = mapContainer.querySelector('.map-layer-toggle');
+    if (existing) existing.remove();
+
+    const controls = document.createElement('div');
+    controls.className = 'map-layer-toggle';
+    controls.innerHTML = `
+        <button type="button" class="map-layer-btn ${defaultLayer === 'osm' ? 'active' : ''}" data-layer="osm">Plan</button>
+        <button type="button" class="map-layer-btn ${defaultLayer === 'satellite' ? 'active' : ''}" data-layer="satellite">Satellite</button>
+        <button type="button" class="map-layer-btn ${defaultLayer === 'hybrid' ? 'active' : ''}" data-layer="hybrid">Hybride</button>
+    `;
+    mapContainer.appendChild(controls);
+
+    const layerSet = createLeafletBaseLayers(map);
+    controls.querySelectorAll('.map-layer-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            setLeafletMapLayer(map, layerSet, button.dataset.layer);
+            controls.querySelectorAll('.map-layer-btn').forEach(item => {
+                item.classList.toggle('active', item.dataset.layer === button.dataset.layer);
+            });
+        });
+    });
+
+    setLeafletMapLayer(map, layerSet, defaultLayer);
 }
 
 function escapeMapPopupText(value) {
@@ -159,29 +227,7 @@ async function initMap() {
 
         mapInstance = L.map('map').setView([pos.lat, pos.lng], 15);
 
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
-            maxZoom: 19
-        });
-
-        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri',
-            maxZoom: 19
-        });
-
-        const satelliteLabelLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Labels &copy; Esri',
-            maxZoom: 19,
-            opacity: 0.7
-        });
-
-        const hybridLayer = L.layerGroup([satelliteLayer, satelliteLabelLayer]);
-        baseMapLayers = {
-            osm: osmLayer,
-            satellite: satelliteLayer,
-            hybrid: hybridLayer
-        };
-
+        baseMapLayers = createLeafletBaseLayers(mapInstance);
         setupMapLayerButtons();
         setMapLayer(activeBaseLayer);
 
