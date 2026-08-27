@@ -1,0 +1,5 @@
+Ce bouton n'a pas d'intérêt car les vendeurs veulent garder l'état de leurs stocks confidentiel, on le supprime :
+<div class="form-group">
+    <label>Quantité en stock</label>
+    <input type="number" id="productStock" placeholder="10" value="5" min="0">
+</div>

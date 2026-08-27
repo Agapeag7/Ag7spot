@@ -104,10 +104,6 @@ async function renderShopOrProduct(container) {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Quantité en stock</label>
-                            <input type="number" id="productStock" placeholder="10" value="5" min="0" />
-                        </div>
-                        <div class="form-group">
                             <label>Description</label>
                             <textarea id="productDesc" placeholder="Taille, matière, couleur..."></textarea>
                         </div>
@@ -301,7 +297,7 @@ function setupProductForm() {
             // fallback to CURRENT_USER.shopId or first owned shop
             shopId = (CURRENT_USER && CURRENT_USER.shopId) ? CURRENT_USER.shopId : (ownedShopsLocal[0] ? ownedShopsLocal[0].id : 0);
         }
-        const stock = parseInt(document.getElementById('productStock').value, 10) || 0;
+        const stock = 0;
         const description = document.getElementById('productDesc').value.trim();
 
         if (!name || !price || Number.isNaN(price)) {
@@ -342,7 +338,7 @@ function setupProductForm() {
                     shopId,
                     name,
                     price,
-                    stock,
+                    stock: 0,
                     description,
                     image: imageUrl,
                     distance: 0
