@@ -75,6 +75,7 @@ class Spot {
     public function __construct() {
         $this->db = new Database();
         $this->ensureFollowAndNotificationTables();
+        $this->ensureUserSchema();
         $this->notifications = new SpotNotifications($this->db);
         $this->users = new SpotUsers($this->db);
         $this->shops = new SpotShops($this->db, $this->notifications);
@@ -85,6 +86,25 @@ class Spot {
         $this->checkins = new SpotCheckins($this->db);
         $this->feed = new SpotFeed($this->db);
         $this->follows = new SpotFollows($this->db);
+    }
+
+    private function ensureUserSchema() {
+        $connection = $this->db->getConnection();
+
+        $column = $connection->query("SHOW COLUMNS FROM users LIKE 'session_token'");
+        if ($column && $column->fetch() === false) {
+            $connection->exec("ALTER TABLE users ADD COLUMN session_token VARCHAR(255) NULL AFTER updated_at");
+        }
+
+        $usernameIndex = $connection->query("SHOW INDEX FROM users WHERE Key_name = 'uk_users_username'");
+        if ($usernameIndex && $usernameIndex->fetch() === false) {
+            $connection->exec('ALTER TABLE users ADD UNIQUE KEY uk_users_username (username)');
+        }
+
+        $emailIndex = $connection->query("SHOW INDEX FROM users WHERE Key_name = 'uk_users_email'");
+        if ($emailIndex && $emailIndex->fetch() === false) {
+            $connection->exec('ALTER TABLE users ADD UNIQUE KEY uk_users_email (email)');
+        }
     }
 
     private function ensureFollowAndNotificationTables() {
@@ -218,6 +238,58 @@ class SpotUsers {
         return $stmt->fetch();
     }
 
+    public function validatePassword($password) {
+        $password = is_string($password) ? trim($password) : '';
+
+        if (strlen($password) < 12) {
+            throw new InvalidArgumentException('Le mot de passe doit contenir au moins 12 caractères.');
+        }
+
+        if (!preg_match('/[a-z]/', $password) || !preg_match('/[A-Z]/', $password) || !preg_match('/\d/', $password) || !preg_match('/[^A-Za-z0-9]/', $password)) {
+            throw new InvalidArgumentException('Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial.');
+        }
+
+        return true;
+    }
+
+    public function validateRegistrationInput($username, $email, $password, $existingEmailUser = null, $existingUsernameUser = null) {
+        $username = trim((string) $username);
+        $email = trim((string) $email);
+        $password = is_string($password) ? trim($password) : '';
+
+        if ($username === '') {
+            throw new InvalidArgumentException('Le pseudo est requis.');
+        }
+
+        if (strlen($username) < 3) {
+            throw new InvalidArgumentException('Le pseudo doit contenir au moins 3 caractères.');
+        }
+
+        if ($email === '') {
+            throw new InvalidArgumentException('L\'adresse e-mail est requise.');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Adresse e-mail invalide.');
+        }
+
+        if (strcasecmp($username, $password) === 0) {
+            throw new InvalidArgumentException('Le mot de passe ne doit pas être identique au pseudo.');
+        }
+
+        $this->validatePassword($password);
+
+        if ($existingEmailUser) {
+            throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.');
+        }
+
+        if ($existingUsernameUser) {
+            throw new InvalidArgumentException('Ce pseudo est déjà utilisé.');
+        }
+
+        return true;
+    }
+
     public function verifyCredentials($username, $password) {
         $user = $this->getUserByUsername($username);
         if (!$user) {
@@ -231,7 +303,7 @@ class SpotUsers {
             return $user;
         }
 
-        if (hash_equals($user['password'], $password)) {
+        if (hash_equals((string) $user['password'], (string) $password)) {
             $this->updatePasswordHash($user['id'], password_hash($password, PASSWORD_DEFAULT));
             return $user;
         }
@@ -239,7 +311,24 @@ class SpotUsers {
         return null;
     }
 
+    public function generateSessionToken() {
+        return bin2hex(random_bytes(32));
+    }
+
+    public function setSessionToken($userId, $sessionToken = null) {
+        $stmt = $this->db->prepare('UPDATE users SET session_token = ? WHERE id = ?');
+        return $stmt->execute([$sessionToken ? trim($sessionToken) : null, intval($userId)]);
+    }
+
+    public function clearSessionToken($userId) {
+        return $this->setSessionToken($userId, null);
+    }
+
     public function createUser($username, $email, $password, $role = 'buyer', $avatar = '') {
+        $existingEmailUser = $this->getUserByEmail(trim($email));
+        $existingUsernameUser = $this->getUserByUsername(trim($username));
+        $this->validateRegistrationInput($username, $email, $password, $existingEmailUser, $existingUsernameUser);
+
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         if ($avatar === '') {
             $avatar = $this->generateAvatar($username);

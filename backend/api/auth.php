@@ -28,18 +28,40 @@ if ($action === 'login') {
         exit;
     }
 
-    $user = $spot->users->verifyCredentials($username, $password);
-    if (!$user) {
-        http_response_code(401);
-        echo json_encode(['success' => false, 'error' => 'Nom d\'utilisateur ou mot de passe invalide']);
+    try {
+        $user = $spot->users->verifyCredentials($username, $password);
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Nom d\'utilisateur ou mot de passe invalide']);
+            exit;
+        }
+
+        $activeSessionToken = $_SESSION['session_token'] ?? null;
+        $dbSessionToken = $user['session_token'] ?? null;
+
+        if (!empty($dbSessionToken) && $activeSessionToken !== $dbSessionToken) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'error' => 'Ce compte est déjà connecté sur un autre appareil.']);
+            exit;
+        }
+
+        $sessionToken = $spot->users->generateSessionToken();
+        $_SESSION['user_id'] = intval($user['id']);
+        $_SESSION['session_token'] = $sessionToken;
+        $spot->users->setSessionToken(intval($user['id']), $sessionToken);
+        unset($user['password']);
+
+        echo json_encode(['success' => true, 'user' => $user]);
+        exit;
+    } catch (InvalidArgumentException $e) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     }
-
-    $_SESSION['user_id'] = intval($user['id']);
-    unset($user['password']);
-
-    echo json_encode(['success' => true, 'user' => $user]);
-    exit;
 }
 
 if ($action === 'register') {
@@ -48,35 +70,34 @@ if ($action === 'register') {
     $password = $data['password'] ?? '';
     $role = trim(strtolower($data['role'] ?? 'buyer'));
 
-    if ($name === '' || $email === '' || $password === '') {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'Nom, email et mot de passe requis']);
-        exit;
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'Adresse e-mail invalide']);
-        exit;
-    }
-
-    if ($spot->users->getUserByEmail($email)) {
-        http_response_code(409);
-        echo json_encode(['success' => false, 'error' => 'Cette adresse e-mail est déjà utilisée']);
-        exit;
-    }
-
     try {
+        if ($name === '' || $email === '' || $password === '') {
+            throw new InvalidArgumentException('Nom, email et mot de passe requis');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Adresse e-mail invalide');
+        }
+
+        $spot->users->validateRegistrationInput($name, $email, $password, $spot->users->getUserByEmail($email), $spot->users->getUserByUsername($name));
+
         $userId = $spot->users->createUser($name, $email, $password, in_array($role, ['seller', 'buyer'], true) ? $role : 'buyer');
         $user = $spot->users->getUserById($userId);
         if (!$user) {
             throw new Exception('Impossible de récupérer l\'utilisateur après inscription');
         }
 
+        $sessionToken = $spot->users->generateSessionToken();
         $_SESSION['user_id'] = intval($user['id']);
+        $_SESSION['session_token'] = $sessionToken;
+        $spot->users->setSessionToken(intval($user['id']), $sessionToken);
         unset($user['password']);
 
         echo json_encode(['success' => true, 'user' => $user]);
+        exit;
+    } catch (InvalidArgumentException $e) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     } catch (Exception $e) {
         http_response_code(500);

@@ -24,10 +24,12 @@ CREATE TABLE `users` (
   `avatar` VARCHAR(100) NOT NULL DEFAULT '',
   `points` INT NOT NULL DEFAULT 0,
   `shop_id` INT UNSIGNED NULL,
+  `session_token` VARCHAR(255) NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_users_email` (`email`)
+  UNIQUE KEY `uk_users_email` (`email`),
+  UNIQUE KEY `uk_users_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `shops` (
