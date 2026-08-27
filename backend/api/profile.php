@@ -46,15 +46,14 @@ try {
     if ($method === 'PUT') {
         $data = json_decode(file_get_contents('php://input'), true);
         $username = trim($data['username'] ?? $user['username']);
-        $email = trim($data['email'] ?? $user['email']);
         $role = in_array(trim($data['role'] ?? $user['role']), ['seller', 'buyer'], true) ? trim($data['role'] ?? $user['role']) : $user['role'];
 
-        if ($username === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if ($username === '') {
             jsonResponse(['success' => false, 'error' => 'Invalid profile data'], 400);
         }
 
-        $stmt = $spot->db->prepare('UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?');
-        $success = $stmt->execute([$username, $email, $role, intval($userId)]);
+        $stmt = $spot->db->prepare('UPDATE users SET username = ?, role = ? WHERE id = ?');
+        $success = $stmt->execute([$username, $role, intval($userId)]);
         if ($success) {
             $user = $spot->users->getUserById($userId);
             unset($user['password']);

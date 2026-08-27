@@ -20,13 +20,9 @@ function renderAuth(container) {
                     <button type="button" class="auth-mode-btn" data-mode="register">Créer un compte</button>
                 </div>
                 <form id="authForm" class="auth-form" data-mode="login">
-                    <div class="form-group auth-register-field hidden">
-                        <label>Nom complet</label>
-                        <input type="text" id="authName" name="name" autocomplete="name" placeholder="Entrer votre nom complet" />
-                    </div>
                     <div class="form-group">
-                        <label id="authEmailLabel">Adresse e-mail</label>
-                        <input type="text" id="authEmail" name="email" autocomplete="username" placeholder="exemple@domaine.com" required />
+                        <label id="authEmailLabel">Nom d'utilisateur</label>
+                        <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d'utilisateur" required />
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
@@ -38,6 +34,8 @@ function renderAuth(container) {
                     <div class="form-group">
                         <label>Mot de passe</label>
                         <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" required />
+                        
+                        <small class="auth-password-hint hidden">Le mot de passe doit contenir au moins 12 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
@@ -69,16 +67,20 @@ function renderAuth(container) {
     const submitBtn = container.querySelector('.auth-submit-btn');
     const loginNote = container.querySelector('.auth-note-login');
     const registerNote = container.querySelector('.auth-note-register');
+    const passwordHint = container.querySelector('.auth-password-hint');
 
     const setMode = (mode) => {
         authForm.dataset.mode = mode;
         modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
         const isRegister = mode === 'register';
         registerFields.forEach(field => field.classList.toggle('hidden', !isRegister));
+        if (passwordHint) {
+            passwordHint.classList.toggle('hidden', !isRegister);
+        }
         submitBtn.innerHTML = isRegister ? '<i class="fas fa-user-plus"></i> Créer mon compte' : '<i class="fas fa-sign-in-alt"></i> Se connecter';
-        authEmailLabel.textContent = isRegister ? 'Adresse e-mail' : 'Nom d\'utilisateur';
-        authEmailInput.placeholder = isRegister ? 'exemple@domaine.com' : 'Entrez votre nom d\'utilisateur';
-        authEmailInput.type = isRegister ? 'email' : 'text';
+        authEmailLabel.textContent = 'Nom d\'utilisateur';
+        authEmailInput.placeholder = 'Entrez votre nom d\'utilisateur';
+        authEmailInput.type = 'text';
         loginNote.classList.toggle('hidden', isRegister);
         registerNote.classList.toggle('hidden', !isRegister);
     };
@@ -117,20 +119,26 @@ function renderAuth(container) {
             return;
         }
 
-        const name = container.querySelector('#authName').value.trim();
-        const email = identifier;
+        const username = identifier.trim();
         const confirmPassword = container.querySelector('#authConfirmPassword').value;
         const accountType = container.querySelector('#authAccountType').value;
         const privacyAccepted = container.querySelector('#authPrivacy').checked;
 
-        if (!name) {
-            showToast('Merci de renseigner ton nom complet.', 'warning');
+        if (!username) {
+            showToast('Merci de renseigner un nom d\'utilisateur.', 'warning');
             return;
         }
-        if (!email) {
-            showToast('Merci de renseigner une adresse e-mail valide.', 'warning');
+
+        if (password.length < 12) {
+            showToast('Le mot de passe doit contenir au moins 12 caractères.', 'warning');
             return;
         }
+
+        if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+            showToast('Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial.', 'warning');
+            return;
+        }
+
         if (password !== confirmPassword) {
             showToast('Les mots de passe ne correspondent pas.', 'warning');
             return;
@@ -141,7 +149,7 @@ function renderAuth(container) {
         }
 
         try {
-            const response = await register(name, email, password, accountType);
+            const response = await register(username, password, accountType);
             const user = response.user;
             localStorage.setItem('ag7_current_user', JSON.stringify(user));
             localStorage.removeItem('onboarding_done');

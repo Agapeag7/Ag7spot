@@ -29,7 +29,7 @@ try {
 }
 
 try {
-    $users->validateRegistrationInput('alice', 'alice@example.com', 'alice', ['email' => 'other@example.com']);
+    $users->validateRegistrationInput('alice', 'alice');
     fwrite(STDERR, "FATAL: password equal to username should be rejected\n");
     exit(1);
 } catch (InvalidArgumentException $e) {
@@ -37,15 +37,7 @@ try {
 }
 
 try {
-    $users->validateRegistrationInput('alice', 'alice@example.com', 'StrongPass!2026', ['email' => 'alice@example.com']);
-    fwrite(STDERR, "FATAL: duplicated email should be rejected\n");
-    exit(1);
-} catch (InvalidArgumentException $e) {
-    // expected
-}
-
-try {
-    $users->validateRegistrationInput('alice', 'alice@example.com', 'StrongPass!2026', null, ['username' => 'alice']);
+    $users->validateRegistrationInput('alice', 'StrongPass!2026', ['username' => 'alice']);
     fwrite(STDERR, "FATAL: duplicated username should be rejected\n");
     exit(1);
 } catch (InvalidArgumentException $e) {

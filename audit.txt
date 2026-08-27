@@ -1,7 +1,0 @@
-- Section Authentification lors de la création d'un compte :
-ajout d'un regex et algorithme pour créer un mot de passe sécuriser 
-le mot de passe doit être suffisamment long et complexe en intégrant des lettres (majuscules et minuscules), des chiffres, de la ponctuation, des caractères spéciaux
-
-- éviter à tout prix les doublons (meme mot de passe et pseudo)
-
-- un compte ne doit pas se connecté simultanement sur deux appareils

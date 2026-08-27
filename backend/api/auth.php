@@ -65,23 +65,18 @@ if ($action === 'login') {
 }
 
 if ($action === 'register') {
-    $name = trim($data['name'] ?? '');
-    $email = trim($data['email'] ?? '');
+    $username = trim($data['username'] ?? $data['name'] ?? '');
     $password = $data['password'] ?? '';
     $role = trim(strtolower($data['role'] ?? 'buyer'));
 
     try {
-        if ($name === '' || $email === '' || $password === '') {
-            throw new InvalidArgumentException('Nom, email et mot de passe requis');
+        if ($username === '' || $password === '') {
+            throw new InvalidArgumentException('Nom d\'utilisateur et mot de passe requis');
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Adresse e-mail invalide');
-        }
+        $spot->users->validateRegistrationInput($username, $password, $spot->users->getUserByUsername($username));
 
-        $spot->users->validateRegistrationInput($name, $email, $password, $spot->users->getUserByEmail($email), $spot->users->getUserByUsername($name));
-
-        $userId = $spot->users->createUser($name, $email, $password, in_array($role, ['seller', 'buyer'], true) ? $role : 'buyer');
+        $userId = $spot->users->createUser($username, $password, in_array($role, ['seller', 'buyer'], true) ? $role : 'buyer');
         $user = $spot->users->getUserById($userId);
         if (!$user) {
             throw new Exception('Impossible de récupérer l\'utilisateur après inscription');

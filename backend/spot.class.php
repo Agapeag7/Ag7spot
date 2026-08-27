@@ -101,9 +101,12 @@ class Spot {
             $connection->exec('ALTER TABLE users ADD UNIQUE KEY uk_users_username (username)');
         }
 
-        $emailIndex = $connection->query("SHOW INDEX FROM users WHERE Key_name = 'uk_users_email'");
-        if ($emailIndex && $emailIndex->fetch() === false) {
-            $connection->exec('ALTER TABLE users ADD UNIQUE KEY uk_users_email (email)');
+        $emailColumn = $connection->query("SHOW COLUMNS FROM users LIKE 'email'");
+        if ($emailColumn && $emailColumn->fetch() !== false) {
+            try {
+                $connection->exec('ALTER TABLE users DROP INDEX uk_users_email');
+            } catch (Exception $e) {}
+            $connection->exec('ALTER TABLE users DROP COLUMN email');
         }
     }
 
@@ -227,9 +230,7 @@ class SpotUsers {
     }
 
     public function getUserByEmail($email) {
-        $stmt = $this->db->prepare('SELECT * FROM users WHERE email = ?');
-        $stmt->execute([$email]);
-        return $stmt->fetch();
+        return null;
     }
 
     public function getUserByUsername($username) {
@@ -252,9 +253,8 @@ class SpotUsers {
         return true;
     }
 
-    public function validateRegistrationInput($username, $email, $password, $existingEmailUser = null, $existingUsernameUser = null) {
+    public function validateRegistrationInput($username, $password, $existingUsernameUser = null) {
         $username = trim((string) $username);
-        $email = trim((string) $email);
         $password = is_string($password) ? trim($password) : '';
 
         if ($username === '') {
@@ -265,23 +265,11 @@ class SpotUsers {
             throw new InvalidArgumentException('Le pseudo doit contenir au moins 3 caractères.');
         }
 
-        if ($email === '') {
-            throw new InvalidArgumentException('L\'adresse e-mail est requise.');
-        }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Adresse e-mail invalide.');
-        }
-
         if (strcasecmp($username, $password) === 0) {
             throw new InvalidArgumentException('Le mot de passe ne doit pas être identique au pseudo.');
         }
 
         $this->validatePassword($password);
-
-        if ($existingEmailUser) {
-            throw new InvalidArgumentException('Cette adresse e-mail est déjà utilisée.');
-        }
 
         if ($existingUsernameUser) {
             throw new InvalidArgumentException('Ce pseudo est déjà utilisé.');
@@ -324,20 +312,18 @@ class SpotUsers {
         return $this->setSessionToken($userId, null);
     }
 
-    public function createUser($username, $email, $password, $role = 'buyer', $avatar = '') {
-        $existingEmailUser = $this->getUserByEmail(trim($email));
+    public function createUser($username, $password, $role = 'buyer', $avatar = '') {
         $existingUsernameUser = $this->getUserByUsername(trim($username));
-        $this->validateRegistrationInput($username, $email, $password, $existingEmailUser, $existingUsernameUser);
+        $this->validateRegistrationInput($username, $password, $existingUsernameUser);
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         if ($avatar === '') {
             $avatar = $this->generateAvatar($username);
         }
 
-        $stmt = $this->db->prepare('INSERT INTO users (username, email, password, role, avatar) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $this->db->prepare('INSERT INTO users (username, password, role, avatar) VALUES (?, ?, ?, ?)');
         $stmt->execute([
             trim($username),
-            trim($email),
             $passwordHash,
             in_array($role, ['seller', 'buyer'], true) ? $role : 'buyer',
             trim($avatar)

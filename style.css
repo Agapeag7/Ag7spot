@@ -1437,7 +1437,7 @@ body {
     box-shadow: var(--shadow);
 }
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 5px;
 }
 .form-group label {
     display: block;
@@ -1457,6 +1457,7 @@ body {
     background: white;
     transition: var(--transition);
     outline: none;
+    margin-bottom: 5px;
 }
 .form-group input:focus,
 .form-group textarea:focus {

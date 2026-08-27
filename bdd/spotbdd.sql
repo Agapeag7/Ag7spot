@@ -18,7 +18,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE `users` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(100) NOT NULL,
-  `email` VARCHAR(150) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `role` ENUM('seller','buyer') NOT NULL DEFAULT 'buyer',
   `avatar` VARCHAR(100) NOT NULL DEFAULT '',
@@ -28,7 +27,6 @@ CREATE TABLE `users` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_users_email` (`email`),
   UNIQUE KEY `uk_users_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

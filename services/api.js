@@ -86,7 +86,7 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 
         throw new Error('Réponse API inattendue: ' + text);
     } catch (error) {
-        console.error('API Error:', error);
+        // console.error('API Error:', error);
         // If session clearing/navigation to auth is already in progress (401 handled),
         // avoid showing additional toasts that confuse the user.
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) {
@@ -156,8 +156,8 @@ function login(username, password) {
     return auth('login', { username, password });
 }
 
-function register(name, email, password, role) {
-    return auth('register', { name, email, password, role });
+function register(name, password, role) {
+    return auth('register', { name, password, role });
 }
 
 function logoutApi() {

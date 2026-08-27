@@ -180,7 +180,7 @@ async function handleSellerShopStatusChange(status) {
 
         showToast('Impossible de modifier le statut de la boutique.', 'error');
     } catch (error) {
-        console.error('handleSellerShopStatusChange error', error);
+        // console.error('handleSellerShopStatusChange error', error);
         showToast('Erreur lors du changement de statut.', 'error');
     }
 }
