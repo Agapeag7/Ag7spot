@@ -19,7 +19,7 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
 
     if ($method === 'GET') {
-        $limit = intval($_GET['limit'] ?? 20);
+        $limit = intval($_GET['limit'] ?? 30);
         $offset = intval($_GET['offset'] ?? 0);
         echo json_encode([
             'success' => true,

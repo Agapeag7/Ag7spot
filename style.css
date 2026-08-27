@@ -305,13 +305,19 @@ body {
     border-radius: 50%;
     background: var(--primary);
 }
+.notification-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 22px 20px;
+}
+.notification-load-more,
 .notification-mark-all {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: calc(100% - 44px);
-    margin: 10px 22px 20px;
+    width: 100%;
     padding: 11px 14px;
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -321,9 +327,14 @@ body {
     font-weight: 600;
     transition: var(--transition);
 }
+.notification-load-more:hover,
 .notification-mark-all:hover {
     border-color: var(--primary);
     background: var(--primary-light);
+}
+.notification-load-more:disabled {
+    opacity: 0.7;
+    cursor: wait;
 }
 .notification-modal .empty-state {
     width: 100%;

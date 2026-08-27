@@ -139,8 +139,9 @@ class SpotNotifications {
         $this->db = $database;
     }
 
-    public function getForUser($userId, $limit = 20, $offset = 0) {
-        $limit = max(1, min(50, intval($limit)));
+    public function getForUser($userId, $limit = 30, $offset = 0) {
+        $this->purgeOldReadNotifications(intval($userId));
+        $limit = max(1, min(30, intval($limit)));
         $offset = max(0, intval($offset));
         $stmt = $this->db->prepare("SELECT id, type, title, body, data_json, read_at, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT {$limit} OFFSET {$offset}");
         $stmt->execute([intval($userId)]);
@@ -150,6 +151,11 @@ class SpotNotifications {
             unset($notification['data_json']);
         }
         return $notifications;
+    }
+
+    private function purgeOldReadNotifications($userId) {
+        $stmt = $this->db->prepare('DELETE FROM notifications WHERE user_id = ? AND read_at IS NOT NULL AND created_at < DATE_SUB(NOW(), INTERVAL 1 MONTH)');
+        $stmt->execute([intval($userId)]);
     }
 
     public function getUnreadCount($userId) {

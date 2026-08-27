@@ -205,7 +205,7 @@ function unfollowShop(shopId) {
     return apiCall('follow.php', 'DELETE', { shop_id: shopId });
 }
 
-function getNotifications(limit = 20, offset = 0) {
+function getNotifications(limit = 30, offset = 0) {
     return apiCall(`notifications.php?limit=${limit}&offset=${offset}`);
 }
 

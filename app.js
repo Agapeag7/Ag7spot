@@ -118,13 +118,27 @@ async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
 
 async function openNotifications() {
     try {
-        const response = await getNotifications();
+        const PAGE_SIZE = 30;
+        const response = await getNotifications(PAGE_SIZE, 0);
         const notifications = response.notifications || [];
         const notificationMap = new Map(notifications.map(item => [String(Number(item.id)), item]));
         let notificationOffset = notifications.length;
         let notificationLoading = false;
-        let notificationHasMore = notifications.length === 20;
+        let notificationHasMore = notifications.length === PAGE_SIZE;
         updateNotificationBadge(response.unread_count || 0);
+
+        const renderNotificationItem = (notification) => `
+            <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
+                <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_message' ? 'comment' : notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
+                <span class="notification-item-content">
+                    <strong>${escapeNotificationText(notification.title)}</strong>
+                    <span>${escapeNotificationText(notification.body)}</span>
+                    <small>${escapeNotificationText(notification.created_at)}</small>
+                </span>
+                ${notification.read_at ? '' : '<span class="notification-unread-dot" aria-label="Non lue"></span>'}
+            </button>
+        `;
+
         const modal = document.createElement('div');
         modal.className = 'modal notification-modal';
         modal.innerHTML = `
@@ -140,50 +154,57 @@ async function openNotifications() {
                     <button class="modal-close" type="button" aria-label="Fermer"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="notification-list">
-                    ${notifications.length ? notifications.map(notification => `
-                        <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
-                            <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_message' ? 'comment' : notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
-                            <span class="notification-item-content">
-                                <strong>${escapeNotificationText(notification.title)}</strong>
-                                <span>${escapeNotificationText(notification.body)}</span>
-                                <small>${escapeNotificationText(notification.created_at)}</small>
-                            </span>
-                            ${notification.read_at ? '' : '<span class="notification-unread-dot" aria-label="Non lue"></span>'}
-                        </button>
-                    `).join('') : '<p class="empty-state small">Aucune notification.</p>'}
+                    ${notifications.length ? notifications.map(renderNotificationItem).join('') : '<p class="empty-state small">Aucune notification.</p>'}
                 </div>
-                ${notifications.some(notification => !notification.read_at) ? '<button class="notification-mark-all" data-mark-all-read><i class="fas fa-check-double"></i> Tout marquer comme lu</button>' : ''}
+                <div class="notification-footer">
+                    ${notificationHasMore ? '<button class="notification-load-more" type="button" data-load-more><i class="fas fa-chevron-down"></i> Voir plus</button>' : ''}
+                    ${notifications.some(notification => !notification.read_at) ? '<button class="notification-mark-all" data-mark-all-read><i class="fas fa-check-double"></i> Tout marquer comme lu</button>' : ''}
+                </div>
             </div>`;
         document.body.appendChild(modal);
+
         const close = () => modal.remove();
         modal.querySelector('.modal-close').addEventListener('click', close);
         const notificationList = modal.querySelector('.notification-list');
-        const appendNotifications = (items) => {
-            notificationList.insertAdjacentHTML('beforeend', items.map(notification => `
-                <button class="notification-item ${notification.read_at ? '' : 'unread'}" data-notification-id="${Number(notification.id)}">
-                    <span class="notification-item-icon"><i class="fas fa-${notification.type === 'new_message' ? 'comment' : notification.type === 'new_product' ? 'box-open' : 'store'}"></i></span>
-                    <span class="notification-item-content">
-                        <strong>${escapeNotificationText(notification.title)}</strong>
-                        <span>${escapeNotificationText(notification.body)}</span>
-                        <small>${escapeNotificationText(notification.created_at)}</small>
-                    </span>
-                    ${notification.read_at ? '' : '<span class="notification-unread-dot" aria-label="Non lue"></span>'}
-                </button>`).join(''));
+        const notificationFooter = modal.querySelector('.notification-footer');
+
+        const refreshFooter = () => {
+            if (!notificationFooter) return;
+            notificationFooter.innerHTML = `
+                ${notificationHasMore ? '<button class="notification-load-more" type="button" data-load-more><i class="fas fa-chevron-down"></i> Voir plus</button>' : ''}
+                ${notifications.some(notification => !notification.read_at) ? '<button class="notification-mark-all" data-mark-all-read><i class="fas fa-check-double"></i> Tout marquer comme lu</button>' : ''}
+            `;
         };
-        notificationList.addEventListener('scroll', async () => {
-            if (notificationLoading || !notificationHasMore || notificationList.scrollHeight - notificationList.scrollTop - notificationList.clientHeight > 80) return;
-            notificationLoading = true;
-            try {
-                const next = await getNotifications(20, notificationOffset);
-                appendNotifications(next.notifications || []);
-                notificationOffset += (next.notifications || []).length;
-                notificationHasMore = (next.notifications || []).length === 20;
-            } finally {
-                notificationLoading = false;
-            }
-        });
+
+        const appendNotifications = (items) => {
+            if (!items.length) return;
+            items.forEach(notification => notificationMap.set(String(Number(notification.id)), notification));
+            notificationList.insertAdjacentHTML('beforeend', items.map(renderNotificationItem).join(''));
+        };
+
         modal.addEventListener('click', async event => {
             if (event.target === modal) close();
+
+            if (event.target.closest('[data-load-more]')) {
+                if (notificationLoading || !notificationHasMore) return;
+                notificationLoading = true;
+                const loadMoreButton = event.target.closest('[data-load-more]');
+                loadMoreButton.disabled = true;
+                loadMoreButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement...';
+                try {
+                    const next = await getNotifications(PAGE_SIZE, notificationOffset);
+                    const nextNotifications = next.notifications || [];
+                    appendNotifications(nextNotifications);
+                    notificationOffset += nextNotifications.length;
+                    notificationHasMore = nextNotifications.length === PAGE_SIZE;
+                    notifications.push(...nextNotifications);
+                    refreshFooter();
+                } finally {
+                    notificationLoading = false;
+                }
+                return;
+            }
+
             const item = event.target.closest('[data-notification-id]');
             if (item) {
                 const notificationId = Number(item.dataset.notificationId);
@@ -203,7 +224,8 @@ async function openNotifications() {
                 await markNotificationRead();
                 updateNotificationBadge(0);
                 modal.querySelectorAll('.notification-item').forEach(element => element.classList.remove('unread'));
-                event.target.closest('[data-mark-all-read]').remove();
+                const markAllButton = event.target.closest('[data-mark-all-read]');
+                if (markAllButton) markAllButton.remove();
             }
         });
     } catch (error) {
