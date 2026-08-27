@@ -36,19 +36,27 @@ if ($action === 'login') {
             exit;
         }
 
+        $currentUserId = intval($_SESSION['user_id'] ?? 0);
         $activeSessionToken = $_SESSION['session_token'] ?? null;
         $dbSessionToken = $user['session_token'] ?? null;
+        $targetUserId = intval($user['id']);
 
-        if (!empty($dbSessionToken) && $activeSessionToken !== $dbSessionToken) {
-            http_response_code(409);
-            echo json_encode(['success' => false, 'error' => 'Ce compte est déjà connecté sur un autre appareil.']);
-            exit;
+        if ($currentUserId === $targetUserId) {
+            $sessionToken = $spot->users->generateSessionToken();
+            $_SESSION['session_token'] = $sessionToken;
+            $spot->users->setSessionToken($targetUserId, $sessionToken);
+        } else {
+            if (!empty($dbSessionToken) && $activeSessionToken !== $dbSessionToken && $currentUserId !== $targetUserId) {
+                http_response_code(409);
+                echo json_encode(['success' => false, 'error' => 'Ce compte est déjà connecté sur un autre appareil.']);
+                exit;
+            }
+
+            $sessionToken = $spot->users->generateSessionToken();
+            $_SESSION['user_id'] = $targetUserId;
+            $_SESSION['session_token'] = $sessionToken;
+            $spot->users->setSessionToken($targetUserId, $sessionToken);
         }
-
-        $sessionToken = $spot->users->generateSessionToken();
-        $_SESSION['user_id'] = intval($user['id']);
-        $_SESSION['session_token'] = $sessionToken;
-        $spot->users->setSessionToken(intval($user['id']), $sessionToken);
         unset($user['password']);
 
         echo json_encode(['success' => true, 'user' => $user]);

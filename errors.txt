@@ -1,0 +1,6 @@
+api.js:31 
+ POST https://localhost/Ag7Spot/backend/api/auth.php 409 (Conflict)
+apiCall	@	api.js:31
+auth	@	api.js:152
+login	@	api.js:156
+(anonymous)	@	auth.js:108
