@@ -85,7 +85,7 @@ async function showCreateCollection() {
         }
 
         loadCollections();
-        showToast('✅ Collection créée !', 'success');
+        showToast('Collection créée !', 'success');
     } catch (error) {
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Impossible de créer la collection.', 'error');

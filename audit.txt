@@ -1,0 +1,9 @@
+- ajout d'autres catégories des boutiques 
+Alimentation
+Mode et habillement
+Beauté et santé
+Maison et décoration
+Culture et loisirs
+
+
+- pour éviter le surcharge des notifications déjà vu : il faut le supprimer définitivement après une durée d'un mois

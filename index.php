@@ -158,10 +158,15 @@ if (!$isLocalHost && !$isHttps) {
                         <div class="form-group">
                             <label for="editShopCategory">Catégorie</label>
                             <select id="editShopCategory" required>
-                                <option value="fashion">Vêtements et chaussures</option>
-                                <option value="home">Maison et déco</option>
+                                <option value="fashion">Mode et habillement</option>
+                                <option value="home">Maison et décoration</option>
                                 <option value="tech">High-tech et électronique</option>
+                                <option value="food">Alimentation et boissons</option>
+                                <option value="sports">Sports et loisirs</option>
                                 <option value="beauty">Santé et beauté</option>
+                                <option value="books">Livres et papeterie</option>
+                                <option value="toys">Jouets et jeux</option>
+                                <option value="other">Autres</option>
                             </select>
                         </div>
                         <div class="form-group">
