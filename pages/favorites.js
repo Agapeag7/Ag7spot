@@ -76,7 +76,7 @@ async function loadFavoritesBatch(reset = false) {
     const list = container.querySelector('.follow-list');
     if (list) list.insertAdjacentHTML('beforeend', followed.map(shop => `
         <div class="follow-item">
-            <img src="${shop.avatar}" alt="${shop.name}" />
+            <span class="shop-initial" aria-label="${shop.name}">${(shop.name || '?').trim().charAt(0).toUpperCase()}</span>
             <div class="name">${shop.name}</div>
             ${renderShopStatus(shop)}
             <button class="btn-outline btn-sm" onclick="event.stopPropagation(); toggleFollow(${shop.id})">

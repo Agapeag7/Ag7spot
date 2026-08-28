@@ -35,7 +35,7 @@ function renderAuth(container) {
                         <label>Mot de passe</label>
                         <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" required />
                         
-                        <small class="auth-password-hint hidden">Le mot de passe doit contenir au moins 12 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
+                        <small class="auth-password-hint hidden" style="color: var(--danger)">Le mot de passe doit contenir au moins 12 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
