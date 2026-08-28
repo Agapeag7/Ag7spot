@@ -62,12 +62,14 @@ async function apiCall(endpoint, method = 'GET', data = null) {
             }
 
             if (contentType.includes('application/json')) {
+                let errorMessage = `Erreur serveur (${response.status})`;
                 try {
                     const error = JSON.parse(text);
-                    throw new Error(error.message || `Erreur serveur (${response.status})`);
+                    errorMessage = error.error || error.message || errorMessage;
                 } catch (jsonError) {
-                    throw new Error(`Erreur serveur (${response.status}) : ${text}`);
+                    // Keep a generic message when the server response is not valid JSON.
                 }
+                throw new Error(errorMessage);
             }
             throw new Error(text || `Erreur serveur (${response.status})`);
         }

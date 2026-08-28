@@ -10,8 +10,9 @@ require_once '../spot.class.php';
 try {
     $spot = new Spot();
 } catch (Exception $e) {
+    error_log('Ag7Spot auth initialization failed: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Le service d\'authentification est temporairement indisponible.']);
     exit;
 }
 
@@ -66,8 +67,9 @@ if ($action === 'login') {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     } catch (Exception $e) {
+        error_log('Ag7Spot login failed: ' . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => 'La connexion est temporairement indisponible.']);
         exit;
     }
 }
@@ -103,8 +105,9 @@ if ($action === 'register') {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     } catch (Exception $e) {
+        error_log('Ag7Spot registration failed: ' . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => 'La création du compte est temporairement indisponible.']);
         exit;
     }
 }
