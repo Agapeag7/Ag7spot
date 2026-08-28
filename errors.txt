@@ -1,1 +1,0 @@
-https://localhost/Ag7Spot/backend/api/auth.php 409 (Conflict)

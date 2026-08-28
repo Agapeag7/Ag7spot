@@ -478,16 +478,14 @@ class SpotShops {
         return $success;
     }
 
-    public function createShop($ownerId, $name, $category, $lat, $lng, $avatar, $cover, $address) {
-        $stmt = $this->db->prepare('INSERT INTO shops (owner_id, name, category, lat, lng, avatar, cover, status, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    public function createShop($ownerId, $name, $category, $lat, $lng, $address) {
+        $stmt = $this->db->prepare('INSERT INTO shops (owner_id, name, category, lat, lng, status, address) VALUES (?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([
             intval($ownerId),
             trim($name),
             trim($category),
             floatval($lat),
             floatval($lng),
-            trim($avatar),
-            trim($cover),
             'open',
             trim($address)
         ]);

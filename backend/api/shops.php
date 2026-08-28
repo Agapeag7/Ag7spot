@@ -45,8 +45,6 @@ switch ($method) {
         $category = trim($data['category'] ?? '');
         $lat = floatval($data['lat'] ?? 0);
         $lng = floatval($data['lng'] ?? 0);
-        $avatar = trim($data['avatar'] ?? '');
-        $cover = trim($data['cover'] ?? '');
         $address = trim($data['address'] ?? '');
 
         if ($ownerId <= 0 || $name === '' || $category === '' || $lat === 0 || $lng === 0 || $address === '') {
@@ -55,7 +53,7 @@ switch ($method) {
             break;
         }
 
-        $shopId = $spot->shops->createShop($ownerId, $name, $category, $lat, $lng, $avatar, $cover, $address);
+        $shopId = $spot->shops->createShop($ownerId, $name, $category, $lat, $lng, $address);
         if ($shopId && $ownerId > 0) {
             $spot->users->setShopId($ownerId, $shopId);
         }

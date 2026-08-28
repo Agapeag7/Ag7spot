@@ -9,8 +9,6 @@ Champs principaux :
 - `name` : string
 - `category` : string
 - `lat` / `lng` : nombre (coordonnées GPS)
-- `avatar` : string (URL image vignette)
-- `cover` : string (URL image de couverture)
 - `followed` : booléen
 - `status` : string (`open`, `closed`, `break`)
 - `address` : string

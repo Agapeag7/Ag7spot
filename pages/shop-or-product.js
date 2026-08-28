@@ -420,8 +420,6 @@ function setupShopForm() {
             return;
         }
 
-        const avatar = 'https://picsum.photos/seed/shop' + Date.now() + '/100/100';
-        const cover = 'https://picsum.photos/seed/shop' + Date.now() + '/600/300';
         const address = `Coordonnées ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
         try {
@@ -431,8 +429,6 @@ function setupShopForm() {
                 category,
                 lat,
                 lng,
-                avatar,
-                cover,
                 address
             });
 
@@ -447,8 +443,6 @@ function setupShopForm() {
                 category,
                 lat,
                 lng,
-                avatar,
-                cover,
                 followed: false,
                 status: 'open',
                 address

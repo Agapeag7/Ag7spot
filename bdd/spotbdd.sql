@@ -37,8 +37,6 @@ CREATE TABLE `shops` (
   `category` VARCHAR(50) NOT NULL,
   `lat` DECIMAL(10,7) NOT NULL,
   `lng` DECIMAL(10,7) NOT NULL,
-  `avatar` VARCHAR(255) NOT NULL,
-  `cover` VARCHAR(255) NOT NULL,
   `status` ENUM('open','closed','break') NOT NULL DEFAULT 'closed',
   `address` VARCHAR(255) NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -150,12 +148,12 @@ CREATE TABLE `messages` (
 --   (2, 'Lina Achete', 'lina@achete.com', 'acheteur123', 'buyer', 'LA', 120, NULL),
 --   (3, 'Tech Vendeur', 'tech@vendeur.com', 'vendeur123', 'seller', 'TV', 230, 3);
 
--- INSERT INTO `shops` (`id`, `owner_id`, `name`, `category`, `lat`, `lng`, `avatar`, `cover`, `status`, `address`) VALUES
---   (1, 1, 'Urban Wear Lyon', 'fashion', 45.7640000, 4.8357000, 'https://picsum.photos/seed/urban/100/100', 'https://picsum.photos/seed/urban/600/300', 'open', '15 Rue de la République, Lyon'),
---   (2, 2, 'Librairie du Coin', 'books', 45.7580000, 4.8450000, 'https://picsum.photos/seed/librairie/100/100', 'https://picsum.photos/seed/librairie/600/300', 'open', '8 Place des Terreaux, Lyon'),
---   (3, 3, 'ElectroShop Pro', 'tech', 45.7700000, 4.8250000, 'https://picsum.photos/seed/electro/100/100', 'https://picsum.photos/seed/electro/600/300', 'break', '42 Rue Garibaldi, Lyon'),
---   (4, 4, 'Boulangerie des Artisans', 'food', 45.7550000, 4.8600000, 'https://picsum.photos/seed/boulangerie/100/100', 'https://picsum.photos/seed/boulangerie/600/300', 'open', '3 Rue Tête d''Or, Lyon'),
---   (5, 5, 'Beauty & Co', 'beauty', 45.7620000, 4.8500000, 'https://picsum.photos/seed/beauty/100/100', 'https://picsum.photos/seed/beauty/600/300', 'closed', '10 Rue Victor Hugo, Lyon');
+-- INSERT INTO `shops` (`id`, `owner_id`, `name`, `category`, `lat`, `lng`, `status`, `address`) VALUES
+--   (1, 1, 'Urban Wear Lyon', 'fashion', 45.7640000, 4.8357000, 'open', '15 Rue de la République, Lyon'),
+--   (2, 2, 'Librairie du Coin', 'books', 45.7580000, 4.8450000, 'open', '8 Place des Terreaux, Lyon'),
+--   (3, 3, 'ElectroShop Pro', 'tech', 45.7700000, 4.8250000, 'break', '42 Rue Garibaldi, Lyon'),
+--   (4, 4, 'Boulangerie des Artisans', 'food', 45.7550000, 4.8600000, 'open', '3 Rue Tête d''Or, Lyon'),
+--   (5, 5, 'Beauty & Co', 'beauty', 45.7620000, 4.8500000, 'closed', '10 Rue Victor Hugo, Lyon');
 
 -- INSERT INTO `products` (`id`, `shop_id`, `name`, `price`, `image`, `stock`, `distance`, `description`) VALUES
 --   (101, 1, 'Sweat Oversize X', 49.99, 'https://picsum.photos/seed/sweat1/400/400', 12, 1.20, NULL),
