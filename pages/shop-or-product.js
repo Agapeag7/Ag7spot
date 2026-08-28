@@ -153,7 +153,7 @@ function renderSellerProducts(shopIds) {
                 </div>
                 <div class="seller-product-info">
                     <strong>${product.name}</strong>
-                    <p>${shop.name} · ${product.stock} en stock</p>
+                    <p>${shop.name}</p>
                     <p class="price">${product.price.toFixed(2)} $</p>
                 </div>
                 <div class="seller-product-actions">

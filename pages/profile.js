@@ -203,7 +203,6 @@ function renderSellerProducts(products, myShop) {
                 </div>
                 <div class="seller-product-info">
                     <strong>${product.name}</strong>
-                    <p>${myShop.name} · ${product.stock} en stock</p>
                     <p class="price">${parseFloat(product.price).toFixed(2)} $</p>
                 </div>
                 <div class="seller-product-actions">
@@ -277,7 +276,7 @@ function renderSellerProductsBatch() {
                 </div>
                 <div class="seller-product-info">
                     <strong>${product.name}</strong>
-                    <p>${shopName} · ${product.stock} en stock</p>
+                    <p>${shopName}</p>
                     <p class="price">${parseFloat(product.price).toFixed(2)} $</p>
                 </div>
                 <div class="seller-product-actions">
