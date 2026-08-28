@@ -102,6 +102,9 @@ async function renderProfile(container) {
                                 <span><i class="fas fa-box-open"></i> Produits déjà ajoutés</span>
                                 <a href="#" onclick="renderProfile(document.getElementById('pageContainer'))">Actualiser</a>
                             </div>
+                            <div class="list-search">
+                                <input type="search" id="sellerProductsSearchInput" placeholder="Rechercher un produit..." aria-label="Rechercher un produit" />
+                            </div>
                             <div id="sellerProductsList" class="seller-products-list">
                                 <div id="sellerProductsContainer" class="seller-products-container"></div>
                                 <div id="sellerProductsBatchSpinner" class="feed-batch-spinner hidden"><div class="spinner small"></div></div>
@@ -223,7 +226,9 @@ const sellerProductsState = {
     pageSize: 5,
     loading: false,
     end: false,
-    myShop: null
+    myShop: null,
+    searchQuery: '',
+    filteredItems: []
 };
 
 function initSellerProducts(products, myShop) {
@@ -232,10 +237,26 @@ function initSellerProducts(products, myShop) {
     sellerProductsState.loading = false;
     sellerProductsState.end = false;
     sellerProductsState.myShop = myShop || null;
+    sellerProductsState.searchQuery = '';
+    sellerProductsState.filteredItems = sellerProductsState.allItems;
 
     const container = document.getElementById('sellerProductsContainer');
     if (!container) return;
     container.innerHTML = '';
+
+    const searchInput = document.getElementById('sellerProductsSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', event => {
+            sellerProductsState.searchQuery = event.target.value.trim();
+            sellerProductsState.filteredItems = sellerProductsState.allItems.filter(product =>
+                matchesQuery(`${product.name || ''} ${product.description || ''}`, sellerProductsState.searchQuery)
+            );
+            sellerProductsState.displayedCount = 0;
+            sellerProductsState.end = false;
+            container.innerHTML = '';
+            renderSellerProductsBatch();
+        });
+    }
 
     // attach scroll handler to container
     const listWrap = document.getElementById('sellerProductsList');
@@ -264,8 +285,8 @@ function renderSellerProductsBatch() {
     try { document.getElementById('sellerProductsBatchSpinner')?.classList.remove('hidden'); } catch(e){}
 
     const start = sellerProductsState.displayedCount;
-    const end = Math.min(start + sellerProductsState.pageSize, sellerProductsState.allItems.length);
-    const slice = sellerProductsState.allItems.slice(start, end);
+    const end = Math.min(start + sellerProductsState.pageSize, sellerProductsState.filteredItems.length);
+    const slice = sellerProductsState.filteredItems.slice(start, end);
 
     const html = slice.map(product => {
         const shopName = sellerProductsState.myShop ? sellerProductsState.myShop.name : (SHOPS.find(s => s.id === product.shopId)?.name || 'Boutique');
@@ -294,9 +315,13 @@ function renderSellerProductsBatch() {
     sellerProductsState.loading = false;
     try { document.getElementById('sellerProductsBatchSpinner')?.classList.add('hidden'); } catch(e){}
 
-    if (sellerProductsState.displayedCount >= sellerProductsState.allItems.length) {
+    if (sellerProductsState.displayedCount >= sellerProductsState.filteredItems.length) {
         sellerProductsState.end = true;
-        container.insertAdjacentHTML('beforeend', `<div class="end-of-feed" style="text-align:center;color:#6B7280;padding:12px 0;">Fin des produits</div>`);
+        if (sellerProductsState.filteredItems.length > 0) {
+            container.insertAdjacentHTML('beforeend', `<div class="end-of-feed" style="text-align:center;color:#6B7280;padding:12px 0;">Fin des produits</div>`);
+        } else {
+            container.innerHTML = '<div class="empty-state small"><i class="fas fa-search"></i><p>Aucun produit ne correspond à ta recherche.</p></div>';
+        }
     }
 }
 

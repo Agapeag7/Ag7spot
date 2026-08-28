@@ -1376,6 +1376,24 @@ body {
     position: fixed; /* rétrocompatibilité */
 }
 
+.list-search {
+    margin: 12px 0;
+}
+.list-search input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    outline: none;
+}
+.list-search input:focus {
+    border-color: var(--primary);
+}
+
 /* Spinners pour le fil */
 .feed-spinner {
     display:flex;

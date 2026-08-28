@@ -2,10 +2,14 @@
 // PAGE : FAVORIS / BOUTIQUES SUIVIES
 // =========================================
 function renderFavorites(container) {
+    favoritesState.searchQuery = '';
     container.innerHTML = `
         <div class="page active">
             <div class="section-title">
                 <span><i class="fas fa-heart"></i> Mes boutiques suivies</span>
+            </div>
+            <div class="list-search">
+                <input type="search" id="followedShopsSearchInput" placeholder="Rechercher une boutique suivie..." aria-label="Rechercher une boutique suivie" />
             </div>
             <div id="favContainer"></div>
         </div>
@@ -15,7 +19,28 @@ function renderFavorites(container) {
     loadFavorites(true);
 }
 
-const favoritesState = { offset: 0, limit: 10, loading: false, hasMore: true };
+const favoritesState = { offset: 0, limit: 10, loading: false, hasMore: true, items: [], searchQuery: '' };
+
+function renderFollowedShops() {
+    const container = document.getElementById('favContainer');
+    if (!container) return;
+    const list = container.querySelector('.follow-list');
+    if (!list) return;
+    const visibleShops = favoritesState.items.filter(shop => matchesQuery(shop.name, favoritesState.searchQuery));
+    list.innerHTML = visibleShops.map(shop => `
+        <div class="follow-item">
+            <span class="shop-initial" aria-label="${shop.name}">${(shop.name || '?').trim().charAt(0).toUpperCase()}</span>
+            <div class="name">${shop.name}</div>
+            ${renderShopStatus(shop)}
+            <button class="btn-outline btn-sm" onclick="event.stopPropagation(); toggleFollow(${shop.id})">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+    if (visibleShops.length === 0) {
+        list.innerHTML = '<div class="empty-state small"><i class="fas fa-search"></i><p>Aucune boutique suivie ne correspond à ta recherche.</p></div>';
+    }
+}
 
 function setupFavoritesScroll() {
     const mainContent = document.getElementById('mainContent');
@@ -34,7 +59,16 @@ async function loadFavorites(reset = false) {
     if (reset) {
         favoritesState.offset = 0;
         favoritesState.hasMore = true;
+        favoritesState.items = [];
         container.innerHTML = '<div class="loading-state"><p>Chargement de tes boutiques suivies...</p></div>';
+    }
+    const searchInput = document.getElementById('followedShopsSearchInput');
+    if (searchInput && !searchInput.dataset.bound) {
+        searchInput.dataset.bound = 'true';
+        searchInput.addEventListener('input', event => {
+            favoritesState.searchQuery = event.target.value.trim();
+            renderFollowedShops();
+        });
     }
     await loadFavoritesBatch(reset);
 }
@@ -55,6 +89,7 @@ async function loadFavoritesBatch(reset = false) {
             if (localShop) localShop.followed = true;
             else SHOPS.push(shop);
         });
+        favoritesState.items.push(...followed);
     } catch (error) {
         showToast('Impossible de charger les boutiques suivies.', 'error');
         favoritesState.hasMore = false;
@@ -73,17 +108,7 @@ async function loadFavoritesBatch(reset = false) {
     }
 
     if (reset) container.innerHTML = '<div class="follow-list"></div>';
-    const list = container.querySelector('.follow-list');
-    if (list) list.insertAdjacentHTML('beforeend', followed.map(shop => `
-        <div class="follow-item">
-            <span class="shop-initial" aria-label="${shop.name}">${(shop.name || '?').trim().charAt(0).toUpperCase()}</span>
-            <div class="name">${shop.name}</div>
-            ${renderShopStatus(shop)}
-            <button class="btn-outline btn-sm" onclick="event.stopPropagation(); toggleFollow(${shop.id})">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `).join(''));
+    renderFollowedShops();
     favoritesState.loading = false;
 }
 
