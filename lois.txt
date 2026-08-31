@@ -1,0 +1,64 @@
+Introduction 
+Le Président de la République a promulgué le 25 novembre 2020 la Loi n° 20/017 relative aux télécommunications et aux technologies de l’information et de la communication qui est entrée en vigueur à la date de sa promulgation. 
+
+Cette loi abroge la Loi-cadre n° 013/2002 du 16 octobre 2002 sur les télécommunications en République démocratique du Congo (« RDC ») ainsi que la Loi n° 014/2002 du 16 octobre 2002 portant création de l’Autorité de régulation de la poste et des communications. 
+
+La présente analyse tente de comprendre la place réservée par ce texte aux questions touchant à la protection de la vie privée et des données à caractère personnel. 
+
+I. La protection de la vie privée à travers le droit au secret des correspondances
+La Loi n° 20/017 consacre les articles 126 à 133 du Titre IIIe au droit au respect de la vie privée et à la protection des données à caractère personnel en matière de télécommunication et des technologies de l’information et de la communication. 
+
+Cette protection de la vie privée s’analyse dans la consécration du droit au secret des correspondances dans le chef de tout utilisateur des réseaux et services de télécommunication et des technologies de l’information et de la communication.
+
+La loi proscrit ainsi toute interception, écoute, enregistrement, transcription et divulgation des correspondances sans autorisation préalable du Parquet général près la Cour de cassation. Cette autorisation du Parquet général près la Cour de cassation, d’une durée de trois mois renouvelables, devra être motivée par les besoins de la manifestation de la vérité dans un dossier judiciaire en comportant tous les éléments d’identification de la liaison visée, de l’infraction qui la justifie ainsi que sa durée.
+
+La nouvelle loi innove par rapport à la Loi-cadre n° 013/2002 du 16 octobre 2002 en consacrant dans le chef de chaque utilisateur le droit spécifique de bénéficier du secret de correspondances émises non seulement par la voie de télécommunications, mais aussi celles émises à travers les technologies de l’information et de la communication. 
+
+En effet, la Loi-cadre se limitait à poser le principe de la garantie du secret des correspondances émises par la voie de télécommunications et elle proscrivait toute atteinte ce secret sauf si elle émanait d’une l’autorité publique et dans les seuls cas de nécessité d’intérêt public prévus par la loi et dans les limites fixées par celle-ci. 
+
+II. La protection des données à caractère personnel : nécessité des textes de mise en application de la Loi
+L’une des avancées majeures du nouveau cadre juridique congolais en matière de télécommunications et des TIC est la prévision des dispositions relatives à la protection des données à caractère personnel. 
+
+En effet dans un contexte de mondialisation croissante entrainant l’affranchissement des barrières à la fourniture des biens et services via internet, la nouvelle loi ambitionne de renforcer le droit à la protection des données à caractère personnel des citoyens congolais. 
+
+Par « données à caractère personnel » il faut comprendre toute information relative à une personne physique identifiée ou identifiable, directement ou indirectement, par référence à un numéro d’identification ou à un ou plusieurs éléments propres à son identité physique, physiologique, génétique, psychique, culturelle, sociale ou économique.
+
+L’article 131 de la Loi du 25 novembre 2020 garantie la confidentialité des données à caractère personnel. 
+
+C’est ainsi que le traitement des données à caractère personnel ne peut être effectué que sur le consentement préalable de la personne concernée ou sur la réquisition de l’officier du ministère public.
+
+S’agissant du consentement, celui-ci pour être valablement reçu doit être libre, spécifique, éclairé, formulé en des termes clairs et simples et faciles d’accès. 
+
+La Loi impose une protection spécifique à certaines catégories de données qu’on peut qualifier de « données sensibles » en interdisant leur traitement.
+
+Il s’agit des données qui révèlent l’origine raciale, ethnique ou régionale, la filiation, les opinions politiques, les convictions religieuses ou philosophiques, l’appartenance syndicale, la vie sexuelle, les données génétiques ou plus généralement celles relatives à l’état de santé de la personne concernée. 
+
+Il convient de noter qu’avant la promulgation de la Loi sous examen, les textes juridiques congolais ne posait aucun principe ni limitation au traitement des données à caractère personnel sensibles. 
+
+Seul le principe constitutionnel de non-discrimination (article 13 de la Constitution) pouvait servir de base à une interdiction d’utiliser et de traiter ces données à des fins discriminatoires. 
+
+C’est ainsi que, l’article 22 de la Loi n° 08/011 du 14 juillet 2008 portant protection des droits des personnes vivant avec le VIH/SIDA et des personnes affectées interdit à tout employeur et à tout médecin œuvrant dans/ou pour le compte d’une entreprise, d’exiger à un postulant ou à un employé le test sérologique au VIH, au cours d’une visite médicale d’aptitude au travail ou d’un examen médical périodique obligatoire.
+
+Il en est de même de l’article 128 du Code du travail congolais qui prévoit que la maternité ne peut constituer une source de discrimination en matière d’emploi et qu’il est en particulier interdit d’exiger d’une femme qui postule un emploi de se soumettre à un test de grossesse ou qu’elle présente un certificat attestant ou non l’état de grossesse, sauf pour les travaux qui sont interdits totalement ou partiellement aux femmes enceintes ou qui allaitent ou un travail qui comporte un risque reconnu ou significatif pour la santé de la femme.
+
+III. Des sanctions en cas de violation des règles en matière de protection de la vie privée et des données à caractère personnel
+Outre les prérogatives reconnues au ministère public et aux officiers de police judiciaire à compétence générale dans la recherche, la constatation et les poursuites des infractions, la loi reconnaît les mêmes prérogatives aux agents commis spécialement par l’Autorité de régulation de l’Administration des télécommunications et des technologies de l’information et de la communication. 
+
+L’agent qui est auteur de toute violation du secret des correspondances ou toute manipulation sans autorisation préalable des données à caractère personnel est punie de servitude pénale en matière de violation de correspondance. Et en cette matière l’article 72 du Code pénal congolais prévoit une servitude pénale d’un mois au plus et d’une amende qui ne dépassera pas deux mille (zaïres) ou l’une de ces peines seulement. 
+
+Quant à l’employeur, il sera condamné à une amende pouvant varier entre 50.000.000 à 100.000.000 de francs congolais .
+
+La victime dispose également du droit de réclamer une réparation civile solidairement à l’agent auteur de l’infraction et à son employeur, en sollicitant du tribunal saisi l’allocation des dommages et intérêts.
+
+La loi punit également toute interception, écoute, enregistrement, transcription au moyen d’un quelconque dispositif pour divulguer une communication ou correspondance privé d’une servitude pénale principale de 1 à 3 ans et/ou d’une amende de 1.000.000 à 10.000.000 de francs congolais . 
+
+Conclusion 
+En ayant brièvement fait le contour de la Loi n° 20/017 du 25 novembre 2020 sur les questions spécifiques de la protection de la vie privée et des données à caractère personnel, l’on note la nette volonté du législateur congolais de renforcer cette protection. 
+
+Cette œuvre combien louable devra cependant, pour sa pleine efficacité, être parachevée par l’adoption des mesures d’application prévue par cette loi. 
+
+Il est ainsi prévu que sur proposition de l’Autorité de régulation, un arrêté du ministre ayant le secteur de la télécommunication et des TIC dans ses attributions, puisse fixer les conditions et modalités de collecte, d’enregistrement, de traitement, de stockage et de transmission des données à caractère personnel.
+
+Cet arrêté permettra également aux services concernés par la protection de la vie privée et des données à caractère personnel au sein des entreprises œuvrant dans le secteur des télécommunications et des TIC ainsi que toutes celles concernées d’une manière ou d’une autre par ces questions de mettre à jour leur politique interne. 
+
+

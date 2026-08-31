@@ -44,7 +44,7 @@ function renderAuth(container) {
                     <div class="form-group auth-register-field hidden privacy-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="authPrivacy" />
-                            J'accepte la <a href="#" class="link">politique de confidentialité</a> et <a href="#" class="link">Conditions d'utilisation</a> de l'application.
+                            J'accepte la <a href="#" class="link" onclick="navigateTo('privacy'); return false;">politique de confidentialité</a> et <a href="#" class="link" onclick="navigateTo('terms'); return false;">Conditions d'utilisation</a> de l'application.
                         </label>
                     </div>
                     <div class="form-group auth-remember-field">
@@ -169,6 +169,71 @@ function renderAuth(container) {
             // showToast already handled in apiCall
         }
     });
+}
+
+function renderLegalPage(container, type = 'privacy') {
+    const title = type === 'privacy' ? 'Politique de confidentialité' : 'Conditions d\'utilisation';
+    const intro = type === 'privacy'
+        ? 'Cette politique décrit la manière dont Ag7Spot collecte, utilise, protège et conserve vos données personnelles.'
+        : 'En utilisant Ag7Spot, vous acceptez les présentes conditions d\'utilisation, qui encadrent votre accès et votre usage de l\'application.';
+
+    const content = type === 'privacy' ? `
+        <h2>Politique de confidentialité</h2>
+        <p>${intro}</p>
+        <h3>1. Données collectées</h3>
+        <p>Nous collectons les informations nécessaires à la création du compte, à l\'authentification, à la gestion de vos achats et ventes, ainsi qu\'aux services de messagerie et notifications.</p>
+        <h3>2. Utilisation des données</h3>
+        <p>Les données sont utilisées pour sécuriser votre compte, personnaliser votre expérience, traiter les commandes, gérer les boutiques et améliorer la qualité du service.</p>
+        <h3>3. Protection</h3>
+        <p>Nous mettons en place des mesures techniques et organisationnelles raisonnables pour protéger vos informations contre l\'accès non autorisé, la modification ou la divulgation.</p>
+        <h3>4. Consentement</h3>
+        <p>En créant un compte ou en utilisant le service, vous consentez au traitement de vos données conformément à cette politique.</p>
+        <h3>5. Droits</h3>
+        <p>Vous pouvez demander la consultation, la mise à jour ou la suppression de vos données personnelles, selon les règles applicables et la législation en vigueur.</p>
+    ` : `
+        <h2>Conditions d'utilisation</h2>
+        <p>${intro}</p>
+        <h3>1. Objet</h3>
+        <p>Ag7Spot permet de découvrir des boutiques, des promotions, de gérer un profil et d\'interagir avec d\'autres utilisateurs.</p>
+        <h3>2. Obligations de l'utilisateur</h3>
+        <p>Vous vous engagez à fournir des informations honnêtes, à respecter les règles de la plateforme et à ne pas utiliser le service à des fins illicites, abusives ou frauduleuses.</p>
+        <h3>3. Compte utilisateur</h3>
+        <p>Vous êtes responsable de la confidentialité de votre mot de passe et de toutes les activités liées à votre compte.</p>
+        <h3>4. Modération et sécurité</h3>
+        <p>Nous nous réservons le droit de suspendre ou supprimer un compte en cas de comportement contraire aux règles de sécurité ou de communauté.</p>
+        <h3>5. Responsabilité</h3>
+        <p>Ag7Spot fournit le service tel quel et ne peut être tenu responsable des contenus publiés par les utilisateurs ou des incidents liés à l\'usage et aux conditions externes.</p>
+    `;
+
+    container.innerHTML = `
+        <div class="page active auth-page">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div>
+                        <span class="auth-badge">Ag7Spot</span>
+                        <h2>${title}</h2>
+                    </div>
+                    <div class="auth-illustration">
+                        <img src="ico/spot.png" alt="Ag7Spot" class="app-icon" />
+                    </div>
+                </div>
+                <div class="legal-content" style="display:grid; gap:12px; color: var(--text-main); line-height:1.7; font-size:14px;">
+                    ${content}
+                </div>
+                <div style="margin-top: 18px;">
+                    <button type="button" class="btn-primary" onclick="navigateTo('auth')">Retour</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderPrivacyPolicy(container) {
+    renderLegalPage(container, 'privacy');
+}
+
+function renderTerms(container) {
+    renderLegalPage(container, 'terms');
 }
 
 function applyStoredUser(user) {

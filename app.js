@@ -503,18 +503,17 @@ function updateHeaderActionsVisibility() {
 }
 
 function navigateTo(page) {
-    if (page !== 'auth' && (!CURRENT_USER || !CURRENT_USER.id)) {
+    const publicPages = ['auth', 'privacy', 'terms'];
+    if (!publicPages.includes(page) && (!CURRENT_USER || !CURRENT_USER.id)) {
         page = 'auth';
     }
 
-    // Mettre à jour la nav
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const navBtn = document.querySelector(`.nav-item[data-page="${page}"]`);
     if (navBtn) navBtn.classList.add('active');
 
     currentPage = page;
 
-    // Charger la page correspondante
     const container = document.getElementById('pageContainer');
 
     switch(page) {
@@ -533,6 +532,12 @@ function navigateTo(page) {
         case 'auth':
             renderAuth(container);
             break;
+        case 'privacy':
+            renderPrivacyPolicy(container);
+            break;
+        case 'terms':
+            renderTerms(container);
+            break;
         case 'favorites':
             renderFavorites(container);
             break;
@@ -543,7 +548,6 @@ function navigateTo(page) {
             container.innerHTML = '<p>Page en construction</p>';
     }
 
-    // Scroll en haut
     document.getElementById('mainContent').scrollTop = 0;
 }
 
