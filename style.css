@@ -439,6 +439,10 @@ body {
     filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
     transform: translateY(-2px);
 }
+
+.map-summary-empty {
+    margin-bottom: 15px;
+}
 /* removed external halo ::after to show only the pin */
 
 /* small bounce on map interactions (optional) */
