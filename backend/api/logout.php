@@ -24,6 +24,7 @@ if (ini_get('session.use_cookies')) {
         $params['path'], $params['domain'], $params['secure'], $params['httponly']
     );
 }
+setcookie('ag7_remember_me', '', time() - 3600, '/', '', false, true);
 session_destroy();
 
 echo json_encode(['success' => true]);

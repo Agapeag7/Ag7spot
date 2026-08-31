@@ -22,7 +22,8 @@ function renderAuth(container) {
                 <form id="authForm" class="auth-form" data-mode="login">
                     <div class="form-group">
                         <label id="authEmailLabel">Nom d'utilisateur</label>
-                        <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d'utilisateur" required />
+                        <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d\'utilisateur" required />
+                        <small class="auth-username-hint hidden" style="color: var(--text-gray)">Le nom doit contenir entre 5 et 20 caractères.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
@@ -47,15 +48,17 @@ function renderAuth(container) {
                             J'accepte la <a href="#" class="link" onclick="navigateTo('privacy'); return false;">politique de confidentialité</a> et <a href="#" class="link" onclick="navigateTo('terms'); return false;">Conditions d'utilisation</a> de l'application.
                         </label>
                     </div>
+                    
+                    <button type="submit" class="btn-primary w-full auth-submit-btn">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+
                     <div class="form-group auth-remember-field">
                         <label class="checkbox-label">
                             <input type="checkbox" id="authRememberMe" checked />
                             <span>Se souvenir de moi</span>
                         </label>
                     </div>
-                    <button type="submit" class="btn-primary w-full auth-submit-btn">
-                        <i class="fas fa-sign-in-alt"></i> Se connecter
-                    </button>
                     <div class="auth-footer">
                         <p class="auth-note-login">Tu dois déjà posséder un compte pour te connecter.</p>
                         <p class="auth-note-register hidden">En créant un compte, tu acceptes la politique de confidentialité et les conditions d'utilisation.</p>
@@ -74,7 +77,20 @@ function renderAuth(container) {
     const loginNote = container.querySelector('.auth-note-login');
     const registerNote = container.querySelector('.auth-note-register');
     const passwordHint = container.querySelector('.auth-password-hint');
+    const usernameHint = container.querySelector('.auth-username-hint');
     const rememberMeInput = container.querySelector('#authRememberMe');
+
+    const generateUsernameWithSuffix = () => {
+        const rawValue = authEmailInput.value.trim();
+        if (!rawValue) return;
+
+        const hasAutoSuffix = /\d{2,}$/.test(rawValue);
+        if (hasAutoSuffix) return;
+
+        const base = rawValue.replace(/\d+$/, '').trim() || 'user';
+        const suffix = String(Math.floor(1000 + Math.random() * 9000));
+        authEmailInput.value = `${base}${suffix}`;
+    };
 
     const setMode = (mode) => {
         authForm.dataset.mode = mode;
@@ -84,9 +100,15 @@ function renderAuth(container) {
         if (passwordHint) {
             passwordHint.classList.toggle('hidden', !isRegister);
         }
+        if (usernameHint) {
+            usernameHint.classList.toggle('hidden', !isRegister);
+        }
+        if (isRegister && authEmailInput.value.trim()) {
+            generateUsernameWithSuffix();
+        }
         submitBtn.innerHTML = isRegister ? '<i class="fas fa-user-plus"></i> Créer mon compte' : '<i class="fas fa-sign-in-alt"></i> Se connecter';
         authEmailLabel.textContent = 'Nom d\'utilisateur';
-        authEmailInput.placeholder = 'Entrez votre nom d\'utilisateur';
+        authEmailInput.placeholder = isRegister ? 'Entrez votre nom d\'utilisateur' : 'Entrez votre nom d\'utilisateur';
         authEmailInput.type = 'text';
         loginNote.classList.toggle('hidden', isRegister);
         registerNote.classList.toggle('hidden', !isRegister);
@@ -102,6 +124,9 @@ function renderAuth(container) {
         e.preventDefault();
 
         const mode = authForm.dataset.mode;
+        if (mode === 'register') {
+            generateUsernameWithSuffix();
+        }
         const identifier = container.querySelector('#authEmail').value.trim();
         const password = container.querySelector('#authPassword').value;
         const rememberMe = rememberMeInput ? rememberMeInput.checked : false;

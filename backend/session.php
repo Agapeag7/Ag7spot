@@ -1,7 +1,9 @@
 <?php
 function configureSessionLifetime(bool $rememberMe = false): void {
+    $lifetime = $rememberMe ? 30 * 24 * 60 * 60 : 0;
+
     session_set_cookie_params([
-        'lifetime' => $rememberMe ? 30 * 24 * 60 * 60 : 0,
+        'lifetime' => $lifetime,
         'path' => '/',
         'domain' => '',
         'secure' => false,
@@ -11,5 +13,6 @@ function configureSessionLifetime(bool $rememberMe = false): void {
 }
 
 if (session_status() === PHP_SESSION_NONE) {
-    configureSessionLifetime();
+    $rememberMe = !empty($_COOKIE['ag7_remember_me']) && $_COOKIE['ag7_remember_me'] === '1';
+    configureSessionLifetime($rememberMe);
 }

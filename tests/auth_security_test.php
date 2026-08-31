@@ -66,8 +66,39 @@ try {
 }
 
 try {
-    $users->validateRegistrationInput('alice', 'StrongPass!2026', ['username' => 'alice']);
+    $users->validateRegistrationInput('alice', 'StrongPass!2026');
+    fwrite(STDERR, "FATAL: username without numeric suffix should be rejected\n");
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+
+try {
+    $users->validateRegistrationInput('alice123', 'StrongPass!2026', ['username' => 'alice123']);
     fwrite(STDERR, "FATAL: duplicated username should be rejected\n");
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+
+try {
+    $users->validateRegistrationInput('alice123', 'StrongPass!2026');
+} catch (InvalidArgumentException $e) {
+    fwrite(STDERR, "FATAL: valid username with numeric suffix should be accepted\n");
+    exit(1);
+}
+
+try {
+    $users->validateRegistrationInput('ab12', 'StrongPass!2026');
+    fwrite(STDERR, "FATAL: username shorter than 5 characters should be rejected\n");
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+
+try {
+    $users->validateRegistrationInput('a123456789012345678901', 'StrongPass!2026');
+    fwrite(STDERR, "FATAL: username longer than 20 characters should be rejected\n");
     exit(1);
 } catch (InvalidArgumentException $e) {
     // expected

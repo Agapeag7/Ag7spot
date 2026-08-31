@@ -261,8 +261,12 @@ class SpotUsers {
             throw new InvalidArgumentException('Le pseudo est requis.');
         }
 
-        if (strlen($username) < 3) {
-            throw new InvalidArgumentException('Le pseudo doit contenir au moins 3 caractères.');
+        if (strlen($username) < 5 || strlen($username) > 20) {
+            throw new InvalidArgumentException('Le pseudo doit contenir entre 5 et 20 caractères, avec un suffixe numérique unique à la fin (ex. pseudo123).');
+        }
+
+        if (!preg_match('/^[A-Za-zÀ-ÖØ-öø-ÿ_][A-Za-zÀ-ÖØ-öø-ÿ0-9_]*[0-9]{2,}$/u', $username)) {
+            throw new InvalidArgumentException('Le pseudo doit finir par des chiffres uniques et contenir entre 5 et 20 caractères (ex. pseudo123).');
         }
 
         if (strcasecmp($username, $password) === 0) {

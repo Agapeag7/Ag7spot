@@ -9,6 +9,11 @@ $rememberMe = !empty($data['remember_me']);
 
 require_once '../session.php';
 configureSessionLifetime($rememberMe);
+if ($rememberMe) {
+    setcookie('ag7_remember_me', '1', time() + (30 * 24 * 60 * 60), '/', '', false, true);
+} else {
+    setcookie('ag7_remember_me', '', time() - 3600, '/', '', false, true);
+}
 session_start();
 require_once '../spot.class.php';
 
