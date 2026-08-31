@@ -44,7 +44,7 @@ function renderAuth(container) {
                     <div class="form-group auth-register-field hidden privacy-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="authPrivacy" />
-                            J'accepte la <a href="#" class="link">politique de confidentialité</a> de l'application.
+                            J'accepte la <a href="#" class="link">politique de confidentialité</a> et <a href="#" class="link">Conditions d'utilisation</a> de l'application.
                         </label>
                     </div>
                     <button type="submit" class="btn-primary w-full auth-submit-btn">

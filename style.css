@@ -622,10 +622,14 @@ body {
     font-size: 14px;
     color: var(--text-main);
     line-height: 1.6;
+    cursor: pointer;
+    flex-wrap: nowrap;
 }
-.checkbox-label input {
+.checkbox-label input[type="checkbox"] {
     margin: 0;
     accent-color: var(--primary);
+    flex-shrink: 0;
+    width: 20px;
 }
 .link {
     color: var(--primary);
