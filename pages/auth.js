@@ -47,6 +47,12 @@ function renderAuth(container) {
                             J'accepte la <a href="#" class="link">politique de confidentialité</a> et <a href="#" class="link">Conditions d'utilisation</a> de l'application.
                         </label>
                     </div>
+                    <div class="form-group auth-remember-field">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="authRememberMe" checked />
+                            <span>Se souvenir de moi</span>
+                        </label>
+                    </div>
                     <button type="submit" class="btn-primary w-full auth-submit-btn">
                         <i class="fas fa-sign-in-alt"></i> Se connecter
                     </button>
@@ -68,6 +74,7 @@ function renderAuth(container) {
     const loginNote = container.querySelector('.auth-note-login');
     const registerNote = container.querySelector('.auth-note-register');
     const passwordHint = container.querySelector('.auth-password-hint');
+    const rememberMeInput = container.querySelector('#authRememberMe');
 
     const setMode = (mode) => {
         authForm.dataset.mode = mode;
@@ -97,6 +104,7 @@ function renderAuth(container) {
         const mode = authForm.dataset.mode;
         const identifier = container.querySelector('#authEmail').value.trim();
         const password = container.querySelector('#authPassword').value;
+        const rememberMe = rememberMeInput ? rememberMeInput.checked : false;
 
         if (!identifier || !password) {
             showToast('Veuillez remplir tous les champs obligatoires.', 'warning');
@@ -105,7 +113,7 @@ function renderAuth(container) {
 
         if (mode === 'login') {
             try {
-                const response = await login(identifier, password);
+                const response = await login(identifier, password, rememberMe);
                 const user = response.user;
                 localStorage.setItem('ag7_current_user', JSON.stringify(user));
                 localStorage.removeItem('onboarding_done');
@@ -149,7 +157,7 @@ function renderAuth(container) {
         }
 
         try {
-            const response = await register(username, password, accountType);
+            const response = await register(username, password, accountType, rememberMe);
             const user = response.user;
             localStorage.setItem('ag7_current_user', JSON.stringify(user));
             localStorage.removeItem('onboarding_done');

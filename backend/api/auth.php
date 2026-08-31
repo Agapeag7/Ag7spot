@@ -4,7 +4,11 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
+$data = json_decode(file_get_contents('php://input'), true) ?? [];
+$rememberMe = !empty($data['remember_me']);
+
 require_once '../session.php';
+configureSessionLifetime($rememberMe);
 session_start();
 require_once '../spot.class.php';
 
@@ -17,7 +21,18 @@ try {
     exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true) ?? [];
+function shouldRejectConcurrentLogin(int $currentUserId, int $targetUserId, ?string $activeSessionToken, ?string $dbSessionToken): bool {
+    if ($currentUserId <= 0) {
+        return false;
+    }
+
+    if ($currentUserId === $targetUserId) {
+        return false;
+    }
+
+    return !empty($dbSessionToken) && $activeSessionToken !== $dbSessionToken;
+}
+
 $action = trim(strtolower($data['action'] ?? 'login'));
 
 if ($action === 'login') {
@@ -43,21 +58,15 @@ if ($action === 'login') {
         $dbSessionToken = $user['session_token'] ?? null;
         $targetUserId = intval($user['id']);
 
-        if ($currentUserId === $targetUserId) {
-            $sessionToken = $spot->users->generateSessionToken();
-            $_SESSION['session_token'] = $sessionToken;
-            $spot->users->setSessionToken($targetUserId, $sessionToken);
-        } else {
-            if (!empty($dbSessionToken) && $activeSessionToken !== $dbSessionToken && $currentUserId !== $targetUserId) {
-                http_response_code(409);
-                echo json_encode(['success' => false, 'error' => 'Ce compte est déjà connecté sur un autre appareil.']);
-                exit;
-            }
-
+        if (!shouldRejectConcurrentLogin($currentUserId, $targetUserId, $activeSessionToken, $dbSessionToken)) {
             $sessionToken = $spot->users->generateSessionToken();
             $_SESSION['user_id'] = $targetUserId;
             $_SESSION['session_token'] = $sessionToken;
             $spot->users->setSessionToken($targetUserId, $sessionToken);
+        } else {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'error' => 'Ce compte est déjà connecté sur un autre appareil.']);
+            exit;
         }
         unset($user['password']);
 

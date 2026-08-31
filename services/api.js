@@ -154,12 +154,12 @@ function auth(action, payload) {
     return apiCall('auth.php', 'POST', Object.assign({ action }, payload));
 }
 
-function login(username, password) {
-    return auth('login', { username, password });
+function login(username, password, rememberMe = false) {
+    return auth('login', { username, password, remember_me: !!rememberMe });
 }
 
-function register(name, password, role) {
-    return auth('register', { name, password, role });
+function register(name, password, role, rememberMe = false) {
+    return auth('register', { name, password, role, remember_me: !!rememberMe });
 }
 
 function logoutApi() {
