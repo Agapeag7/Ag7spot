@@ -157,7 +157,7 @@ if (!$isLocalHost && !$isHttps) {
                         </div>
                         <div class="form-group">
                             <label for="editShopCategory">Catégorie</label>
-                            <select id="editShopCategory" required>
+                            <select id="editShopCategory" class="" required>
                                 <option value="fashion">Mode et habillement</option>
                                 <option value="home">Maison et décoration</option>
                                 <option value="tech">High-tech et électronique</option>

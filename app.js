@@ -251,7 +251,7 @@ function handleGlobalNavigationClick(event) {
 document.addEventListener('DOMContentLoaded', async () => {
     attachNavigationHandlers();
 
-    const storedUser = loadStoredUser();
+    let storedUser = loadStoredUser();
     if (storedUser) {
         if (typeof applyStoredUser === 'function') {
             applyStoredUser(storedUser);
@@ -266,9 +266,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (!CURRENT_USER || !CURRENT_USER.id) {
-        updateHeaderActionsVisibility();
-        navigateTo('auth');
-        return;
+        try {
+            const profileResponse = await getProfile();
+            const user = profileResponse && profileResponse.user ? profileResponse.user : null;
+            if (user) {
+                storedUser = user;
+                localStorage.setItem('ag7_current_user', JSON.stringify(user));
+                if (typeof applyStoredUser === 'function') {
+                    applyStoredUser(user);
+                } else {
+                    CURRENT_USER.id = user.id || CURRENT_USER.id;
+                    CURRENT_USER.username = user.username || CURRENT_USER.username;
+                    CURRENT_USER.points = user.points ?? CURRENT_USER.points;
+                    CURRENT_USER.avatar = user.avatar || CURRENT_USER.avatar;
+                    CURRENT_USER.shopId = user.shopId || null;
+                    CURRENT_USER.role = user.role || CURRENT_USER.role;
+                }
+            } else {
+                localStorage.removeItem('ag7_current_user');
+                updateHeaderActionsVisibility();
+                navigateTo('auth');
+                return;
+            }
+        } catch (error) {
+            localStorage.removeItem('ag7_current_user');
+            updateHeaderActionsVisibility();
+            navigateTo('auth');
+            return;
+        }
     }
 
     updateHeaderActionsVisibility();

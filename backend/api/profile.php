@@ -10,6 +10,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, PUT');
 header('Access-Control-Allow-Headers: Content-Type');
 
+require_once '../session.php';
+
 function jsonResponse(array $data, int $status = 200) {
     if (!headers_sent()) {
         header('Content-Type: application/json');

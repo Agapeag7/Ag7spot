@@ -10,6 +10,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
+require_once '../session.php';
 session_start();
 
 function jsonResponse(array $data, int $status = 200) {
