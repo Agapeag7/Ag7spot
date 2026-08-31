@@ -429,10 +429,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         navigator.serviceWorker.register('sw.js')
             .then(() => console.log('SW enregistré'))
             .catch(err => {
-                console.info('SW non enregistré en mode local sans certificat valide.', location.protocol, location.hostname);
+                console.info('SW non enregistré en mode local sans certificat valide.');
             });
     } else if ('serviceWorker' in navigator) {
-        console.info('SW non enregistré : certificat ou contexte de sécurité insuffisant.', location.protocol, location.hostname);
+        console.info('SW non enregistré : certificat ou contexte de sécurité insuffisant.');
     }
 });
 

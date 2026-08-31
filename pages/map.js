@@ -349,7 +349,7 @@ async function loadShopsOnMap(pos, query = '') {
             const products = await getShopProducts(shop.id);
             mapProductsByShop.set(Number(shop.id), Array.isArray(products) ? products : []);
         } catch (error) {
-            console.warn(`Impossible de récupérer les produits de la boutique ${shop.id}.`, error);
+            console.warn(`Impossible de récupérer les produits de la boutique.`, error);
             mapProductsByShop.set(Number(shop.id), []);
         }
     }));
