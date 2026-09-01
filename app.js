@@ -594,16 +594,18 @@ function startAg7SpotTutorial() {
     const steps = getAg7SpotTutorialSteps();
     let currentStep = 0;
 
+    const clearTutorialDom = () => {
+        document.querySelectorAll('.ag7spot-tutorial-overlay, .ag7spot-tutorial-highlight').forEach(el => el.remove());
+    };
+
     const closeTutorial = () => {
-        const overlay = document.getElementById('ag7SpotTutorialOverlay');
-        if (overlay) overlay.remove();
+        clearTutorialDom();
         window.ag7SpotTutorialRunning = false;
         markAg7SpotTutorialDone();
     };
 
     const showStep = () => {
-        const overlay = document.getElementById('ag7SpotTutorialOverlay');
-        if (overlay) overlay.remove();
+        clearTutorialDom();
 
         const step = steps[currentStep];
         if (!step) {
@@ -624,7 +626,6 @@ function startAg7SpotTutorial() {
 
         const rect = target.getBoundingClientRect();
         const highlight = document.createElement('div');
-        highlight.id = 'ag7SpotTutorialHighlight';
         highlight.className = 'ag7spot-tutorial-highlight';
         highlight.style.top = `${rect.top - 8}px`;
         highlight.style.left = `${rect.left - 8}px`;
@@ -632,7 +633,6 @@ function startAg7SpotTutorial() {
         highlight.style.height = `${rect.height + 16}px`;
 
         const backdrop = document.createElement('div');
-        backdrop.id = 'ag7SpotTutorialOverlay';
         backdrop.className = 'ag7spot-tutorial-overlay';
         backdrop.innerHTML = `
             <div class="ag7spot-tutorial-card">
