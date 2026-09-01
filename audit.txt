@@ -1,38 +1,21 @@
-Pour familiariser les nouveaux utilisateurs à l'appli :
-
-Intro.js : Très populaire, léger et parfait pour créer des étapes pas à pas.
-Driver.js : Une bibliothèque puissante et sans dépendances pour mettre en surbrillance des éléments.
-Shepherd.js : Très personnalisable pour guider les utilisateurs à travers votre application.
-
-Comment ça fonctionne techniquement ?
-- Cibler les boutons : Vous devez ajouter un identifiant unique (comme un id, une class ou une ref) sur chaque bouton que vous souhaitez expliquer.
-- Définir les étapes : Vous créez un tableau de configuration (un script) qui dit à l'application quel bouton cibler et quel texte afficher.
-- Suivre l'état de l'utilisateur : Vous devez enregistrer dans la mémoire locale de l'appareil (ex: localStorage sur le web, SharedPreferences sur Android) si l'utilisateur a déjà vu le tutoriel pour ne plus lui afficher aux prochaines ouvertures.
-
-
-Exemple conceptuel (avec Intro.js sur le Web)
-<button id="bouton-creer">Créer un projet</button>
-<button id="bouton-exporter">Exporter</button>
-
-
-Dans le code JavaScript :
-// 1. On vérifie si l'utilisateur est nouveau
-if (!localStorage.getItem('tutorial_done')) {
-  
-  // 2. On configure les étapes
-  introJs().setOptions({
-    steps: [
-      {
-        element: '#bouton-creer',
-        intro: "Cliquez ici pour commencer votre tout premier projet !"
-      },
-      {
-        element: '#bouton-exporter',
-        intro: "Une fois terminé, utilisez ce bouton pour télécharger votre travail."
-      }
-    ]
-  }).oncomplete(() => {
-    // 3. On enregistre que le tutoriel est fini
-    localStorage.setItem('tutorial_done', 'true');
-  }).start();
-}
+il y'a un autre soucis cette zone empeche de voir tout :
+<div class="modal-content onboarding-modal">
+    <div id="onboardingContainer">
+        <div class="onboarding">
+            
+et ceci doit se placer au centre de l'ecran et non en bas :
+<div class="ag7spot-tutorial-card">
+    <div class="ag7spot-tutorial-header">
+        <span class="ag7spot-tutorial-badge">1/8</span>
+        <button type="button" class="ag7spot-tutorial-close" aria-label="Fermer le tutoriel">×</button>
+    </div>
+    <h3>Recherche</h3>
+    <p>Rechercher rapidement un produit ou une boutique près de toi.</p>
+    <div class="ag7spot-tutorial-actions">
+        <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-secondary" data-action="skip">Passer</button>
+        <div class="ag7spot-tutorial-nav">
+            <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-muted" data-action="prev" disabled="">Retour</button>
+            <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-primary" data-action="next">Suivant</button>
+        </div>
+    </div>
+</div>
