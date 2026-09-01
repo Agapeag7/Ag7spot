@@ -126,6 +126,127 @@ body {
 .header-actions i:hover {
     color: var(--primary);
 }
+
+.ag7spot-tutorial-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(15, 23, 42, 0.48);
+    backdrop-filter: blur(3px);
+}
+
+.ag7spot-tutorial-highlight {
+    position: fixed;
+    z-index: 3001;
+    border: 3px solid rgba(93, 110, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.48);
+    pointer-events: none;
+}
+
+.ag7spot-tutorial-card {
+    position: absolute;
+    right: 20px;
+    top: 90px;
+    width: min(360px, calc(100vw - 32px));
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 16px 16px 14px;
+    color: var(--text-main);
+}
+
+.ag7spot-tutorial-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.ag7spot-tutorial-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: rgba(93, 110, 255, 0.1);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ag7spot-tutorial-close {
+    border: none;
+    background: transparent;
+    color: var(--text-gray);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.ag7spot-tutorial-card h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+}
+
+.ag7spot-tutorial-card p {
+    margin: 0;
+    color: var(--text-gray);
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.ag7spot-tutorial-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.ag7spot-tutorial-nav {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.ag7spot-tutorial-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.ag7spot-tutorial-btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.ag7spot-tutorial-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.ag7spot-tutorial-btn-secondary {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--text-main);
+}
+
+.ag7spot-tutorial-btn-muted {
+    background: transparent;
+    color: var(--text-gray);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.ag7spot-tutorial-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .notification-trigger {
     position: relative;
     display: inline-flex;

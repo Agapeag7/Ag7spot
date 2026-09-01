@@ -436,6 +436,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     appInitialized = true;
     updateHeaderActionsVisibility();
 
+    if (CURRENT_USER && CURRENT_USER.id && !isAg7SpotTutorialDone()) {
+        setTimeout(() => startAg7SpotTutorial(), 350);
+    }
+
     bindHeaderActions();
 
     refreshNotificationBadge();
@@ -521,6 +525,158 @@ function updateHeaderActionsVisibility() {
             bottomNav.classList.add('hidden');
         }
     }
+}
+
+function getAg7SpotTutorialKey() {
+    const userId = (window.CURRENT_USER && window.CURRENT_USER.id) ? String(window.CURRENT_USER.id) : null;
+    return userId ? `ag7spot_tutorial_done_${userId}` : 'ag7spot_tutorial_done';
+}
+
+function isAg7SpotTutorialDone() {
+    const key = getAg7SpotTutorialKey();
+    return localStorage.getItem(key) === 'true';
+}
+
+function markAg7SpotTutorialDone() {
+    localStorage.setItem(getAg7SpotTutorialKey(), 'true');
+}
+
+function getAg7SpotTutorialSteps() {
+    return [
+        {
+            selector: '#searchIcon',
+            title: 'Recherche',
+            text: 'Rechercher rapidement un produit ou une boutique près de toi.'
+        },
+        {
+            selector: '#notificationTrigger',
+            title: 'Notifications',
+            text: 'Regarde ici les nouveaux messages, mises à jour et alertes importantes.'
+        },
+        {
+            selector: '.nav-item[data-page="map"]',
+            title: 'Carte',
+            text: 'Explore la carte pour voir les boutiques les plus proches de ta position.'
+        },
+        {
+            selector: '#distanceRange',
+            title: 'Distance',
+            text: 'Ajuste la distance pour filtrer les offres à proximité.'
+        },
+        {
+            selector: '#feedSearchInput',
+            title: 'Recherche du fil',
+            text: 'Utilise la recherche pour trouver un produit ou une boutique en particulier.'
+        },
+        {
+            selector: '.nav-item.nav-center[data-page="add"]',
+            title: 'Ajouter',
+            text: 'Ajoute ici ta boutique ou un produit à vendre.'
+        },
+        {
+            selector: '#routeBtn',
+            title: 'Parcours',
+            text: 'Crée un parcours pour organiser ta visite de plusieurs boutiques.'
+        },
+        {
+            selector: '.nav-item[data-page="profile"]',
+            title: 'Profil',
+            text: 'Depuis ton profil, tu peux gérer tes produits, ton statut boutique et tes paramètres.'
+        }
+    ];
+}
+
+function startAg7SpotTutorial() {
+    if (window.ag7SpotTutorialRunning) return;
+    if (!CURRENT_USER || !CURRENT_USER.id) return;
+    if (isAg7SpotTutorialDone()) return;
+
+    const steps = getAg7SpotTutorialSteps();
+    let currentStep = 0;
+
+    const closeTutorial = () => {
+        const overlay = document.getElementById('ag7SpotTutorialOverlay');
+        if (overlay) overlay.remove();
+        window.ag7SpotTutorialRunning = false;
+        markAg7SpotTutorialDone();
+    };
+
+    const showStep = () => {
+        const overlay = document.getElementById('ag7SpotTutorialOverlay');
+        if (overlay) overlay.remove();
+
+        const step = steps[currentStep];
+        if (!step) {
+            closeTutorial();
+            return;
+        }
+
+        const target = document.querySelector(step.selector);
+        if (!target) {
+            if (currentStep < steps.length - 1) {
+                currentStep += 1;
+                showStep();
+                return;
+            }
+            closeTutorial();
+            return;
+        }
+
+        const rect = target.getBoundingClientRect();
+        const highlight = document.createElement('div');
+        highlight.id = 'ag7SpotTutorialHighlight';
+        highlight.className = 'ag7spot-tutorial-highlight';
+        highlight.style.top = `${rect.top - 8}px`;
+        highlight.style.left = `${rect.left - 8}px`;
+        highlight.style.width = `${rect.width + 16}px`;
+        highlight.style.height = `${rect.height + 16}px`;
+
+        const backdrop = document.createElement('div');
+        backdrop.id = 'ag7SpotTutorialOverlay';
+        backdrop.className = 'ag7spot-tutorial-overlay';
+        backdrop.innerHTML = `
+            <div class="ag7spot-tutorial-card">
+                <div class="ag7spot-tutorial-header">
+                    <span class="ag7spot-tutorial-badge">${currentStep + 1}/${steps.length}</span>
+                    <button type="button" class="ag7spot-tutorial-close" aria-label="Fermer le tutoriel">×</button>
+                </div>
+                <h3>${step.title}</h3>
+                <p>${step.text}</p>
+                <div class="ag7spot-tutorial-actions">
+                    <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-secondary" data-action="skip">Passer</button>
+                    <div class="ag7spot-tutorial-nav">
+                        <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-muted" data-action="prev" ${currentStep === 0 ? 'disabled' : ''}>Retour</button>
+                        <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-primary" data-action="next">${currentStep === steps.length - 1 ? 'Terminer' : 'Suivant'}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const closeButton = backdrop.querySelector('.ag7spot-tutorial-close');
+        closeButton.addEventListener('click', closeTutorial);
+
+        backdrop.querySelector('[data-action="skip"]').addEventListener('click', closeTutorial);
+        backdrop.querySelector('[data-action="prev"]').addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep -= 1;
+                showStep();
+            }
+        });
+        backdrop.querySelector('[data-action="next"]').addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep += 1;
+                showStep();
+            } else {
+                closeTutorial();
+            }
+        });
+
+        document.body.appendChild(highlight);
+        document.body.appendChild(backdrop);
+        window.ag7SpotTutorialRunning = true;
+    };
+
+    showStep();
 }
 
 function navigateTo(page) {
