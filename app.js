@@ -117,6 +117,9 @@ async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
 }
 
 async function openNotifications() {
+    if (!CURRENT_USER || !CURRENT_USER.id) {
+        return;
+    }
     try {
         const PAGE_SIZE = 30;
         const response = await getNotifications(PAGE_SIZE, 0);
@@ -248,83 +251,20 @@ function handleGlobalNavigationClick(event) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    attachNavigationHandlers();
-
-    let storedUser = loadStoredUser();
-    if (storedUser) {
-        if (typeof applyStoredUser === 'function') {
-            applyStoredUser(storedUser);
-        } else {
-            CURRENT_USER.id = storedUser.id || CURRENT_USER.id;
-            CURRENT_USER.username = storedUser.username || CURRENT_USER.username;
-            CURRENT_USER.points = storedUser.points ?? CURRENT_USER.points;
-            CURRENT_USER.avatar = storedUser.avatar || CURRENT_USER.avatar;
-            CURRENT_USER.shopId = storedUser.shopId || null;
-            CURRENT_USER.role = storedUser.role || CURRENT_USER.role;
-        }
-    }
-
-    if (!CURRENT_USER || !CURRENT_USER.id) {
-        try {
-            const profileResponse = await getProfile();
-            const user = profileResponse && profileResponse.user ? profileResponse.user : null;
-            if (user) {
-                storedUser = user;
-                localStorage.setItem('ag7_current_user', JSON.stringify(user));
-                if (typeof applyStoredUser === 'function') {
-                    applyStoredUser(user);
-                } else {
-                    CURRENT_USER.id = user.id || CURRENT_USER.id;
-                    CURRENT_USER.username = user.username || CURRENT_USER.username;
-                    CURRENT_USER.points = user.points ?? CURRENT_USER.points;
-                    CURRENT_USER.avatar = user.avatar || CURRENT_USER.avatar;
-                    CURRENT_USER.shopId = user.shopId || null;
-                    CURRENT_USER.role = user.role || CURRENT_USER.role;
-                }
-            } else {
-                localStorage.removeItem('ag7_current_user');
-                updateHeaderActionsVisibility();
-                navigateTo('auth');
-                return;
-            }
-        } catch (error) {
-            localStorage.removeItem('ag7_current_user');
-            updateHeaderActionsVisibility();
-            navigateTo('auth');
-            return;
-        }
-    }
-
-    updateHeaderActionsVisibility();
-
-    // Vérifier si l'onboarding doit être affiché (par utilisateur)
-    if (CURRENT_USER && CURRENT_USER.id) {
-        const onboardingKey = `onboarding_done_${CURRENT_USER.id}`;
-        const onboardingDone = localStorage.getItem(onboardingKey);
-        if (!onboardingDone) {
-            renderOnboarding();
-            document.getElementById('onboardingModal').classList.remove('hidden');
-        }
-    }
-
-    // Charger la page par défaut
-    navigateTo('feed');
-    appInitialized = true;
-    updateHeaderActionsVisibility();
-
-    // Icône recherche : bascule l'affichage du champ de recherche dans le fil
+function bindHeaderActions() {
     const searchIconEl = document.getElementById('searchIcon');
-    if (searchIconEl) {
+    if (searchIconEl && !searchIconEl.dataset.boundHeaderSearch) {
+        searchIconEl.dataset.boundHeaderSearch = 'true';
         searchIconEl.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+
             const showAndFix = (wrap) => {
                 wrap.classList.add('show');
                 wrap.classList.add('fixed');
                 const input = document.getElementById('feedSearchInput');
                 if (input) input.focus();
 
-                // installer gestionnaire Esc global pour fermer la recherche
                 if (!window._feedSearchEscHandler) {
                     window._feedSearchEscHandler = function(ev) {
                         if (ev.key === 'Escape' || ev.keyCode === 27) {
@@ -390,36 +330,117 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.addEventListener('keydown', window._feedSearchEscHandler);
                 }
             } else {
-                // vider la recherche et recharger le fil complet
                 wrap.classList.remove('fixed');
-                if (input) {
-                    input.value = '';
-                }
+                if (input) input.value = '';
                 const dist = parseInt(document.getElementById('distanceRange')?.value || 5);
-                loadFeed(dist, '');
+                if (typeof loadFeed === 'function') loadFeed(dist, '');
 
-                // enlever le gestionnaire Esc si présent
                 if (window._feedSearchEscHandler) {
                     document.removeEventListener('keydown', window._feedSearchEscHandler);
                     delete window._feedSearchEscHandler;
                 }
             }
         });
+
+        searchIconEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                searchIconEl.click();
+            }
+        });
     }
 
     const notificationTrigger = document.getElementById('notificationTrigger');
-    if (notificationTrigger) {
-        notificationTrigger.addEventListener('click', openNotifications);
+    if (notificationTrigger && !notificationTrigger.dataset.boundHeaderNotification) {
+        notificationTrigger.dataset.boundHeaderNotification = 'true';
+        notificationTrigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!CURRENT_USER || !CURRENT_USER.id) return;
+            openNotifications();
+        });
         notificationTrigger.addEventListener('keydown', event => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
+                event.stopPropagation();
+                if (!CURRENT_USER || !CURRENT_USER.id) return;
                 openNotifications();
             }
         });
-        refreshNotificationBadge();
-        window.clearInterval(window.notificationBadgeInterval);
-        window.notificationBadgeInterval = window.setInterval(refreshNotificationBadge, 30000);
     }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    attachNavigationHandlers();
+    bindHeaderActions();
+
+    let storedUser = loadStoredUser();
+    if (storedUser) {
+        if (typeof applyStoredUser === 'function') {
+            applyStoredUser(storedUser);
+        } else {
+            CURRENT_USER.id = storedUser.id || CURRENT_USER.id;
+            CURRENT_USER.username = storedUser.username || CURRENT_USER.username;
+            CURRENT_USER.points = storedUser.points ?? CURRENT_USER.points;
+            CURRENT_USER.avatar = storedUser.avatar || CURRENT_USER.avatar;
+            CURRENT_USER.shopId = storedUser.shopId || null;
+            CURRENT_USER.role = storedUser.role || CURRENT_USER.role;
+        }
+    }
+
+    if (!CURRENT_USER || !CURRENT_USER.id) {
+        try {
+            const profileResponse = await getProfile();
+            const user = profileResponse && profileResponse.user ? profileResponse.user : null;
+            if (user) {
+                storedUser = user;
+                localStorage.setItem('ag7_current_user', JSON.stringify(user));
+                if (typeof applyStoredUser === 'function') {
+                    applyStoredUser(user);
+                } else {
+                    CURRENT_USER.id = user.id || CURRENT_USER.id;
+                    CURRENT_USER.username = user.username || CURRENT_USER.username;
+                    CURRENT_USER.points = user.points ?? CURRENT_USER.points;
+                    CURRENT_USER.avatar = user.avatar || CURRENT_USER.avatar;
+                    CURRENT_USER.shopId = user.shopId || null;
+                    CURRENT_USER.role = user.role || CURRENT_USER.role;
+                }
+            } else {
+                localStorage.removeItem('ag7_current_user');
+                updateHeaderActionsVisibility();
+                navigateTo('auth');
+                return;
+            }
+        } catch (error) {
+            localStorage.removeItem('ag7_current_user');
+            updateHeaderActionsVisibility();
+            navigateTo('auth');
+            return;
+        }
+    }
+
+    updateHeaderActionsVisibility();
+
+    // Vérifier si l'onboarding doit être affiché (par utilisateur)
+    if (CURRENT_USER && CURRENT_USER.id) {
+        const onboardingKey = `onboarding_done_${CURRENT_USER.id}`;
+        const onboardingDone = localStorage.getItem(onboardingKey);
+        if (!onboardingDone) {
+            renderOnboarding();
+            document.getElementById('onboardingModal').classList.remove('hidden');
+        }
+    }
+
+    // Charger la page par défaut
+    navigateTo('feed');
+    appInitialized = true;
+    updateHeaderActionsVisibility();
+
+    bindHeaderActions();
+
+    refreshNotificationBadge();
+    window.clearInterval(window.notificationBadgeInterval);
+    window.notificationBadgeInterval = window.setInterval(refreshNotificationBadge, 30000);
 
     // Service Worker pour le hors-ligne
     const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);

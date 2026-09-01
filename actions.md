@@ -169,3 +169,4 @@ Critères de succès
 Recommandation finale
 - implémenter une version “weighted ranking” dès maintenant, car elle est simple, fiable, visible immédiatement, et s’intègre parfaitement au projet actuel sans dépendre d’un back-end complexe.
 - la prochaine étape technique sera d’écrire la logique dans `services/storage.js` + `pages/feed.js`, puis valider le rendu sur un profil utilisateur exemple.
+  
