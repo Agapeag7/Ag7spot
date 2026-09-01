@@ -591,6 +591,11 @@ function startAg7SpotTutorial() {
     if (!CURRENT_USER || !CURRENT_USER.id) return;
     if (isAg7SpotTutorialDone()) return;
 
+    const onboardingModal = document.getElementById('onboardingModal');
+    if (onboardingModal && !onboardingModal.classList.contains('hidden')) {
+        return;
+    }
+
     const steps = getAg7SpotTutorialSteps();
     let currentStep = 0;
 

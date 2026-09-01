@@ -1,9 +1,4 @@
-il y'a un autre soucis cette zone empeche de voir tout :
-<div class="modal-content onboarding-modal">
-    <div id="onboardingContainer">
-        <div class="onboarding">
-            
-et ceci doit se placer au centre de l'ecran et non en bas :
+et pendant l'explication du tutoriel durant les  :
 <div class="ag7spot-tutorial-card">
     <div class="ag7spot-tutorial-header">
         <span class="ag7spot-tutorial-badge">1/8</span>

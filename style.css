@@ -132,20 +132,19 @@ body {
     inset: 0;
     z-index: 3000;
     display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
     padding: 20px;
-    background: rgba(15, 23, 42, 0.48);
-    backdrop-filter: blur(3px);
+    background: transparent;
     pointer-events: none;
 }
 
 .ag7spot-tutorial-highlight {
     position: fixed;
     z-index: 3005;
-    border: 1px solid rgba(93, 110, 255, 0.95);
+    border: 2px solid rgba(93, 110, 255, 0.95);
     border-radius: 16px;
-    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.48);
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.12);
     pointer-events: none;
 }
 
@@ -155,11 +154,11 @@ body {
     width: min(360px, calc(100vw - 32px));
     background: white;
     border-radius: 20px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
     padding: 16px 16px 14px;
     color: var(--text-main);
     pointer-events: auto;
-    margin: 0;
+    margin: 0 auto;
 }
 
 .ag7spot-tutorial-header {
@@ -1889,6 +1888,7 @@ body {
 }
 .onboarding-modal {
     padding: 20px 20px 20px 15px;
+    z-index: 1001;
 }
 .onboarding h2 {
     text-align: center;

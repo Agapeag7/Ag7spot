@@ -60,6 +60,9 @@ async function finishOnboarding() {
         });
 
         document.getElementById('onboardingModal').classList.add('hidden');
+        if (typeof startAg7SpotTutorial === 'function') {
+            setTimeout(startAg7SpotTutorial, 300);
+        }
         showToast(`Bienvenue ! ${nearby.length} boutiques autour de toi`, 'success');
         navigateTo('feed');
     } catch (e) {
@@ -75,5 +78,8 @@ function skipOnboarding() {
         localStorage.setItem('onboarding_done', 'true');
     }
     document.getElementById('onboardingModal').classList.add('hidden');
+    if (typeof startAg7SpotTutorial === 'function') {
+        setTimeout(startAg7SpotTutorial, 300);
+    }
     navigateTo('feed');
 }
