@@ -639,10 +639,9 @@ function startAg7SpotTutorial() {
 
         const backdrop = document.createElement('div');
         backdrop.className = 'ag7spot-tutorial-overlay';
-        const isTargetOnRightSide = (rect.left + rect.width / 2) > window.innerWidth * 0.62;
 
         backdrop.innerHTML = `
-            <div class="ag7spot-tutorial-card" data-arrow="${isTargetOnRightSide ? 'left' : 'top'}">
+            <div class="ag7spot-tutorial-card">
                 <div class="ag7spot-tutorial-header">
                     <span class="ag7spot-tutorial-badge">${currentStep + 1}/${steps.length}</span>
                     <button type="button" class="ag7spot-tutorial-close" aria-label="Fermer le tutoriel">×</button>
@@ -662,30 +661,67 @@ function startAg7SpotTutorial() {
         const tutorialCard = backdrop.querySelector('.ag7spot-tutorial-card');
         if (tutorialCard) {
             const cardWidth = 360;
-            let left = rect.left + (rect.width / 2) - (cardWidth / 2);
-            let top = rect.top + rect.height + 22;
+            const padding = 18;
+            const cardHeight = 220;
+            const targetCenterX = rect.left + rect.width / 2;
+            const targetCenterY = rect.top + rect.height / 2;
+            const minCardLeft = padding;
+            const maxCardLeft = window.innerWidth - cardWidth - padding;
 
-            if (isTargetOnRightSide) {
-                left = rect.left - cardWidth - 24;
-                top = Math.min(Math.max(24, rect.top + (rect.height / 2) - 70), window.innerHeight - 200);
+            const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+            let cardLeft = clamp(targetCenterX - cardWidth / 2, minCardLeft, maxCardLeft);
+            let cardTop = rect.bottom + 22;
+            let arrowSide = 'top';
+
+            const enoughSpaceRight = window.innerWidth - rect.right - padding > cardWidth + 28;
+            const enoughSpaceLeft = rect.left - padding > cardWidth + 28;
+            const enoughSpaceBottom = window.innerHeight - rect.bottom - padding > cardHeight + 26;
+            const enoughSpaceTop = rect.top - padding > cardHeight + 26;
+
+            if (targetCenterX > window.innerWidth * 0.62 && enoughSpaceLeft) {
+                arrowSide = 'right';
+                cardLeft = rect.left - cardWidth - 22;
+                cardTop = clamp(targetCenterY - cardHeight / 2, padding, window.innerHeight - cardHeight - padding);
+            } else if (targetCenterX < window.innerWidth * 0.38 && enoughSpaceRight) {
+                arrowSide = 'left';
+                cardLeft = rect.right + 22;
+                cardTop = clamp(targetCenterY - cardHeight / 2, padding, window.innerHeight - cardHeight - padding);
+            } else if (enoughSpaceBottom) {
+                arrowSide = 'top';
+                cardLeft = clamp(targetCenterX - cardWidth / 2, minCardLeft, maxCardLeft);
+                cardTop = rect.bottom + 22;
+            } else if (enoughSpaceTop) {
+                arrowSide = 'bottom';
+                cardLeft = clamp(targetCenterX - cardWidth / 2, minCardLeft, maxCardLeft);
+                cardTop = rect.top - cardHeight - 22;
             } else {
-                left = Math.min(window.innerWidth - cardWidth - 20, Math.max(20, left));
-                if (top + 180 > window.innerHeight - 20) {
-                    top = rect.top - 180 - 22;
-                }
-            }
-
-            if (isTargetOnRightSide && left < 20) {
-                left = Math.min(window.innerWidth - cardWidth - 20, rect.right + 18);
+                arrowSide = 'top';
+                cardLeft = clamp(targetCenterX - cardWidth / 2, minCardLeft, maxCardLeft);
+                cardTop = clamp(rect.bottom + 22, padding, window.innerHeight - cardHeight - padding);
             }
 
             tutorialCard.style.position = 'absolute';
-            tutorialCard.style.left = `${left}px`;
-            tutorialCard.style.top = `${top}px`;
+            tutorialCard.style.left = `${cardLeft}px`;
+            tutorialCard.style.top = `${cardTop}px`;
 
             const arrow = document.createElement('div');
-            arrow.className = 'ag7spot-tutorial-arrow';
-            arrow.classList.add(isTargetOnRightSide ? 'ag7spot-tutorial-arrow-left' : 'ag7spot-tutorial-arrow-top');
+            arrow.className = `ag7spot-tutorial-arrow ag7spot-tutorial-arrow-${arrowSide}`;
+
+            if (arrowSide === 'left') {
+                arrow.style.top = `${clamp(targetCenterY - cardTop - 8, 18, cardHeight - 18)}px`;
+                arrow.style.left = '-7px';
+            } else if (arrowSide === 'right') {
+                arrow.style.top = `${clamp(targetCenterY - cardTop - 8, 18, cardHeight - 18)}px`;
+                arrow.style.right = '-7px';
+            } else if (arrowSide === 'top') {
+                arrow.style.left = `${clamp(targetCenterX - cardLeft - 8, 18, cardWidth - 18)}px`;
+                arrow.style.top = '-7px';
+            } else if (arrowSide === 'bottom') {
+                arrow.style.left = `${clamp(targetCenterX - cardLeft - 8, 18, cardWidth - 18)}px`;
+                arrow.style.bottom = '-7px';
+            }
+
             tutorialCard.appendChild(arrow);
         }
 

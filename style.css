@@ -184,25 +184,38 @@ body {
 
 .ag7spot-tutorial-arrow {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     background: white;
     border-left: 1px solid rgba(93, 110, 255, 0.08);
     border-top: 1px solid rgba(93, 110, 255, 0.08);
     transform: rotate(45deg);
     z-index: 3095;
+    pointer-events: none;
 }
 
 .ag7spot-tutorial-arrow-left {
-    right: -8px;
+    left: -7px;
     top: 50%;
-    margin-top: -8px;
+    margin-top: -7px;
+}
+
+.ag7spot-tutorial-arrow-right {
+    right: -7px;
+    top: 50%;
+    margin-top: -7px;
 }
 
 .ag7spot-tutorial-arrow-top {
-    top: -8px;
+    top: -7px;
     left: 50%;
-    margin-left: -8px;
+    margin-left: -7px;
+}
+
+.ag7spot-tutorial-arrow-bottom {
+    bottom: -7px;
+    left: 50%;
+    margin-left: -7px;
 }
 
 .ag7spot-tutorial-header {
