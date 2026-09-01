@@ -1,4 +1,5 @@
-Pour familiariser le nouveaux utilisateurs à l'appli :
+Pour familiariser les nouveaux utilisateurs à l'appli :
+
 Intro.js : Très populaire, léger et parfait pour créer des étapes pas à pas.
 Driver.js : Une bibliothèque puissante et sans dépendances pour mettre en surbrillance des éléments.
 Shepherd.js : Très personnalisable pour guider les utilisateurs à travers votre application.
