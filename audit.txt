@@ -1,4 +1,4 @@
-et pendant l'explication du tutoriel durant les  :
+et pendant l'explication du tutoriel durant, le modale d'explication doit egalement apparaitre comme les endroits qu'il explique donc bien visible donc rien ne doit le couvrir:
 <div class="ag7spot-tutorial-card">
     <div class="ag7spot-tutorial-header">
         <span class="ag7spot-tutorial-badge">1/8</span>

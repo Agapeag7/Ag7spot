@@ -132,7 +132,7 @@ body {
     inset: 0;
     z-index: 3000;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     padding: 20px;
     background: transparent;
@@ -144,7 +144,7 @@ body {
     z-index: 3005;
     border: 2px solid rgba(93, 110, 255, 0.95);
     border-radius: 16px;
-    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.08);
     pointer-events: none;
 }
 
@@ -154,11 +154,16 @@ body {
     width: min(360px, calc(100vw - 32px));
     background: white;
     border-radius: 20px;
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
     padding: 16px 16px 14px;
     color: var(--text-main);
     pointer-events: auto;
-    margin: 0 auto;
+    margin: 0;
+    border: 1px solid rgba(93, 110, 255, 0.08);
+}
+
+.ag7spot-tutorial-overlay > .ag7spot-tutorial-card {
+    margin-left: auto;
 }
 
 .ag7spot-tutorial-header {

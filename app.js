@@ -639,6 +639,8 @@ function startAg7SpotTutorial() {
 
         const backdrop = document.createElement('div');
         backdrop.className = 'ag7spot-tutorial-overlay';
+        const isTargetOnRightSide = (rect.left + rect.width / 2) > window.innerWidth * 0.62;
+        backdrop.style.justifyContent = isTargetOnRightSide ? 'flex-end' : 'center';
         backdrop.innerHTML = `
             <div class="ag7spot-tutorial-card">
                 <div class="ag7spot-tutorial-header">
@@ -656,6 +658,12 @@ function startAg7SpotTutorial() {
                 </div>
             </div>
         `;
+
+        const tutorialCard = backdrop.querySelector('.ag7spot-tutorial-card');
+        if (tutorialCard) {
+            tutorialCard.style.marginLeft = isTargetOnRightSide ? 'auto' : '0';
+            tutorialCard.style.marginRight = isTargetOnRightSide ? '0' : 'auto';
+        }
 
         const closeButton = backdrop.querySelector('.ag7spot-tutorial-close');
         closeButton.addEventListener('click', closeTutorial);

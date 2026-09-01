@@ -189,6 +189,17 @@ function renderAuth(container) {
             applyStoredUser(user);
             updateHeaderActionsVisibility();
             showToast('Compte créé avec succès !', 'success');
+
+            const onboardingKey = `onboarding_done_${user.id}`;
+            if (!localStorage.getItem(onboardingKey)) {
+                renderOnboarding();
+                const onboardingModal = document.getElementById('onboardingModal');
+                if (onboardingModal) {
+                    onboardingModal.classList.remove('hidden');
+                }
+                return;
+            }
+
             navigateTo('feed');
         } catch (error) {
             // showToast already handled in apiCall
