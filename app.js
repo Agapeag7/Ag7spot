@@ -640,9 +640,9 @@ function startAg7SpotTutorial() {
         const backdrop = document.createElement('div');
         backdrop.className = 'ag7spot-tutorial-overlay';
         const isTargetOnRightSide = (rect.left + rect.width / 2) > window.innerWidth * 0.62;
-        backdrop.style.justifyContent = isTargetOnRightSide ? 'flex-end' : 'center';
+
         backdrop.innerHTML = `
-            <div class="ag7spot-tutorial-card">
+            <div class="ag7spot-tutorial-card" data-arrow="${isTargetOnRightSide ? 'left' : 'top'}">
                 <div class="ag7spot-tutorial-header">
                     <span class="ag7spot-tutorial-badge">${currentStep + 1}/${steps.length}</span>
                     <button type="button" class="ag7spot-tutorial-close" aria-label="Fermer le tutoriel">×</button>
@@ -661,8 +661,32 @@ function startAg7SpotTutorial() {
 
         const tutorialCard = backdrop.querySelector('.ag7spot-tutorial-card');
         if (tutorialCard) {
-            tutorialCard.style.marginLeft = isTargetOnRightSide ? 'auto' : '0';
-            tutorialCard.style.marginRight = isTargetOnRightSide ? '0' : 'auto';
+            const cardWidth = 360;
+            let left = rect.left + (rect.width / 2) - (cardWidth / 2);
+            let top = rect.top + rect.height + 22;
+
+            if (isTargetOnRightSide) {
+                left = rect.left - cardWidth - 24;
+                top = Math.min(Math.max(24, rect.top + (rect.height / 2) - 70), window.innerHeight - 200);
+            } else {
+                left = Math.min(window.innerWidth - cardWidth - 20, Math.max(20, left));
+                if (top + 180 > window.innerHeight - 20) {
+                    top = rect.top - 180 - 22;
+                }
+            }
+
+            if (isTargetOnRightSide && left < 20) {
+                left = Math.min(window.innerWidth - cardWidth - 20, rect.right + 18);
+            }
+
+            tutorialCard.style.position = 'absolute';
+            tutorialCard.style.left = `${left}px`;
+            tutorialCard.style.top = `${top}px`;
+
+            const arrow = document.createElement('div');
+            arrow.className = 'ag7spot-tutorial-arrow';
+            arrow.classList.add(isTargetOnRightSide ? 'ag7spot-tutorial-arrow-left' : 'ag7spot-tutorial-arrow-top');
+            tutorialCard.appendChild(arrow);
         }
 
         const closeButton = backdrop.querySelector('.ag7spot-tutorial-close');

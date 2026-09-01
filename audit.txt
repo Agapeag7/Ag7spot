@@ -1,16 +1,4 @@
 et pendant l'explication du tutoriel durant, le modale d'explication doit egalement apparaitre comme les endroits qu'il explique donc bien visible donc rien ne doit le couvrir:
 <div class="ag7spot-tutorial-card">
     <div class="ag7spot-tutorial-header">
-        <span class="ag7spot-tutorial-badge">1/8</span>
-        <button type="button" class="ag7spot-tutorial-close" aria-label="Fermer le tutoriel">×</button>
-    </div>
-    <h3>Recherche</h3>
-    <p>Rechercher rapidement un produit ou une boutique près de toi.</p>
-    <div class="ag7spot-tutorial-actions">
-        <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-secondary" data-action="skip">Passer</button>
-        <div class="ag7spot-tutorial-nav">
-            <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-muted" data-action="prev" disabled="">Retour</button>
-            <button type="button" class="ag7spot-tutorial-btn ag7spot-tutorial-btn-primary" data-action="next">Suivant</button>
-        </div>
-    </div>
-</div>
+        

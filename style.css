@@ -131,12 +131,14 @@ body {
     position: fixed;
     inset: 0;
     z-index: 3000;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 20px;
     background: transparent;
     pointer-events: none;
+    animation: ag7spotTutorialFadeIn 0.25s ease;
+}
+
+@keyframes ag7spotTutorialFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .ag7spot-tutorial-highlight {
@@ -146,10 +148,16 @@ body {
     border-radius: 16px;
     box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.08);
     pointer-events: none;
+    animation: ag7spotHighlightPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes ag7spotHighlightPulse {
+    from { box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.08), 0 0 0 0 rgba(93, 110, 255, 0.24); }
+    to { box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.08), 0 0 0 8px rgba(93, 110, 255, 0.10); }
 }
 
 .ag7spot-tutorial-card {
-    position: relative;
+    position: absolute;
     z-index: 3100;
     width: min(360px, calc(100vw - 32px));
     background: white;
@@ -160,10 +168,41 @@ body {
     pointer-events: auto;
     margin: 0;
     border: 1px solid rgba(93, 110, 255, 0.08);
+    animation: ag7spotCardIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.ag7spot-tutorial-overlay > .ag7spot-tutorial-card {
-    margin-left: auto;
+@keyframes ag7spotCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ag7spot-tutorial-arrow {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-left: 1px solid rgba(93, 110, 255, 0.08);
+    border-top: 1px solid rgba(93, 110, 255, 0.08);
+    transform: rotate(45deg);
+    z-index: 3095;
+}
+
+.ag7spot-tutorial-arrow-left {
+    right: -8px;
+    top: 50%;
+    margin-top: -8px;
+}
+
+.ag7spot-tutorial-arrow-top {
+    top: -8px;
+    left: 50%;
+    margin-left: -8px;
 }
 
 .ag7spot-tutorial-header {
