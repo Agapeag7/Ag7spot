@@ -131,6 +131,8 @@ body {
     inset: 0;
     z-index: 3000;
     background: transparent;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     pointer-events: none;
     animation: ag7spotTutorialFadeIn 0.25s ease;
 }

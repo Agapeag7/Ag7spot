@@ -7,7 +7,8 @@ function renderShopStatus(shop) {
         'closed': { icon: 'fa-store-slash', label: 'Fermé', cls: 'closed' },
         'break': { icon: 'fa-mug-hot', label: 'Pause', cls: 'break' }
     };
-    const s = statusMap[shop.status] || statusMap['closed'];
+    const status = String(shop?.status || 'closed').toLowerCase();
+    const s = statusMap[status] || statusMap['closed'];
     return `<span class="shop-status ${s.cls}"><i class="fas ${s.icon}"></i> ${s.label}</span>`;
 }
 
@@ -18,6 +19,9 @@ async function updateShopStatus(shopId, status) {
         const shop = SHOPS.find(s => s.id === shopId);
         if (shop) {
             shop.status = status;
+            if (typeof refreshShopStatusInMap === 'function') {
+                refreshShopStatusInMap(shop);
+            }
             showToast(`Statut mis à jour : ${status}`, 'success');
         }
         return result;

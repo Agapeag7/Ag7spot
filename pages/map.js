@@ -191,6 +191,26 @@ function renderMapShopPopup(shop, products, deals, routeButton) {
         </div>`;
 }
 
+function refreshShopStatusInMap(shop) {
+    const marker = mapMarkers.find(item => item.shopId === Number(shop.id));
+    if (!marker) return;
+
+    const popup = marker.getPopup();
+    if (!popup) return;
+
+    const popupContent = popup.getContent();
+    if (typeof popupContent === 'string') {
+        popup.setContent(popupContent.replace(
+            /<div class="map-popup-status">[\s\S]*?<\/div>/,
+            `<div class="map-popup-status">${renderShopStatus(shop)}</div>`
+        ));
+    }
+
+    const popupElement = popup.getElement();
+    const statusElement = popupElement?.querySelector('.map-popup-status');
+    if (statusElement) statusElement.innerHTML = renderShopStatus(shop);
+}
+
 async function toggleMapFollow(shopId, isFollowed, button) {
     try {
         const response = isFollowed ? await unfollowShop(shopId) : await followShop(shopId);
@@ -393,6 +413,7 @@ async function loadShopsOnMap(pos, query = '') {
                 className: 'shop-marker-with-label'
             })
         }).addTo(mapInstance);
+        marker.shopId = Number(shop.id);
 
         marker.bindPopup(renderMapShopPopup(shop, products, deals, routeButton), {
             maxWidth: 340,
