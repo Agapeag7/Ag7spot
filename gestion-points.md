@@ -156,10 +156,3 @@ id, user_id, amount, type, reference_type, reference_id, created_at
 
 Le check-in devrait recevoir et valider cote serveur la position, la precision et la distance calculee depuis les coordonnees de `shops`. La contrainte anti-duplicata doit etre imposee en base ou dans une transaction, pas seulement dans le JavaScript.
 
-
-
-
-
-
-cette zone doit être dynamique sur :
-<div class="map-popup-status"><span class="shop-status open"><i class="fas fa-store"></i> Ouvert</span></div>
