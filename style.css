@@ -128,7 +128,6 @@ body {
 }
 
 .ag7spot-tutorial-overlay {
-    position: fixed;
     inset: 0;
     z-index: 3000;
     background: transparent;
@@ -162,12 +161,12 @@ body {
     width: min(360px, calc(100vw - 32px));
     background: white;
     border-radius: 20px;
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
-    padding: 16px 16px 14px;
+    box-shadow: 0 0px 40px var(--primary-dark);
+    padding: 20px 25px 16px;
     color: var(--text-main);
     pointer-events: auto;
     margin: 0;
-    border: 1px solid rgba(93, 110, 255, 0.08);
+    border: 1px solid rgba(93, 110, 255, 0.95);
     animation: ag7spotCardIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
