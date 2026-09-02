@@ -422,12 +422,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateHeaderActionsVisibility();
 
     // Vérifier si l'onboarding doit être affiché (par utilisateur)
-    if (CURRENT_USER && CURRENT_USER.id) {
-        const onboardingKey = `onboarding_done_${CURRENT_USER.id}`;
-        const onboardingDone = localStorage.getItem(onboardingKey);
-        if (!onboardingDone) {
-            renderOnboarding();
-            document.getElementById('onboardingModal').classList.remove('hidden');
+    if (CURRENT_USER && CURRENT_USER.id && shouldShowOnboardingForUser(CURRENT_USER.id)) {
+        renderOnboarding();
+        const onboardingModal = document.getElementById('onboardingModal');
+        if (onboardingModal) {
+            onboardingModal.classList.remove('hidden');
         }
     }
 
@@ -436,7 +435,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     appInitialized = true;
     updateHeaderActionsVisibility();
 
-    if (CURRENT_USER && CURRENT_USER.id && !isAg7SpotTutorialDone()) {
+    if (CURRENT_USER && CURRENT_USER.id && !isAg7SpotTutorialDone() && !shouldShowOnboardingForUser(CURRENT_USER.id)) {
         setTimeout(() => startAg7SpotTutorial(), 350);
     }
 
@@ -562,11 +561,6 @@ function getAg7SpotTutorialSteps() {
             selector: '#distanceRange',
             title: 'Distance',
             text: 'Ajuste la distance pour filtrer les offres à proximité.'
-        },
-        {
-            selector: '#feedSearchInput',
-            title: 'Recherche du fil',
-            text: 'Utilise la recherche pour trouver un produit ou une boutique en particulier.'
         },
         {
             selector: '.nav-item.nav-center[data-page="add"]',

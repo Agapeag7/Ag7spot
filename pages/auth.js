@@ -190,8 +190,7 @@ function renderAuth(container) {
             updateHeaderActionsVisibility();
             showToast('Compte créé avec succès !', 'success');
 
-            const onboardingKey = `onboarding_done_${user.id}`;
-            if (!localStorage.getItem(onboardingKey)) {
+            if (shouldShowOnboardingForUser(user.id)) {
                 renderOnboarding();
                 const onboardingModal = document.getElementById('onboardingModal');
                 if (onboardingModal) {

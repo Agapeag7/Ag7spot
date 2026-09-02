@@ -1,3 +1,49 @@
+function getOnboardingKey(userId = null) {
+    const safeUserId = userId ?? (window.CURRENT_USER && window.CURRENT_USER.id) ?? null;
+    return safeUserId ? `onboarding_done_${safeUserId}` : 'onboarding_done';
+}
+
+function shouldShowOnboardingForUser(userId = null) {
+    const onboardingKey = getOnboardingKey(userId);
+    if (localStorage.getItem(onboardingKey) === 'true') {
+        return false;
+    }
+    if (localStorage.getItem('onboarding_done') === 'true') {
+        return false;
+    }
+    return true;
+}
+
+function markOnboardingDone(userId = null) {
+    const safeUserId = userId ?? (window.CURRENT_USER && window.CURRENT_USER.id) ?? null;
+    const onboardingKey = getOnboardingKey(safeUserId);
+    localStorage.setItem(onboardingKey, 'true');
+    if (safeUserId) {
+        localStorage.setItem('onboarding_done', 'true');
+    }
+    return true;
+}
+
+function completeOnboardingFlow(userId = null, categories = []) {
+    const safeUserId = userId ?? (window.CURRENT_USER && window.CURRENT_USER.id) ?? null;
+    markOnboardingDone(safeUserId);
+    if (typeof saveUserCategories === 'function') {
+        saveUserCategories(categories, safeUserId);
+    }
+    const onboardingModal = document.getElementById('onboardingModal');
+    if (onboardingModal) {
+        onboardingModal.classList.add('hidden');
+    }
+    if (typeof startAg7SpotTutorial === 'function') {
+        setTimeout(() => {
+            const activeModal = document.getElementById('onboardingModal');
+            if (activeModal && !activeModal.classList.contains('hidden')) return;
+            startAg7SpotTutorial();
+        }, 300);
+    }
+    return true;
+}
+
 function renderOnboarding() {
     const categories = [
         { id: 'fashion', icon: 'fa-tshirt', label: 'Vêtements' },
@@ -10,7 +56,10 @@ function renderOnboarding() {
         { id: 'toys', icon: 'fa-puzzle-piece', label: 'Jeux' }
     ];
 
-    document.getElementById('onboardingContainer').innerHTML = `
+    const onboardingContainer = document.getElementById('onboardingContainer');
+    if (!onboardingContainer) return;
+
+    onboardingContainer.innerHTML = `
         <div class="onboarding">
             <h2>Bienvenue sur Ag7Spot</h2>
             <p>Choisis les catégories qui t'intéressent :</p>
@@ -33,6 +82,7 @@ function renderOnboarding() {
 }
 
 function toggleCategory(el) {
+    if (!el) return;
     el.classList.toggle('selected');
 }
 
@@ -42,44 +92,37 @@ async function finishOnboarding() {
 
     try {
         const pos = await getUserPosition();
-        // Envoyer les préférences (simulé) — stocker par utilisateur
         const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
-        if (userId) {
-            localStorage.setItem(`onboarding_done_${userId}`, 'true');
-            saveUserCategories(categories, userId);
-        } else {
-            // fallback global flag
-            localStorage.setItem('onboarding_done', 'true');
-            saveUserCategories(categories, null);
-        }
+        completeOnboardingFlow(userId, categories);
 
-        // Charger les boutiques recommandées
-        const nearby = SHOPS.filter(s => {
+        const nearby = Array.isArray(SHOPS) ? SHOPS.filter(s => {
             const dist = getDistanceBetween(pos.lat, pos.lng, s.lat, s.lng);
             return dist <= 5 && categories.includes(s.category);
-        });
+        }) : [];
 
-        document.getElementById('onboardingModal').classList.add('hidden');
-        if (typeof startAg7SpotTutorial === 'function') {
-            setTimeout(startAg7SpotTutorial, 300);
-        }
         showToast(`Bienvenue ! ${nearby.length} boutiques autour de toi`, 'success');
         navigateTo('feed');
     } catch (e) {
+        const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
+        markOnboardingDone(userId);
         showToast('Erreur onboarding', 'error');
+        navigateTo('feed');
     }
 }
 
 function skipOnboarding() {
     const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
-    if (userId) {
-        localStorage.setItem(`onboarding_done_${userId}`, 'true');
-    } else {
-        localStorage.setItem('onboarding_done', 'true');
+    markOnboardingDone(userId);
+    const onboardingModal = document.getElementById('onboardingModal');
+    if (onboardingModal) {
+        onboardingModal.classList.add('hidden');
     }
-    document.getElementById('onboardingModal').classList.add('hidden');
     if (typeof startAg7SpotTutorial === 'function') {
-        setTimeout(startAg7SpotTutorial, 300);
+        setTimeout(() => {
+            const modal = document.getElementById('onboardingModal');
+            if (modal && !modal.classList.contains('hidden')) return;
+            startAg7SpotTutorial();
+        }, 300);
     }
     navigateTo('feed');
 }

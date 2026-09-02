@@ -817,6 +817,7 @@ body {
     accent-color: var(--primary);
     flex-shrink: 0;
     width: 20px;
+    height: 20px;
 }
 .link {
     color: var(--primary);
