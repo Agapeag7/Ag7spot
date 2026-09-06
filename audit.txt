@@ -1,2 +1,5 @@
-ce bouton sur le fil doit foctionner , pour pouvoir elargir la portée d'offres sur le fil actus :
+1. ce bouton sur le fil doit foctionner , pour pouvoir elargir la portée d'offres sur le fil actus :
 <button class="btn-primary btn-sm" onclick="loadFeed(10)">Élargir à 10 km</button>
+
+2. Vu que cette zone n'a plus de sens dans ce projet, remplace-le par un autre qui merite :
+<span class="stock-badge out-of-stock"><i class="fas fa-times-circle"></i></span>

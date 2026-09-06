@@ -1203,9 +1203,9 @@ body {
     color: var(--warning);
     animation: pulse-badge 1.5s infinite;
 }
-.stock-badge.out-of-stock {
-    background: rgba(239, 68, 68, 0.15);
-    color: var(--danger);
+.stock-badge.on-request {
+    background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
 }
 @keyframes pulse-badge {
     0% { opacity: 1; }

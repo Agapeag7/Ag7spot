@@ -189,6 +189,16 @@ function renderDistanceFilter() {
     `;
 }
 
+function expandFeedDistance(distance) {
+    const range = document.getElementById('distanceRange');
+    const value = document.getElementById('distanceValue');
+    const nextDistance = clamp(Number(distance) || 10, 1, 20);
+
+    if (range) range.value = nextDistance;
+    if (value) value.textContent = `${nextDistance} km`;
+    loadFeed(nextDistance, feedState.currentQuery);
+}
+
 async function loadFeed(maxDistance, productQuery = '') {
     const container = document.getElementById('feedContainer');
     const query = (productQuery || '').trim();
@@ -223,7 +233,7 @@ async function loadFeed(maxDistance, productQuery = '') {
                 <div class="empty-state">
                     <i class="fas fa-store-slash"></i>
                     <p>Aucun produit trouvé dans un rayon de ${maxDistance} km.</p>
-                    <button class="btn-primary btn-sm" onclick="loadFeed(10)">Élargir à 10 km</button>
+                    <button class="btn-primary btn-sm" onclick="expandFeedDistance(10)">Élargir à 10 km</button>
                 </div>
             `;
             feedState.loading = false;
