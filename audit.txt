@@ -1,2 +1,2 @@
-
-Pendant que le tuto est en cours , doit que manipuler le tuto seul
+ce bouton sur le fil doit foctionner , pour pouvoir elargir la portée d'offres sur le fil actus :
+<button class="btn-primary btn-sm" onclick="loadFeed(10)">Élargir à 10 km</button>

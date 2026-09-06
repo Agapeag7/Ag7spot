@@ -291,7 +291,7 @@ function renderFeedBatch() {
                                 <i class="fas fa-comment"></i> Réserver
                             </button>
                             <button class="btn-outline btn-sm" onclick="event.stopPropagation(); getDirections(${p.lat}, ${p.lng})">
-                                <img src="ico/spot.png" alt="Ag7Spot" class="btn-icon-app" />
+                                <img src="ico/spot-i.png" alt="Ag7Spot" class="btn-icon-app" />
                             </button>
                         </div>
                     </div>
