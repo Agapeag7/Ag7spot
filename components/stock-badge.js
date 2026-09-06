@@ -3,7 +3,7 @@
 // =========================================
 function renderStockBadge(product) {
     if (product.stock <= 0) {
-        return `<span class="stock-badge on-request"><i class="fas fa-comments"></i> Sur demande</span>`;
+        return `<span class="stock-badge on-request">Sur demande</span>`;
     } else if (product.stock <= 3) {
         return `<span class="stock-badge last-items"><i class="fas fa-exclamation-triangle"></i> Dernière pièce</span>`;
     } else {

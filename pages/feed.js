@@ -320,7 +320,7 @@ function renderFeedBatch() {
     if (feedState.displayedCount >= feedState.allItems.length) {
         feedState.end = true;
         // optional: show a small end marker
-        container.insertAdjacentHTML('beforeend', `<div class="end-of-feed" style="text-align:center;color:#6B7280;padding:12px 0;">Vous avez atteint la fin</div>`);
+        container.insertAdjacentHTML('beforeend', `<div class="end-of-feed" style="text-align:center;padding:12px 0;"><span><i class="fas fa-check-double"></i> Vous avez atteint la fin</span></div>`);
     }
 }
 

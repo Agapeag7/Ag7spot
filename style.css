@@ -1603,6 +1603,13 @@ body {
 }
 .feed-spinner.hidden, .feed-batch-spinner.hidden { display:none; }
 
+.end-of-feed span {
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 5px 15px;
+    color: var(--bg);
+}
+
 .spinner {
     width:36px;
     height:36px;
