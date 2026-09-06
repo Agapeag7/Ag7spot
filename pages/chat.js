@@ -13,7 +13,7 @@ function buildReservationMessage(message) {
         ? `${Number(shop.lat).toFixed(7)}, ${Number(shop.lng).toFixed(7)}`
         : 'Non disponibles';
 
-    return `${message}\n \nRéférence : \n Produit : ${product.name} \n Prix : ${parseFloat(product.price).toFixed(2)} $ \n Boutique : ${shop.name}`;
+    return `${message}\n \nProduit : ${product.name} \n Prix : ${parseFloat(product.price).toFixed(2)} $ \n Boutique : ${shop.name}`;
 }
 
 async function openChat(productId) {
@@ -93,7 +93,7 @@ async function sendChatMessage() {
         const reservationMessage = buildReservationMessage(message);
         const result = await sendMessage(currentChatShop.id, currentChatProduct.id, reservationMessage);
         if (result && result.success) {
-            addChatMessage('Vous \n', reservationMessage, 'sent');
+            addChatMessage('Vous', reservationMessage, 'sent');
             showToast('Message envoyé à la boutique.', 'success');
         } else {
             throw new Error('Le message n’a pas pu être envoyé.');
