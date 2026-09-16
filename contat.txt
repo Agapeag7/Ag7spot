@@ -1,0 +1,279 @@
+CONTRAT UTILISATEUR ET CONDITIONS D'UTILISATION
+AG7SPOT
+
+Version : 14 septembre 2026
+
+PREAMBULE
+Le present contrat regit l'acces et l'utilisation de l'application Ag7Spot. Il est
+conclu entre Ag7Spot, l'editeur du service, et toute personne qui cree un compte ou
+utilise l'application (l'« Utilisateur »). L'inscription et l'utilisation du service
+valent acceptation pleine et entiere du present contrat.
+
+La version acceptee par l'Utilisateur est conservee avec la date et l'identifiant du
+compte. Le contrat est accessible dans l'application et s'applique tant que le compte
+reste actif, ainsi qu'aux obligations qui survivent a sa fermeture.
+
+1. IDENTIFICATION ET OBJET DU SERVICE
+
+Ag7Spot est une application mobile-first de decouverte du commerce local. Elle permet
+notamment de rechercher des boutiques et des produits, de consulter leur position sur
+une carte, de suivre des boutiques, de contacter un vendeur, de preparer une visite et, pour les vendeurs, de gerer une boutique et de publier des
+produits.
+
+Ag7Spot est une plateforme de mise en relation et d'information. Sauf indication
+expresse contraire, Ag7Spot ne vend pas les produits, n'est pas partie aux ventes entre
+utilisateurs et vendeurs, et ne garantit ni la disponibilite, ni le prix, ni la qualite,
+ni la conformite des produits ou services presentes par un vendeur.
+
+2. DEFINITIONS
+
+"Application" designe le service Ag7Spot, son site, ses interfaces, ses applications,
+ses contenus et ses services associes.
+
+"Utilisateur" designe toute personne utilisant l'Application, qu'elle soit acheteur,
+visiteur ou vendeur.
+
+"Acheteur" designe l'Utilisateur qui consulte les offres, suit des boutiques ou
+contacte un vendeur.
+
+"Vendeur" designe l'Utilisateur autorise a creer une boutique et a publier des produits.
+
+"Contenu" designe toute information, image, texte, prix, localisation, message ou
+donnee publiee ou transmise par un Utilisateur.
+
+3. ACCEPTATION ET CONDITIONS D'ACCES
+
+L'Utilisateur accepte les presentes conditions en cochant la case d'acceptation lors de
+la creation de son compte. Cette acceptation a la meme valeur pour chaque utilisation
+ulterieure de l'Application.
+
+L'Utilisateur doit avoir la capacite juridique de contracter. Lorsqu'une personne agit
+pour le compte d'une entreprise, elle declare disposer du pouvoir necessaire pour
+l'engager.
+
+L'Utilisateur s'engage a fournir des informations exactes, a jour et completes. Il doit
+conserver ses identifiants confidentiels et prevenir Ag7Spot sans delai en cas d'acces
+non autorise a son compte. Toute action realisee depuis son compte est presumee avoir
+ete realisee par lui, sauf preuve contraire.
+
+4. UTILISATION AUTORISEE
+
+L'Utilisateur peut utiliser l'Application uniquement pour rechercher des commerces,
+des produits et des informations locales, communiquer avec les vendeurs et utiliser
+les fonctions proposees dans le respect des presentes conditions et des lois
+applicables.
+
+Il est interdit de :
+- usurper l'identite d'une autre personne ou utiliser son compte ;
+- publier des informations fausses, trompeuses, diffamatoires ou illicites ;
+- publier un produit ou un service interdit par la loi ;
+- harceler, menacer, insulter ou solliciter abusivement un autre Utilisateur ;
+- contourner les controles de securite, tenter d'acceder aux donnees d'autrui ou
+	perturber le fonctionnement de l'Application ;
+- extraire automatiquement les donnees, copier le catalogue ou exploiter le service
+	sans autorisation ecrite ;
+- utiliser la geolocalisation ou les donnees d'un tiers sans son autorisation ;
+- utiliser les points, le check-in, les offres ou les fonctions de l'Application de
+	maniere frauduleuse.
+
+5. OBLIGATIONS PARTICULIERES DU VENDEUR
+
+Le Vendeur est seul responsable de sa boutique, de ses produits, de ses prix, de ses
+stocks, de ses images, de ses descriptions et des informations qu'il publie.
+
+Le Vendeur garantit notamment qu'il :
+- exerce son activite conformement aux lois, autorisations et obligations fiscales,
+	commerciales, sanitaires et de protection du consommateur applicables ;
+- dispose des droits necessaires sur les marques, textes, images et contenus publies ;
+- affiche des informations exactes et actualise rapidement les prix, stocks, horaires
+	et statuts de sa boutique ;
+- ne presente pas comme disponible un produit qu'il ne peut pas fournir ;
+- respecte les engagements qu'il prend avec un Acheteur par message ou lors d'une
+	reservation.
+
+La publication d'un produit ne constitue pas une validation, une certification ou une
+recommandation d'Ag7Spot. Ag7Spot peut masquer ou retirer tout contenu qui semble
+illicite, trompeur, dangereux ou contraire aux presentes conditions.
+
+6. MESSAGES, RESERVATIONS ET TRANSACTIONS
+
+Le chat permet une prise de contact et une demande de reservation ou d'information.
+Sauf confirmation contraire du vendeur, un message ou une demande envoyee dans
+l'Application ne vaut pas reservation ferme, commande, promesse de vente ou paiement.
+
+Les conditions de vente, le prix final, le paiement, la livraison ou le retrait, les
+retours, les garanties et les reclamations sont convenus directement entre l'Acheteur
+et le Vendeur. Chaque partie doit conserver les preuves utiles de ses echanges.
+
+Ag7Spot ne percoit aucun paiement et ne garantit pas l'execution d'une transaction,
+sauf mention specifique dans une fonctionnalite distincte. Ag7Spot ne pourra pas etre
+tenu responsable d'un produit indisponible, d'un prix modifie, d'une annulation, d'un
+retard, d'un defaut ou d'un litige entre un Acheteur et un Vendeur.
+
+7. GEOLOCALISATION, CARTE ET PARCOURS
+
+Certaines fonctions necessitent l'autorisation d'acceder a la position de l'Utilisateur.
+Cette position sert notamment a afficher des boutiques proches, filtrer le fil,
+calculer des distances et preparer un parcours.
+
+La geolocalisation est indicative et peut etre imprecise, indisponible ou retardee.
+Les distances, horaires, itineraires et temps de trajet sont des estimations. Ils ne
+remplacent pas la signalisation, les regles de circulation, les horaires officiels ni
+le jugement de l'Utilisateur. L'Utilisateur reste responsable de ses deplacements et
+doit utiliser son appareil en respectant les regles de securite.
+
+Le Vendeur doit fournir une adresse et des coordonnees exactes pour sa boutique. Il ne
+doit pas publier la localisation privee d'un tiers sans autorisation.
+
+8. CHECK-IN ET POINTS
+
+Lorsque cette fonction est disponible, un check-in peut etre accepte si les conditions
+techniques et les regles de proximite et de statut de la boutique sont respectees.
+Les points eventuellement accordes sont une fonctionnalite promotionnelle et ne sont
+ni de la monnaie, ni un depot, ni une somme remboursable. Ils ne peuvent etre vendus,
+cedes ou convertis en argent, sauf mention ecrite contraire d'Ag7Spot.
+
+Ag7Spot peut refuser, annuler ou retirer des points obtenus par erreur ou fraude, et
+peut modifier ou interrompre le programme de points. L'Utilisateur ne doit pas
+simuler sa position, multiplier les check-ins ou utiliser un dispositif destine a
+contourner les controles.
+
+9. CONTENU PUBLIE PAR L'UTILISATEUR
+
+L'Utilisateur conserve ses droits sur ses Contenus. Il accorde a Ag7Spot, pendant la
+duree de leur mise a disposition, une licence mondiale, gratuite, non exclusive et
+necessaire au fonctionnement du service pour heberger, reproduire, adapter au format
+technique, afficher et distribuer ces Contenus dans l'Application.
+
+L'Utilisateur garantit qu'il dispose de tous les droits necessaires et que son Contenu
+ne porte atteinte a aucun droit de tiers. Il reste responsable de ses publications,
+messages et informations.
+
+10. DONNEES PERSONNELLES ET CONFIDENTIALITE
+
+Ag7Spot traite les donnees necessaires a la creation et a la gestion du compte, a la
+securite, a la mise en relation, a la personnalisation du fil, a la geolocalisation
+lorsqu'elle est autorisee et au fonctionnement des notifications.
+
+Les modalites de collecte, les finalites, les durees de conservation, les destinataires
+et les droits de l'Utilisateur sont detaillees dans la Politique de confidentialite,
+qui fait partie du parcours d'inscription. L'Utilisateur peut retirer les autorisations
+facultatives depuis son appareil ou les reglages disponibles, sous reserve des
+fonctions qui ne peuvent alors plus fonctionner.
+
+Ag7Spot ne demande jamais a un Utilisateur de communiquer son mot de passe par message.
+L'Utilisateur doit eviter de transmettre dans le chat des donnees sensibles ou inutiles.
+
+11. PROPRIETE INTELLECTUELLE
+
+L'Application, sa marque, son code, son interface, ses textes, ses bases de donnees,
+ses graphismes et ses elements sont proteges par les droits applicables. Aucun droit
+de propriete n'est transfere a l'Utilisateur. Toute reproduction, modification,
+distribution ou exploitation non autorisee est interdite.
+
+12. DISPONIBILITE ET RESPONSABILITE
+
+Ag7Spot met en oeuvre des moyens raisonnables pour maintenir un service accessible,
+mais ne garantit pas une disponibilite continue, sans erreur ou compatible avec tous
+les appareils. Le service peut etre suspendu pour maintenance, securite, evolution ou
+raison technique.
+
+Dans les limites autorisees par la loi, Ag7Spot ne repond pas des dommages lies aux
+informations fournies par les Utilisateurs, aux contenus de tiers, aux transactions,
+aux interruptions du reseau, a l'utilisation de la geolocalisation ou au non-respect
+des consignes de securite.
+
+La presente clause ne limite pas les garanties et responsabilites qui ne peuvent pas
+etre exclues ou limitees par la loi applicable, notamment les droits imperatifs du
+consommateur.
+
+13. SIGNALEMENT ET MODERATION
+
+Tout Utilisateur peut signaler un contenu ou un comportement illicite ou abusif par
+les moyens de contact indiques dans l'Application. Ag7Spot peut examiner le signalement
+et prendre toute mesure proportionnee, notamment demander une correction, masquer un
+contenu, limiter une fonction ou suspendre un compte.
+
+Ag7Spot peut conserver les informations necessaires pour prevenir la fraude, proteger
+les personnes et repondre a une obligation legale.
+
+14. SUSPENSION ET RESILIATION
+
+L'Utilisateur peut cesser d'utiliser l'Application et demander la suppression de son
+compte selon la procedure disponible dans l'Application ou en contactant Ag7Spot.
+
+Ag7Spot peut suspendre ou resilier un compte en cas de violation des presentes
+conditions, de fraude, de risque pour la securite, d'obligation legale ou d'utilisation
+abusive du service. Lorsque cela est possible, Ag7Spot informe l'Utilisateur du motif
+et lui permet de regulariser sa situation.
+
+La fermeture du compte ne supprime pas les obligations deja nees, les preuves qui
+doivent etre conservees legalement ou les clauses qui, par leur nature, continuent de
+s'appliquer.
+
+15. MODIFICATION DES CONDITIONS
+
+Ag7Spot peut faire evoluer les presentes conditions pour tenir compte d'une evolution
+du service, de la loi ou de la securite. La nouvelle version sera portee a la
+connaissance des Utilisateurs par un moyen adapte. En cas de modification substantielle,
+une nouvelle acceptation pourra etre demandee. La poursuite de l'utilisation apres la
+date d'entree en vigueur vaut acceptation, sous reserve des droits imperatifs de
+l'Utilisateur.
+
+16. DROIT APPLICABLE ET REGLEMENT DES DIFFERENDS
+
+Le present contrat est soumis au droit applicable dans le pays ou Ag7Spot est exploite,
+sous reserve des dispositions obligatoires protectrices de l'Utilisateur. Les parties
+recherchent d'abord une solution amiable a tout differend relatif au contrat ou a
+l'utilisation de l'application.
+
+A defaut d'accord amiable, le differend est soumis aux juridictions competentes selon
+les regles legales applicables. Cette clause ne prive pas un consommateur des droits
+qui lui sont garantis par la loi.
+
+17. ACCEPTATION PAR SIGNATURE MANUSCRITE
+
+Avant la creation ou l'utilisation du compte, l'Utilisateur declare avoir lu
+integralement le present contrat, la politique de confidentialite presente dans
+l'application et les regles d'utilisation du service. Il les accepte sans reserve et
+s'engage a les respecter.
+
+La signature manuscrite ci-dessous vaut preuve de l'accord de l'Utilisateur. Chaque
+partie conserve un exemplaire date et signe du contrat. La signature doit etre obtenue
+avant la premiere utilisation du compte.
+
+IDENTIFICATION DE L'EXPLOITANT
+
+Nom ou denomination : Ag7Spot
+Representant : _________________________________________________________________
+Adresse : _____________________________________________________________________
+Telephone ou moyen de contact : ________________________________________________
+
+IDENTIFICATION DE L'UTILISATEUR
+
+Nom et prenom : ________________________________________________________________
+Nom d'utilisateur Ag7Spot : ___________________________________________________
+Adresse : _____________________________________________________________________
+Telephone ou e-mail : _________________________________________________________
+Type de compte :                 [ ] Acheteur       [ ] Vendeur
+
+DECLARATION DE L'UTILISATEUR
+
+Je soussigne(e), _______________________________________________________________,
+confirme avoir recu un exemplaire du present contrat, l'avoir lu et compris, et
+accepter l'ensemble de ses clauses. Je certifie que les renseignements fournis sont
+exacts et m'engage a informer Ag7Spot de toute modification utile.
+
+Fait a : ______________________________________________________________________
+Le : ____ / ____ / __________
+
+Signature de l'Utilisateur,
+precedee de la mention manuscrite « Lu et approuve » :
+
+
+
+Signature du representant d'Ag7Spot :
+
+
+
+FIN DU CONTRAT

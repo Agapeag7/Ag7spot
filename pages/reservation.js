@@ -1,5 +1,5 @@
 // =========================================
-// PAGE : CHAT / PRÉ-COMMANDE
+// PAGE : RESERVATION
 // =========================================
 let currentChatShop = null;
 let currentChatProduct = null;
@@ -7,12 +7,6 @@ let currentChatProduct = null;
 function buildReservationMessage(message) {
     const product = currentChatProduct;
     const shop = currentChatShop;
-    const coordinates = [shop.lat, shop.lng]
-        .map(value => Number(value))
-        .every(Number.isFinite)
-        ? `${Number(shop.lat).toFixed(7)}, ${Number(shop.lng).toFixed(7)}`
-        : 'Non disponibles';
-
     return `${message}\n \nProduit : ${product.name} \n Prix : ${parseFloat(product.price).toFixed(2)} $ \n Boutique : ${shop.name}`;
 }
 
@@ -31,9 +25,9 @@ async function openChat(productId) {
 
     currentChatProduct = product;
     currentChatShop = shop;
-
     const modal = document.getElementById('chatModal');
     const container = document.getElementById('chatContainer');
+    if (!modal || !container) return;
 
     container.innerHTML = `
         <div class="chat-header">
@@ -62,43 +56,33 @@ async function openChat(productId) {
     `;
 
     modal.classList.remove('hidden');
-
-    // Focus input
-    document.getElementById('chatInput').focus();
-
-    // Enter pour envoyer
-    document.getElementById('chatInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') sendChatMessage();
+    const input = document.getElementById('chatInput');
+    input.focus();
+    input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') sendChatMessage();
     });
-
-    // Charger les anciens messages
     loadChatMessages(shop.id);
 }
 
 function closeChat() {
-    document.getElementById('chatModal').classList.add('hidden');
+    const modal = document.getElementById('chatModal');
+    if (modal) modal.classList.add('hidden');
     currentChatShop = null;
     currentChatProduct = null;
 }
 
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
-    const message = input.value.trim();
+    const message = input?.value.trim();
     if (!message || !currentChatShop || !currentChatProduct) return;
-
     input.value = '';
-
-    // Envoyer via API
     try {
-        const reservationMessage = buildReservationMessage(message);
-        const result = await sendMessage(currentChatShop.id, currentChatProduct.id, reservationMessage);
-        if (result && result.success) {
-            addChatMessage('Vous', reservationMessage, 'sent');
-            showToast('Message envoyé à la boutique.', 'success');
-        } else {
-            throw new Error('Le message n’a pas pu être envoyé.');
-        }
-    } catch (e) {
+        const content = buildReservationMessage(message);
+        const result = await sendMessage(currentChatShop.id, currentChatProduct.id, content);
+        if (!result || !result.success) throw new Error('Le message n’a pas pu être envoyé.');
+        addChatMessage('Vous', content, 'sent');
+        showToast('Message envoyé à la boutique.', 'success');
+    } catch (error) {
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
         showToast('Erreur d\'envoi', 'error');
     }
@@ -106,6 +90,7 @@ async function sendChatMessage() {
 
 function addChatMessage(sender, message, type) {
     const container = document.getElementById('chatMessages');
+    if (!container) return;
     const div = document.createElement('div');
     div.className = `message ${type}`;
     const senderElement = document.createElement('strong');
@@ -122,20 +107,17 @@ async function loadChatMessages(shopId) {
         const container = document.getElementById('chatMessages');
         if (!container) return;
         container.innerHTML = '';
-        messages.forEach(msg => {
-            const isCurrentUser = Number(msg.sender_id) === Number(CURRENT_USER.id);
-            const type = isCurrentUser ? 'sent' : 'received';
-            const sender = isCurrentUser ? 'Vous' : 'Boutique';
-            addChatMessage(sender, msg.content, type);
+        messages.forEach(message => {
+            const isCurrentUser = Number(message.sender_id) === Number(CURRENT_USER.id);
+            addChatMessage(isCurrentUser ? 'Vous' : 'Boutique', message.content, isCurrentUser ? 'sent' : 'received');
         });
         container.scrollTop = container.scrollHeight;
-    } catch (e) {
+    } catch (error) {
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
-        console.warn('Impossible de charger les messages', e);
+        console.warn('Impossible de charger les messages', error);
     }
 }
 
-// Exposer pour les appels
 window.openChat = openChat;
 window.closeChat = closeChat;
 window.sendChatMessage = sendChatMessage;

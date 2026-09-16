@@ -31,10 +31,10 @@ const USERS = [
     { id: 3, username: 'Tech Vendeur', email: 'tech@vendeur.com', password: 'vendeur123', role: 'seller', avatar: 'TV', points: 230, shopId: 3 }
 ];
 
-const COLLECTIONS = [
-    { id: 1, name: "Mode Vintage à Lyon", description: "Les meilleures adresses pour du vintage", shops: [1, 5], creator: 1 },
-    { id: 2, name: "Petit-déjeuner gourmand", description: "Boulangeries et café de quartier", shops: [4], creator: 2 }
-];
+// const COLLECTIONS = [
+//     { id: 1, name: "Mode Vintage à Lyon", description: "Les meilleures adresses pour du vintage", shops: [1, 5], creator: 1 },
+//     { id: 2, name: "Petit-déjeuner gourmand", description: "Boulangeries et café de quartier", shops: [4], creator: 2 }
+// ];
 
 const CURRENT_USER = { id: null, username: '', points: 0, avatar: '', shopId: null, role: 'buyer' };
 

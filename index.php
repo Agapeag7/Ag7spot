@@ -125,10 +125,10 @@ if (!$isLocalHost && !$isHttps) {
                             <label for="editProductPrice">Prix ($)</label>
                             <input id="editProductPrice" type="number" min="0.01" step="0.01" required />
                         </div>
-                        <!-- <div class="form-group">
+                        <div class="form-group">
                             <label for="editProductStock">Quantité en stock</label>
                             <input id="editProductStock" type="number" min="0" step="1" required />
-                        </div> -->
+                        </div>
                         <div class="form-group">
                             <label for="editProductDescription">Description</label>
                             <textarea id="editProductDescription"></textarea>
@@ -211,7 +211,7 @@ if (!$isLocalHost && !$isHttps) {
         <script src="pages/profile.js"></script>
         <script src="pages/parcours.js"></script>
         <script src="pages/collections.js"></script>
-        <script src="pages/chat.js"></script>
+        <script src="pages/reservation.js"></script>
         <script src="pages/auth.js"></script>
 
         <!-- App principale -->

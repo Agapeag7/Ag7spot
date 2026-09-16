@@ -555,6 +555,11 @@ body {
 .page.active {
     display: block;
 }
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -600,8 +605,8 @@ body {
     transform: translate(-50%, -100%);
     pointer-events: none;
     z-index: 999;
-    width: 52px;
-    height: 52px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: grid;
     place-items: center;
@@ -620,7 +625,7 @@ body {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: var(--primary-dark); /* fallback for old browsers */
-    font-size: 42px;
+    font-size: 32px;
     filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
     transform: translateY(-2px);
 }
@@ -1706,6 +1711,9 @@ body {
     display: block;
     margin-bottom: 8px;
 }
+.image-upload input[type="file"] {
+    display: none;
+}
 .image-upload.has-image {
     border-color: var(--success);
     background: rgba(16, 185, 129, 0.05);
@@ -2134,6 +2142,7 @@ body {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     outline: none;
+    width: 80%;
 }
 .chat-input input:focus {
     border-color: var(--primary);

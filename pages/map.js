@@ -185,7 +185,7 @@ function renderMapShopPopup(shop, products, deals, routeButton) {
             <div class="map-popup-actions">
                 ${followButton}
                 <button class="btn-outline btn-sm" onclick="getDirectionsStatic(${Number(shop.lat)}, ${Number(shop.lng)})"><i class="fas fa-route"></i> Itinéraire</button>
-                <button class="btn-outline btn-sm" onclick="doCheckIn(${Number(shop.id)})"><i class="fas fa-check"></i> Check-in</button>
+                // <!-- <button class="btn-outline btn-sm" onclick="doCheckIn(${Number(shop.id)})"><i class="fas fa-check"></i> Check-in</button> -->
                 ${routeButton}
             </div>
         </div>`;

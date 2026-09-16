@@ -7,9 +7,10 @@ class Database {
         $config = $this->loadConfig();
 
         $dsn = sprintf(
-            '%s:host=%s;dbname=%s;charset=%s',
+            '%s:host=%s;port=%s;dbname=%s;charset=%s',
             $config['driver'],
             $config['host'],
+            $config['port'],
             $config['name'],
             $config['charset']
         );
@@ -36,14 +37,26 @@ class Database {
             throw new Exception('Invalid database configuration.');
         }
 
-        return array_merge([
+        $config = array_merge([
             'driver' => 'mysql',
-            'host' => '127.0.0.1',
-            'name' => 'ag7spot',
-            'user' => 'root',
-            'pass' => '',
-            'charset' => 'utf8mb4',
+            'port' => 3306,
         ], $config);
+
+        foreach (['driver', 'host', 'port', 'name', 'user', 'charset'] as $key) {
+            if (empty($config[$key])) {
+                throw new Exception('Missing database configuration value: ' . $key);
+            }
+        }
+
+        if (!filter_var($config['port'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 65535]])) {
+            throw new Exception('Invalid database configuration value: port');
+        }
+
+        if (!array_key_exists('pass', $config)) {
+            throw new Exception('Missing database configuration value: pass');
+        }
+
+        return $config;
     }
 
     public function getConnection() {
