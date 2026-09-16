@@ -157,7 +157,7 @@ function renderMapShopPopup(shop, products, deals, routeButton) {
         ? products.map(product => `
             <div class="map-popup-product">
                 <span>${escapeMapPopupText(product.name)}</span>
-                <strong>${parseFloat(product.price).toFixed(2)} $</strong>
+                <strong>${isProductPriceVisible(product) ? `${parseFloat(product.price).toFixed(2)} $` : 'Prix sur demande'}</strong>
             </div>`).join('')
         : '<p class="map-popup-empty">Aucun produit disponible</p>';
     const dealsHtml = deals.length ? `

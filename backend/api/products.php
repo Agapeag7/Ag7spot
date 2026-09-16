@@ -41,6 +41,7 @@ switch ($method) {
         $stock = 0;
         $description = '';
         $image = '';
+        $showPrice = true;
 
         if (!empty($_FILES) && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             // Read other values from POST when using FormData
@@ -49,6 +50,8 @@ switch ($method) {
             $price = floatval($_POST['price'] ?? 0);
             $stock = intval($_POST['stock'] ?? 0);
             $description = trim($_POST['description'] ?? '');
+            $showPrice = filter_var($_POST['show_price'] ?? true, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            $showPrice = $showPrice ?? true;
 
             $uploadDir = __DIR__ . '/../articles';
             if (!is_dir($uploadDir)) {
@@ -77,6 +80,8 @@ switch ($method) {
             $price = floatval($_POST['price'] ?? 0);
             $stock = intval($_POST['stock'] ?? 0);
             $description = trim($_POST['description'] ?? '');
+            $showPrice = filter_var($_POST['show_price'] ?? true, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            $showPrice = $showPrice ?? true;
             $image = trim($_POST['image'] ?? '');
             $image_url = $image;
         } else {
@@ -87,6 +92,8 @@ switch ($method) {
             $price = floatval($data['price'] ?? 0);
             $stock = intval($data['stock'] ?? 0);
             $description = trim($data['description'] ?? '');
+            $showPrice = filter_var($data['show_price'] ?? true, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            $showPrice = $showPrice ?? true;
             $image = trim($data['image'] ?? '');
             $image_url = $image;
         }
@@ -106,7 +113,7 @@ switch ($method) {
             $imageToStore = $filename; // filename only
         }
 
-        $productId = $spot->products->createProduct($shopId, $name, $price, $stock, $description, $imageToStore);
+        $productId = $spot->products->createProduct($shopId, $name, $price, $stock, $description, $imageToStore, $showPrice);
         $response = ['success' => true, 'product_id' => intval($productId)];
         if (!empty($image_url)) {
             $response['image_url'] = $image_url;
@@ -127,6 +134,8 @@ switch ($method) {
         $stock = intval($data['stock'] ?? 0);
         $description = trim($data['description'] ?? '');
         $image = trim($data['image'] ?? '');
+        $showPrice = filter_var($data['show_price'] ?? true, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        $showPrice = $showPrice ?? true;
         $userId = $_SESSION['user_id'] ?? null;
 
         if (!$userId || !$productId) {
@@ -149,7 +158,7 @@ switch ($method) {
             break;
         }
 
-        $success = $spot->products->updateProduct($productId, $name, $price, $stock, $description, $image);
+        $success = $spot->products->updateProduct($productId, $name, $price, $stock, $description, $image, $showPrice);
         echo json_encode(['success' => $success]);
         break;
 

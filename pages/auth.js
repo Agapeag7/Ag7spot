@@ -216,28 +216,53 @@ function renderLegalPage(container, type = 'privacy') {
         <h2>Politique de confidentialité</h2>
         <p>${intro}</p>
         <h3>1. Données collectées</h3>
-        <p>Nous collectons les informations nécessaires à la création du compte, à l\'authentification, à la gestion de vos achats et ventes, ainsi qu\'aux services de messagerie et notifications.</p>
-        <h3>2. Utilisation des données</h3>
-        <p>Les données sont utilisées pour sécuriser votre compte, personnaliser votre expérience, traiter les commandes, gérer les boutiques et améliorer la qualité du service.</p>
-        <h3>3. Protection</h3>
-        <p>Nous mettons en place des mesures techniques et organisationnelles raisonnables pour protéger vos informations contre l\'accès non autorisé, la modification ou la divulgation.</p>
-        <h3>4. Consentement</h3>
-        <p>En créant un compte ou en utilisant le service, vous consentez au traitement de vos données conformément à cette politique.</p>
-        <h3>5. Droits</h3>
-        <p>Vous pouvez demander la consultation, la mise à jour ou la suppression de vos données personnelles, selon les règles applicables et la législation en vigueur.</p>
+        <p>Nous collectons les informations nécessaires à la création et à la gestion du compte, notamment le nom d\'utilisateur, le type de compte, les informations de profil et les données nécessaires à l\'authentification.</p>
+        <p>Selon les fonctions utilisées, nous pouvons également traiter les boutiques, produits, images, messages, réservations, suivis, notifications, points, check-ins et informations de localisation publiés ou transmis dans l\'application.</p>
+        <h3>2. Finalités du traitement</h3>
+        <p>Ces données servent à sécuriser les comptes, permettre la mise en relation entre acheteurs et vendeurs, personnaliser le fil, afficher les boutiques proches, gérer les boutiques et produits, transmettre les notifications et assurer le fonctionnement des réservations et du chat.</p>
+        <p>Elles peuvent aussi être utilisées pour prévenir la fraude, protéger les utilisateurs, modérer les contenus, résoudre les incidents et respecter nos obligations légales.</p>
+        <h3>3. Géolocalisation</h3>
+        <p>Lorsque vous l\'autorisez, votre position peut servir à afficher les commerces proches, filtrer le fil, calculer des distances et préparer un parcours. La géolocalisation est indicative, peut être imprécise ou indisponible, et l\'autorisation peut être retirée depuis les réglages de votre appareil. Certaines fonctions peuvent alors ne plus être disponibles.</p>
+        <h3>4. Messages et données sensibles</h3>
+        <p>Les messages et demandes envoyés dans l\'application peuvent être conservés pour fournir le service, assurer la sécurité et traiter les signalements. Ag7Spot ne demande jamais votre mot de passe par message. Évitez de communiquer dans le chat des données sensibles ou inutiles.</p>
+        <h3>5. Conservation et partage</h3>
+        <p>Les données sont conservées pendant la durée nécessaire aux finalités décrites, à la sécurité du service et au respect des obligations légales. Elles peuvent être accessibles aux personnes et prestataires strictement nécessaires au fonctionnement d\'Ag7Spot, ainsi qu\'aux autorités lorsque la loi l\'exige. Ag7Spot ne vend pas vos données personnelles.</p>
+        <h3>6. Protection</h3>
+        <p>Nous mettons en place des mesures techniques et organisationnelles raisonnables pour protéger vos informations contre l\'accès non autorisé, la modification, la perte ou la divulgation.</p>
+        <h3>7. Vos droits</h3>
+        <p>Vous pouvez demander la consultation, la rectification, la suppression ou la limitation du traitement de vos données, selon les règles applicables. Vous pouvez également retirer les autorisations facultatives. Toute demande peut être adressée à Ag7Spot par les moyens de contact indiqués dans l\'application.</p>
+        <h3>8. Évolution de la politique</h3>
+        <p>Cette politique peut évoluer pour tenir compte des changements du service, de la loi ou de la sécurité. En cas de modification substantielle, nous vous en informerons par un moyen adapté et une nouvelle acceptation pourra être demandée.</p>
     ` : `
         <h2>Conditions d'utilisation</h2>
         <p>${intro}</p>
-        <h3>1. Objet</h3>
-        <p>Ag7Spot permet de découvrir des boutiques, des promotions, de gérer un profil et d\'interagir avec d\'autres utilisateurs.</p>
-        <h3>2. Obligations de l'utilisateur</h3>
-        <p>Vous vous engagez à fournir des informations honnêtes, à respecter les règles de la plateforme et à ne pas utiliser le service à des fins illicites, abusives ou frauduleuses.</p>
-        <h3>3. Compte utilisateur</h3>
-        <p>Vous êtes responsable de la confidentialité de votre mot de passe et de toutes les activités liées à votre compte.</p>
-        <h3>4. Modération et sécurité</h3>
-        <p>Nous nous réservons le droit de suspendre ou supprimer un compte en cas de comportement contraire aux règles de sécurité ou de communauté.</p>
-        <h3>5. Responsabilité</h3>
-        <p>Ag7Spot fournit le service tel quel et ne peut être tenu responsable des contenus publiés par les utilisateurs ou des incidents liés à l\'usage et aux conditions externes.</p>
+        <h3>1. Objet du service</h3>
+        <p>Ag7Spot est une plateforme de découverte du commerce local. Elle permet de rechercher des boutiques et des produits, de consulter leur position, de suivre des boutiques, de contacter un vendeur, de préparer une visite et, pour les vendeurs autorisés, de gérer une boutique et de publier des produits.</p>
+        <p>Ag7Spot est une plateforme de mise en relation et d\'information. Sauf indication expresse contraire, Ag7Spot ne vend pas les produits, n\'est pas partie aux ventes et ne garantit ni la disponibilité, ni le prix, ni la qualité ou la conformité des offres publiées par un vendeur.</p>
+        <h3>2. Compte et accès</h3>
+        <p>Vous devez avoir la capacité juridique de contracter et fournir des informations exactes, à jour et complètes. Vous êtes responsable de la confidentialité de vos identifiants et des activités réalisées depuis votre compte. Prévenez Ag7Spot sans délai en cas d\'accès non autorisé.</p>
+        <h3>3. Utilisation interdite</h3>
+        <p>Il est interdit d\'usurper l\'identité d\'une personne, d\'utiliser le compte d\'autrui, de publier des contenus faux, trompeurs, diffamatoires ou illicites, de proposer un produit interdit, de harceler ou menacer un utilisateur, de contourner les contrôles de sécurité, d\'accéder aux données d\'autrui, d\'extraire automatiquement le catalogue ou d\'utiliser le service de manière frauduleuse.</p>
+        <h3>4. Obligations du vendeur</h3>
+        <p>Le vendeur est responsable de sa boutique, de ses produits, prix, stocks, images, descriptions et horaires. Il doit respecter les lois et obligations applicables à son activité, disposer des droits nécessaires sur ses contenus et actualiser rapidement les informations publiées.</p>
+        <p>La publication d\'un produit ne constitue ni une validation, ni une certification, ni une recommandation d\'Ag7Spot.</p>
+        <h3>5. Messages, réservations et transactions</h3>
+        <p>Un message ou une demande envoyée dans l\'application ne vaut pas réservation ferme, commande, promesse de vente ou paiement, sauf confirmation contraire du vendeur. Le prix final, le paiement, la livraison ou le retrait, les retours, les garanties et les réclamations sont convenus directement entre l\'acheteur et le vendeur.</p>
+        <p>Ag7Spot ne perçoit aucun paiement et ne garantit pas l\'exécution d\'une transaction, sauf mention spécifique dans une fonctionnalité distincte.</p>
+        <h3>6. Géolocalisation, check-in et points</h3>
+        <p>Les positions, distances, horaires, itinéraires et temps de trajet sont des estimations. Vous restez responsable de vos déplacements et devez respecter les règles de sécurité et de circulation.</p>
+        <p>Les points éventuellement accordés par un check-in sont une fonctionnalité promotionnelle : ils ne sont ni de la monnaie, ni un dépôt, ni une somme remboursable, et ne peuvent être vendus, cédés ou convertis en argent. Toute simulation de position ou utilisation frauduleuse peut entraîner leur retrait et la suspension du compte.</p>
+        <h3>7. Contenus et propriété intellectuelle</h3>
+        <p>Vous conservez vos droits sur vos contenus. En les publiant, vous accordez à Ag7Spot une licence mondiale, gratuite, non exclusive et limitée à la durée de leur mise à disposition, nécessaire pour les héberger, les adapter au format technique, les afficher et les distribuer dans l\'application. Vous garantissez disposer des droits nécessaires et restez responsable de vos publications et messages.</p>
+        <p>L\'application, sa marque, son code, son interface, ses textes, ses bases de données et ses graphismes sont protégés par les droits applicables. Toute reproduction, modification, distribution ou exploitation non autorisée est interdite.</p>
+        <h3>8. Signalement et modération</h3>
+        <p>Tout utilisateur peut signaler un contenu ou un comportement illicite ou abusif par les moyens indiqués dans l\'application. Ag7Spot peut demander une correction, masquer ou retirer un contenu, limiter une fonctionnalité ou prendre toute autre mesure proportionnée.</p>
+        <h3>9. Disponibilité et responsabilité</h3>
+        <p>Ag7Spot met en œuvre des moyens raisonnables pour maintenir le service accessible, sans garantir une disponibilité continue, sans erreur ou compatible avec tous les appareils. Dans les limites autorisées par la loi, Ag7Spot ne répond pas des contenus de tiers, des transactions, des interruptions de réseau, de l\'usage de la géolocalisation ou du non-respect des consignes de sécurité.</p>
+        <h3>10. Suspension et suppression du compte</h3>
+        <p>Vous pouvez cesser d\'utiliser l\'application et demander la suppression de votre compte selon la procédure disponible. Ag7Spot peut suspendre ou supprimer un compte en cas de violation des présentes conditions, de fraude, de risque pour la sécurité, d\'obligation légale ou d\'usage abusif. La fermeture du compte ne supprime pas les obligations déjà nées ni celles qui doivent continuer à s\'appliquer.</p>
+        <h3>11. Modification et règlement des différends</h3>
+        <p>Ag7Spot peut faire évoluer ces conditions pour tenir compte du service, de la loi ou de la sécurité. En cas de modification substantielle, une nouvelle acceptation pourra être demandée. Les parties recherchent d\'abord une solution amiable à tout différend, sous réserve des droits impératifs du consommateur et des règles légales applicables.</p>
     `;
 
     container.innerHTML = `

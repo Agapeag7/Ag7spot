@@ -103,6 +103,12 @@ async function renderShopOrProduct(container) {
                             <input type="number" id="productPrice" placeholder="49.99" step="0.01" required />
                         </div>
                         <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="productShowPrice" checked />
+                                <span>Afficher le prix aux clients</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
                             <label>Ma boutique</label>
                             <select id="productShop">
                                 ${ownedShops.map(shop => `<option value="${shop.id}">${shop.name}</option>`).join('')}
@@ -304,6 +310,7 @@ function setupProductForm() {
         }
         const stock = 0;
         const description = document.getElementById('productDesc').value.trim();
+        const showPrice = document.getElementById('productShowPrice').checked;
 
         if (!name || !price || Number.isNaN(price)) {
             showToast('Veuillez remplir tous les champs correctement.', 'warning');
@@ -318,6 +325,7 @@ function setupProductForm() {
         formData.append('price', price);
         formData.append('stock', stock);
         formData.append('description', description);
+        formData.append('show_price', showPrice ? '1' : '0');
         if (file) {
             formData.append('image', file);
         } else {
@@ -345,6 +353,7 @@ function setupProductForm() {
                     price,
                     stock: 0,
                     description,
+                    show_price: showPrice ? 1 : 0,
                     image: imageUrl,
                     distance: 0
                 });

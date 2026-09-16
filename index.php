@@ -126,6 +126,12 @@ if (!$isLocalHost && !$isHttps) {
                             <input id="editProductPrice" type="number" min="0.01" step="0.01" required />
                         </div>
                         <div class="form-group">
+                            <label class="checkbox-label">
+                                <input id="editProductShowPrice" type="checkbox" checked />
+                                <span>Afficher le prix aux clients</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
                             <label for="editProductStock">Quantité en stock</label>
                             <input id="editProductStock" type="number" min="0" step="1" required />
                         </div>

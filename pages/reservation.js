@@ -7,7 +7,8 @@ let currentChatProduct = null;
 function buildReservationMessage(message) {
     const product = currentChatProduct;
     const shop = currentChatShop;
-    return `${message}\n \nProduit : ${product.name} \n Prix : ${parseFloat(product.price).toFixed(2)} $ \n Boutique : ${shop.name}`;
+    const priceLabel = isProductPriceVisible(product) ? `${parseFloat(product.price).toFixed(2)} $` : 'Prix sur demande';
+    return `${message}\n \nProduit : ${product.name} \n Prix : ${priceLabel} \n Boutique : ${shop.name}`;
 }
 
 async function openChat(productId) {
@@ -44,7 +45,7 @@ async function openChat(productId) {
                 <i class="fas fa-reply"></i>
                 <div>
                     <strong>Réservation</strong>
-                    <span>${product.name} · ${parseFloat(product.price).toFixed(2)} $</span>
+                    <span>${product.name} · ${isProductPriceVisible(product) ? `${parseFloat(product.price).toFixed(2)} $` : 'Prix sur demande'}</span>
                     <small>${shop.address || 'Adresse non renseignée'} · ${shop.lat}, ${shop.lng}</small>
                 </div>
             </div>

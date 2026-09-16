@@ -51,6 +51,7 @@ CREATE TABLE `products` (
   `shop_id` INT UNSIGNED NOT NULL,
   `name` VARCHAR(150) NOT NULL,
   `price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `show_price` TINYINT(1) NOT NULL DEFAULT 1,
   `image` VARCHAR(255) NOT NULL,
   `stock` INT NOT NULL DEFAULT 0,
   `distance` DECIMAL(6,2) NOT NULL DEFAULT 0.00,

@@ -25,6 +25,10 @@ function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
 
+function isProductPriceVisible(product) {
+    return product && product.show_price !== false && Number(product.show_price) !== 0;
+}
+
 function getUserRecommendationProfile() {
     const userId = (window.CURRENT_USER && window.CURRENT_USER.id) || null;
     if (typeof getRecommendationProfile === 'function') {
@@ -294,7 +298,7 @@ function renderFeedBatch() {
                     </div>
                     <h3>${p.name}</h3>
                     <div class="meta">
-                        <span class="price">${parseFloat(p.price).toFixed(2)} $</span>
+                        <span class="price">${isProductPriceVisible(p) ? `${parseFloat(p.price).toFixed(2)} $` : 'Prix sur demande'}</span>
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                             ${stockHtml}
                             <button class="btn-outline btn-sm" onclick="event.stopPropagation(); openChat(${p.id})">
@@ -335,7 +339,8 @@ function showProductDetail(productId) {
             category: product.category || shop?.category || ''
         }, window.CURRENT_USER?.id || null);
     }
-    alert(`🛍️ ${product.name}\n📍 ${shop.name}\n💰 ${product.price} $\n Stock: ${product.stock} unités`);
+    const priceLabel = isProductPriceVisible(product) ? `${product.price} $` : 'Prix sur demande';
+    alert(`🛍️ ${product.name}\n📍 ${shop.name}\n💰 ${priceLabel}\n Stock: ${product.stock} unités`);
 }
 
 function getDirections(lat, lng) {

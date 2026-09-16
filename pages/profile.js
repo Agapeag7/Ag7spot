@@ -459,6 +459,7 @@ function editProduct(productId) {
     productPendingEdit = Number(productId);
     document.getElementById('editProductName').value = product.name || '';
     document.getElementById('editProductPrice').value = product.price ?? '';
+    document.getElementById('editProductShowPrice').checked = product.show_price !== false && Number(product.show_price) !== 0;
     document.getElementById('editProductStock').value = product.stock ?? 0;
     document.getElementById('editProductDescription').value = product.description || '';
     modal.classList.remove('hidden');
@@ -483,6 +484,7 @@ async function confirmEditProduct(event) {
     const productId = productPendingEdit;
     const name = document.getElementById('editProductName').value.trim();
     const price = Number.parseFloat(document.getElementById('editProductPrice').value);
+    const showPrice = document.getElementById('editProductShowPrice').checked;
     const stock = Number.parseInt(document.getElementById('editProductStock').value, 10);
     const description = document.getElementById('editProductDescription').value.trim();
     const button = document.getElementById('confirmEditProductButton');
@@ -503,6 +505,7 @@ async function confirmEditProduct(event) {
         const success = await updateProduct(productId, {
             name,
             price,
+            show_price: showPrice,
             stock,
             description,
             image: product?.image || ''

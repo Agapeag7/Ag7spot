@@ -89,6 +89,7 @@ class Spot {
         $this->db = new Database();
         $this->ensureFollowAndNotificationTables();
         $this->ensureUserSchema();
+        $this->ensureProductSchema();
         $this->notifications = new SpotNotifications($this->db);
         $this->users = new SpotUsers($this->db);
         $this->shops = new SpotShops($this->db, $this->notifications);
@@ -120,6 +121,14 @@ class Spot {
                 $connection->exec('ALTER TABLE users DROP INDEX uk_users_email');
             } catch (Exception $e) {}
             $connection->exec('ALTER TABLE users DROP COLUMN email');
+        }
+    }
+
+    private function ensureProductSchema() {
+        $connection = $this->db->getConnection();
+        $column = $connection->query("SHOW COLUMNS FROM products LIKE 'show_price'");
+        if ($column && $column->fetch() === false) {
+            $connection->exec("ALTER TABLE products ADD COLUMN show_price TINYINT(1) NOT NULL DEFAULT 1 AFTER price");
         }
     }
 
@@ -552,11 +561,12 @@ class SpotProducts {
         return $stmt->fetchColumn();
     }
 
-    public function updateProduct($productId, $name, $price, $stock, $description, $image) {
-        $stmt = $this->db->prepare('UPDATE products SET name = ?, price = ?, stock = ?, description = ?, image = ? WHERE id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)');
+    public function updateProduct($productId, $name, $price, $stock, $description, $image, $showPrice = true) {
+        $stmt = $this->db->prepare('UPDATE products SET name = ?, price = ?, show_price = ?, stock = ?, description = ?, image = ? WHERE id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)');
         return $stmt->execute([
             trim($name),
             floatval($price),
+            $showPrice ? 1 : 0,
             intval($stock),
             trim($description),
             trim($image),
@@ -574,12 +584,13 @@ class SpotProducts {
         return $stmt->execute([intval($stock), intval($productId)]);
     }
 
-    public function createProduct($shopId, $name, $price, $stock, $description, $image) {
-        $stmt = $this->db->prepare('INSERT INTO products (shop_id, name, price, image, stock, distance, description) VALUES (?, ?, ?, ?, ?, 0, ?)');
+    public function createProduct($shopId, $name, $price, $stock, $description, $image, $showPrice = true) {
+        $stmt = $this->db->prepare('INSERT INTO products (shop_id, name, price, show_price, image, stock, distance, description) VALUES (?, ?, ?, ?, ?, ?, 0, ?)');
         $stmt->execute([
             intval($shopId),
             trim($name),
             floatval($price),
+            $showPrice ? 1 : 0,
             trim($image),
             intval($stock),
             trim($description)
