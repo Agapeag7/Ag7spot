@@ -132,10 +132,6 @@ if (!$isLocalHost && !$isHttps) {
                             </label>
                         </div>
                         <div class="form-group">
-                            <label for="editProductStock">Quantité en stock</label>
-                            <input id="editProductStock" type="number" min="0" step="1" required />
-                        </div>
-                        <div class="form-group">
                             <label for="editProductDescription">Description</label>
                             <textarea id="editProductDescription"></textarea>
                         </div>

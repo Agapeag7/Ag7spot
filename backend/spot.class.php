@@ -1,5 +1,10 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Minishlink\WebPush\Subscription;
+use Minishlink\WebPush\WebPush;
+
 class Database {
     private $pdo;
 
@@ -159,6 +164,19 @@ class Spot {
             KEY idx_notifications_user_read (user_id, read_at),
             CONSTRAINT fk_runtime_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+        $connection->exec('CREATE TABLE IF NOT EXISTS push_subscriptions (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id INT UNSIGNED NOT NULL,
+            endpoint VARCHAR(500) NOT NULL,
+            p256dh VARCHAR(255) NOT NULL,
+            auth_token VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uk_push_subscriptions_user_endpoint (user_id, endpoint),
+            KEY idx_push_subscriptions_user_id (user_id),
+            CONSTRAINT fk_runtime_push_subscriptions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
         $connection->exec('CREATE TABLE IF NOT EXISTS messages (
             id INT UNSIGNED NOT NULL AUTO_INCREMENT,
             sender_id INT UNSIGNED NOT NULL,
@@ -219,13 +237,85 @@ class SpotNotifications {
         return $this->db->prepare($sql)->execute($params);
     }
 
+    public function savePushSubscription($userId, $endpoint, $p256dh, $authToken) {
+        $endpoint = trim((string) $endpoint);
+        $p256dh = trim((string) $p256dh);
+        $authToken = trim((string) $authToken);
+        if ($userId <= 0 || $endpoint === '' || $p256dh === '' || $authToken === '') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare('INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth_token) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE p256dh = VALUES(p256dh), auth_token = VALUES(auth_token), updated_at = CURRENT_TIMESTAMP');
+        return $stmt->execute([intval($userId), $endpoint, $p256dh, $authToken]);
+    }
+
+    public function getPushSubscriptions($userId) {
+        $stmt = $this->db->prepare('SELECT endpoint, p256dh, auth_token FROM push_subscriptions WHERE user_id = ?');
+        $stmt->execute([intval($userId)]);
+        return $stmt->fetchAll();
+    }
+
+    private function getVapidConfig() {
+        $subject = getenv('VAPID_SUBJECT') ?: 'mailto:contact@ag7spot.local';
+        return [
+            'subject' => $subject,
+            'publicKey' => getenv('VAPID_PUBLIC_KEY') ?: 'BBXArKH2xkGAIWVZQ7lX-EtgOsHPXJue8T_isko4XpDbrmOmgzaBVCnKo8oYDzcVONFuyib-B8VLolWRd6vH9Z8',
+            'privateKey' => getenv('VAPID_PRIVATE_KEY') ?: 'B06oViYFRtKuU6rc-72aGZp3kzgFfSwTSlJygaLaPHk',
+        ];
+    }
+
+    public function sendPushToUser($userId, $title, $body, array $data = []) {
+        $subscriptions = $this->getPushSubscriptions($userId);
+        if (!$subscriptions) {
+            return 0;
+        }
+
+        $payload = json_encode([
+            'title' => trim((string) $title),
+            'body' => trim((string) $body),
+            'type' => $data['type'] ?? 'general',
+            'data' => $data,
+            'icon' => $data['icon'] ?? '/ico/spot.png',
+            'badge' => $data['badge'] ?? '/ico/spot.png',
+            'url' => $data['url'] ?? '/index.php',
+        ], JSON_UNESCAPED_SLASHES);
+
+        $push = new WebPush(['VAPID' => $this->getVapidConfig()]);
+        $sent = 0;
+        foreach ($subscriptions as $subscription) {
+            try {
+                $push->queueNotification(
+                    Subscription::create([
+                        'endpoint' => $subscription['endpoint'],
+                        'keys' => [
+                            'p256dh' => $subscription['p256dh'],
+                            'auth' => $subscription['auth_token'],
+                        ],
+                    ]),
+                    $payload,
+                    ['TTL' => 2419200, 'urgency' => 'high']
+                );
+            } catch (Throwable $e) {
+                continue;
+            }
+        }
+
+        foreach ($push->flush() as $report) {
+            $sent += ($report->isSuccess() ? 1 : 0);
+        }
+
+        return $sent;
+    }
+
     public function notifyShopFollowers($shopId, $type, $title, $body, array $data = []) {
         try {
             $stmt = $this->db->prepare('SELECT sf.user_id FROM shop_follows sf JOIN shops s ON s.id = sf.shop_id WHERE sf.shop_id = ? AND sf.user_id <> s.owner_id');
             $stmt->execute([intval($shopId)]);
             $insert = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
             foreach ($stmt->fetchAll() as $follower) {
-                $insert->execute([intval($follower['user_id']), trim($type), trim($title), trim($body), json_encode($data)]);
+                $userId = intval($follower['user_id']);
+                $insert->execute([$userId, trim($type), trim($title), trim($body), json_encode($data)]);
+                $this->sendPushToUser($userId, $title, $body, array_merge(['type' => trim($type)], $data));
             }
         } catch (PDOException $e) {
             if ($e->getCode() !== '42S02') throw $e;
@@ -234,7 +324,11 @@ class SpotNotifications {
 
     public function notifyUser($userId, $type, $title, $body, array $data = []) {
         $stmt = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
-        return $stmt->execute([intval($userId), trim($type), trim($title), trim($body), json_encode($data)]);
+        $success = $stmt->execute([intval($userId), trim($type), trim($title), trim($body), json_encode($data)]);
+        if ($success) {
+            $this->sendPushToUser(intval($userId), $title, $body, array_merge(['type' => trim($type)], $data));
+        }
+        return $success;
     }
 }
 

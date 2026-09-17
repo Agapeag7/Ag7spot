@@ -211,6 +211,18 @@ function getNotifications(limit = 30, offset = 0) {
     return apiCall(`notifications.php?limit=${limit}&offset=${offset}`);
 }
 
+function getPushNotificationsState() {
+    return apiCall('notifications.php?action=push_state');
+}
+
+function subscribePushNotifications(subscription) {
+    return apiCall('notifications.php', 'POST', { action: 'subscribe_push', subscription });
+}
+
+function unsubscribePushNotifications() {
+    return apiCall('notifications.php', 'POST', { action: 'unsubscribe_push' });
+}
+
 function markNotificationRead(notificationId = null) {
     return apiCall('notifications.php', 'PUT', notificationId ? { notification_id: notificationId } : {});
 }

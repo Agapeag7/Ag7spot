@@ -188,12 +188,9 @@ async function editProduct(productId) {
     if (name === null) return;
     const priceValue = prompt('Modifier le prix ($)', product.price);
     if (priceValue === null) return;
-    const stockValue = prompt('Modifier la quantité en stock', product.stock);
-    if (stockValue === null) return;
 
     const price = parseFloat(priceValue);
-    const stock = parseInt(stockValue, 10);
-    if (!name.trim() || Number.isNaN(price) || Number.isNaN(stock)) {
+    if (!name.trim() || Number.isNaN(price)) {
         showToast('Valeurs invalides.', 'warning');
         return;
     }
@@ -202,7 +199,7 @@ async function editProduct(productId) {
         const success = await updateProduct(productId, {
             name: name.trim(),
             price,
-            stock,
+            stock: Number(product.stock) || 0,
             description: product.description || '',
             image: product.image || ''
         });
@@ -210,7 +207,6 @@ async function editProduct(productId) {
         if (success) {
             product.name = name.trim();
             product.price = price;
-            product.stock = stock;
             showToast('Produit mis à jour.', 'success');
             renderProfile(document.getElementById('pageContainer'));
         } else {

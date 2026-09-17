@@ -1,15 +1,13 @@
-* d'abord la présentation de l'application ag7spot
+Pages | dossiers Ajouter :
+- composer.json
+- composer.lock
+- push_notifications_test.php
+- vendor/
 
-* Problematique : (ex: chez moi les vendeurs postent plein des marchandises sur statuts whatsapp sans precision et embrouillent la navigation tranquille des status whatsapp)
-
-* Questions :
-
-- Pourquoi le nom Ag7spot ? : 
-
-- C'est quoi un itinéraire ? :
-
-- Comment rendre l'appli rentable ? : 
-
-- dans l'application Différence entre Boutique suivi(e) et boutique non suivi(e) :
-
-- Explication Application mobile-first :
+Pages Modifier :
+- app.js
+- notifications.php
+- spot.class.php
+- profile.js
+- api.js
+- sw.js

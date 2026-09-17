@@ -1,0 +1,2 @@
+En voulant modifier le produit j'ai toujours cette notif :
+Product can no longer be edited

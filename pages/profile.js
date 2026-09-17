@@ -114,9 +114,11 @@ async function renderProfile(container) {
 
                 <div class="settings-card">
                     <h4><i class="fas fa-cog"></i> Paramètres</h4>
-                    <div class="settings-item">
+                    <div class="settings-item" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
                         <span>Notifications push</span>
-                        <span class="settings-value">Non configurées</span>
+                        <button class="btn-outline btn-sm" type="button" onclick="registerPushNotifications(true)">
+                            <span id="pushStatusLabel">Non configurées</span>
+                        </button>
                     </div>
                     <div class="settings-item">
                         <span>Mode sombre</span>
@@ -134,6 +136,18 @@ async function renderProfile(container) {
 
         Object.assign(CURRENT_USER || window.CURRENT_USER || {}, user);
         localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
+
+        const pushStatusLabel = document.getElementById('pushStatusLabel');
+        if (pushStatusLabel) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                pushStatusLabel.textContent = 'Activées';
+            } else if ('Notification' in window && Notification.permission === 'denied') {
+                pushStatusLabel.textContent = 'Désactivées';
+            } else {
+                pushStatusLabel.textContent = 'Non configurées';
+            }
+        }
+
         // init seller products pagination if seller
         if (user.role === 'seller' && myShop) {
             // products variable from API response
@@ -460,7 +474,6 @@ function editProduct(productId) {
     document.getElementById('editProductName').value = product.name || '';
     document.getElementById('editProductPrice').value = product.price ?? '';
     document.getElementById('editProductShowPrice').checked = product.show_price !== false && Number(product.show_price) !== 0;
-    document.getElementById('editProductStock').value = product.stock ?? 0;
     document.getElementById('editProductDescription').value = product.description || '';
     modal.classList.remove('hidden');
     document.getElementById('editProductName').focus();
@@ -485,11 +498,10 @@ async function confirmEditProduct(event) {
     const name = document.getElementById('editProductName').value.trim();
     const price = Number.parseFloat(document.getElementById('editProductPrice').value);
     const showPrice = document.getElementById('editProductShowPrice').checked;
-    const stock = Number.parseInt(document.getElementById('editProductStock').value, 10);
     const description = document.getElementById('editProductDescription').value.trim();
     const button = document.getElementById('confirmEditProductButton');
 
-    if (!name || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
+    if (!name || !Number.isFinite(price) || price <= 0) {
         showToast('Vérifie les informations du produit.', 'warning');
         return;
     }
@@ -506,7 +518,7 @@ async function confirmEditProduct(event) {
             name,
             price,
             show_price: showPrice,
-            stock,
+            stock: Number(product?.stock) || 0,
             description,
             image: product?.image || ''
         });
