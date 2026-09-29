@@ -1,0 +1,81 @@
+﻿# Rôle
+Tu es un architecte système spécialisé en algorithmes de recommandation et feeds temps réel. 
+Tu vas concevoir l'algorithme de fil d'actualité pour une application mobile-first de découverte 
+du commerce local (type "marketplace géolocalisé" : acheteurs découvrent boutiques/produits près 
+d'eux, vendeurs présentent leur catalogue au bon public).
+
+# Contexte produit
+- Utilisateurs acheteurs : cherchent des produits/boutiques disponibles à proximité, veulent une 
+  découverte rapide et géographiquement pertinente (remplace le fait de parcourir Instagram/Facebook 
+  Marketplace/plusieurs boutiques).
+- Utilisateurs vendeurs : publient un catalogue (produits, stock, promos, événements en boutique) 
+  et veulent être vus par les bonnes personnes au bon endroit et au bon moment.
+- Le fil est le point d'entrée principal de l'app (équivalent du "For You Timeline" de X, mais 
+  orienté commerce local et non contenu social).
+
+# Ce que je veux que tu produises
+Conçois une architecture complète en 4 étages, inspirée du pipeline candidate sourcing → features 
+→ ranking → mixing/filtering utilisé par les grands systèmes de recommandation (X/Twitter, TikTok), 
+mais adaptée à un contexte marchand géolocalisé plutôt que social.
+
+## 1. Candidate Sourcing (récupération multi-sources)
+Liste et détaille les sources de candidats à combiner, par exemple :
+- Proximité géographique brute (rayon dynamique selon densité urbaine/rurale)
+- Boutiques/produits déjà suivis ou visités par l'utilisateur (in-network)
+- Boutiques similaires à celles visitées / catégories déjà consultées (out-of-network, 
+  type cr-mixer)
+- Graphe d'interactions utilisateur-produit (vues, clics, mise en favoris) façon UTEG
+- Nouveautés et produits fraîchement publiés (fraîcheur du catalogue)
+- Promotions et événements en cours (urgence temporelle)
+- Recommandations de boutiques à découvrir (équivalent FRS) basées sur des acheteurs similaires
+Pour chaque source, précise : signal exploité, fenêtre temporelle, poids indicatif dans le mix.
+
+## 2. Feature Engineering & Enrichissement
+Détaille les signaux à calculer pour chaque paire (utilisateur, candidat) :
+- Signaux géographiques : distance réelle, distance perçue (temps de trajet, transport), 
+  zone de chalandise
+- Signaux d'intention : historique de recherche, catégories consultées, requêtes récentes
+- Signaux de confiance/qualité : réputation vendeur (façon tweepcred), avis clients, 
+  taux de réponse, ancienneté du compte
+- Signaux de fraîcheur : âge de la publication, mise à jour du stock, dernière activité 
+  de la boutique
+- Signaux de sécurité/conformité : détection de faux comptes, produits interdits, contenu 
+  frauduleux (équivalent trust-and-safety-models)
+- Signaux de similarité : clustering de boutiques/produits par catégorie et style 
+  (équivalent simclusters-ann)
+
+## 3. Ranking en deux temps
+- Light ranker : modèle simple et rapide (règles pondérées ou modèle linéaire) pour réduire 
+  le pool de candidats à un ensemble gérable
+- Heavy ranker : modèle plus complexe (arbre de décision ou réseau de neurones léger) qui 
+  prédit la probabilité d'action (clic, visite en boutique, achat, sauvegarde) en combinant 
+  tous les signaux ci-dessus
+Précise la fonction de score finale (formule pondérée ou probabilité prédite) et les objectifs 
+d'optimisation (ex: probabilité de visite en boutique dans les 24h, probabilité de clic).
+
+## 4. Mixing, Filtrage & Diversité
+- Règles de diversité : éviter de saturer le fil avec une seule boutique/catégorie, garantir 
+  une variété géographique et thématique
+- Filtres de qualité/conformité : produits interdits, doublons, contenu obsolète (stock épuisé)
+- Équilibrage acheteur/vendeur : garantir une exposition équitable aux nouveaux vendeurs 
+  (cold start) sans favoriser uniquement les gros comptes
+- Personnalisation vs découverte : ratio entre contenu familier et contenu de découverte 
+  (exploration/exploitation)
+
+# Contraintes techniques à respecter
+- Mobile-first : la latence de calcul du fil doit rester compatible avec un scroll fluide 
+  (< 300ms par page de résultats)
+- Le classement doit pouvoir se recalculer en quasi temps réel quand l'utilisateur change 
+  de localisation
+- Prévoir un mode dégradé si peu de boutiques sont disponibles à proximité (élargissement 
+  progressif du rayon)
+- Prévoir la gestion du cold start (nouvel utilisateur sans historique, nouvelle boutique 
+  sans données d'engagement)
+
+# Format de sortie attendu
+1. Schéma/diagramme textuel de l'architecture globale (les 4 étages et leurs interactions)
+2. Tableau détaillé de chaque composant (nom, rôle, signaux utilisés, poids/priorité)
+3. Formule de scoring final proposée (avec les variables et leur pondération indicative)
+4. Recommandations concrètes de mise en œuvre (quelle stack technique envisager pour un MVP 
+   vs une V2 à grande échelle)
+5. Métriques de succès à suivre pour évaluer la qualité du fil (côté acheteur ET côté vendeur)

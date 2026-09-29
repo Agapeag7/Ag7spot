@@ -23,7 +23,7 @@ function renderAuth(container) {
                     <div class="form-group">
                         <label id="authEmailLabel">Nom d'utilisateur</label>
                         <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d\'utilisateur" required />
-                        <small class="auth-username-hint hidden" style="color: var(--text-gray)">Le nom doit contenir entre 5 et 20 caractères.</small>
+                        <small class="auth-username-hint hidden" style="color: var(--text-gray)">Le nom doit contenir entre 5 et 20 caractères, sans espace.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
