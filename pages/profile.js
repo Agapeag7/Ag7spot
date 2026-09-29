@@ -127,6 +127,9 @@ async function renderProfile(container) {
                     <div class="settings-item">
                         <span>Mode hors-ligne</span>
                     </div>
+                    <button class="btn-outline w-full" type="button" onclick="navigateTo('help')">
+                        <i class="fas fa-circle-question"></i> Aide et assistance
+                    </button>
                     <button class="btn-outline w-full" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> Se déconnecter
                     </button>

@@ -856,6 +856,9 @@ function navigateTo(page) {
         case 'terms':
             renderTerms(container);
             break;
+        case 'help':
+            renderHelp(container);
+            break;
         case 'favorites':
             renderFavorites(container);
             break;

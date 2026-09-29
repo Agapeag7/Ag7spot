@@ -1179,6 +1179,7 @@ body {
 }
 .w-full {
     width: 100%;
+    margin-bottom: 10px;
 }
 
 /* Badges */
@@ -1888,6 +1889,109 @@ body {
 .settings-value:last-child {
     color: var(--text-gray);
     font-weight: 400;
+}
+
+.help-guide-header {
+    border-left: 4px solid var(--primary);
+}
+.help-guide-entry {
+    margin-top: 10px;
+}
+.help-guide-entry i {
+    margin: 0 5px;
+    color: var(--primary);
+}
+.help-topic {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+.help-topic:first-child {
+    padding-top: 0;
+}
+.help-topic summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    line-height: 1.45;
+    list-style-position: inside;
+}
+.help-topic summary > i {
+    width: 20px;
+    flex: 0 0 20px;
+    color: var(--primary);
+    text-align: center;
+}
+.help-topic summary::after {
+    content: "+";
+    margin-left: auto;
+    color: var(--primary);
+    font-size: 20px;
+    line-height: 1;
+}
+.help-topic[open] summary::after {
+    content: "-";
+}
+.help-step-number {
+    display: inline-grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    flex: 0 0 25px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-size: 13px;
+}
+.help-topic ol,
+.help-topic ul {
+    margin: 12px 0 0 30px;
+    padding-left: 18px;
+}
+.help-topic li {
+    margin: 0 0 9px;
+    padding-left: 3px;
+    line-height: 1.55;
+}
+.help-topic > p {
+    margin: 12px 0 0 30px;
+    line-height: 1.55;
+}
+.help-topic kbd {
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    font: inherit;
+    font-size: 0.9em;
+}
+.help-icon-list {
+    list-style: none;
+}
+.help-icon-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-left: -18px;
+}
+.help-icon-list li > i {
+    width: 18px;
+    flex: 0 0 18px;
+    margin-top: 3px;
+    color: var(--primary);
+    text-align: center;
+}
+.help-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 16px;
+}
+.help-legal-links > span {
+    flex-basis: 100%;
+    font-weight: 700;
 }
 
 /* ===== FAVORIS ===== */

@@ -215,6 +215,7 @@ if (!$isLocalHost && !$isHttps) {
         <script src="pages/collections.js"></script>
         <script src="pages/reservation.js"></script>
         <script src="pages/auth.js"></script>
+        <script src="pages/help.js"></script>
 
         <!-- App principale -->
         <script src="app.js"></script>
