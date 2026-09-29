@@ -1891,7 +1891,7 @@ body {
     font-weight: 400;
 }
 
-.help-guide-header {
+.help-guide-content {
     border-left: 4px solid var(--primary);
 }
 .help-guide-entry {
