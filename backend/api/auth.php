@@ -9,12 +9,6 @@ $rememberMe = !empty($data['remember_me']);
 
 require_once '../session.php';
 configureSessionLifetime($rememberMe);
-if ($rememberMe) {
-    setcookie('ag7_remember_me', '1', time() + (30 * 24 * 60 * 60), '/', '', false, true);
-} else {
-    setcookie('ag7_remember_me', '', time() - 3600, '/', '', false, true);
-}
-session_start();
 require_once '../spot.class.php';
 
 try {
@@ -53,21 +47,28 @@ if ($action === 'login') {
     try {
         $user = $spot->users->verifyCredentials($username, $password);
         if (!$user) {
+            $knownUser = $spot->users->getUserByUsername($username);
             http_response_code(401);
-            echo json_encode(['success' => false, 'error' => 'Nom d\'utilisateur ou mot de passe invalide']);
+            $message = $knownUser
+                ? 'Mot de passe incorrect. Vérifiez votre saisie.'
+                : 'Ce nom d\'utilisateur n\'existe pas. Vérifiez l\'orthographe ou créez un compte.';
+            echo json_encode(['success' => false, 'error' => $message]);
             exit;
         }
 
+        session_start();
         $currentUserId = intval($_SESSION['user_id'] ?? 0);
         $activeSessionToken = $_SESSION['session_token'] ?? null;
         $dbSessionToken = $user['session_token'] ?? null;
         $targetUserId = intval($user['id']);
 
         if (!shouldRejectConcurrentLogin($currentUserId, $targetUserId, $activeSessionToken, $dbSessionToken)) {
+            session_regenerate_id(true);
             $sessionToken = $spot->users->generateSessionToken();
             $_SESSION['user_id'] = $targetUserId;
             $_SESSION['session_token'] = $sessionToken;
             $spot->users->setSessionToken($targetUserId, $sessionToken);
+            setRememberMeCookie($rememberMe);
         } else {
             http_response_code(409);
             echo json_encode(['success' => false, 'error' => 'Ce compte est déjà connecté sur un autre appareil.']);
@@ -107,10 +108,13 @@ if ($action === 'register') {
             throw new Exception('Impossible de récupérer l\'utilisateur après inscription');
         }
 
+        session_start();
+        session_regenerate_id(true);
         $sessionToken = $spot->users->generateSessionToken();
         $_SESSION['user_id'] = intval($user['id']);
         $_SESSION['session_token'] = $sessionToken;
         $spot->users->setSessionToken(intval($user['id']), $sessionToken);
+        setRememberMeCookie($rememberMe);
         unset($user['password']);
 
         echo json_encode(['success' => true, 'user' => $user]);

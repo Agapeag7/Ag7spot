@@ -19,34 +19,39 @@ function renderAuth(container) {
                     <button type="button" class="auth-mode-btn active" data-mode="login">Connexion</button>
                     <button type="button" class="auth-mode-btn" data-mode="register">Créer un compte</button>
                 </div>
-                <form id="authForm" class="auth-form" data-mode="login">
+                <form id="authForm" class="auth-form" data-mode="login" novalidate>
                     <div class="form-group">
                         <label id="authEmailLabel">Nom d'utilisateur</label>
-                        <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d\'utilisateur" required />
-                        <small class="auth-username-hint hidden" style="color: var(--text-gray)">Le nom doit contenir entre 5 et 20 caractères, sans espace.</small>
+                        <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d\'utilisateur" aria-describedby="authUsernameError" required />
+                        <small class="auth-field-error hidden" id="authUsernameError" aria-live="polite"></small>
+                        <small class="auth-username-hint hidden" style="color: var(--text-gray)">Le pseudo doit contenir entre 5 et 20 caractères, sans espace, et finir par au moins 2 chiffres (ajoutés automatiquement si nécessaire).</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
-                        <select id="authAccountType" class="auth-select" autocomplete="off">
+                        <select id="authAccountType" class="auth-select" autocomplete="off" aria-describedby="authAccountTypeError">
                             <option value="buyer">Acheteur</option>
                             <option value="seller">Vendeur</option>
                         </select>
+                        <small class="auth-field-error hidden" id="authAccountTypeError" aria-live="polite"></small>
                     </div>
                     <div class="form-group">
                         <label>Mot de passe</label>
-                        <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" required />
+                        <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="authPasswordError" required />
+                        <small class="auth-field-error hidden" id="authPasswordError" aria-live="polite"></small>
                         
                         <small class="auth-password-hint hidden" style="color: var(--danger)">Le mot de passe doit contenir au moins 12 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
-                        <input type="password" id="authConfirmPassword" name="new-password" autocomplete="new-password" placeholder="••••••••" />
+                        <input type="password" id="authConfirmPassword" name="new-password" autocomplete="new-password" aria-describedby="authConfirmPasswordError" placeholder="••••••••" />
+                        <small class="auth-field-error hidden" id="authConfirmPasswordError" aria-live="polite"></small>
                     </div>
                     <div class="form-group auth-register-field hidden privacy-group">
                         <label class="checkbox-label">
-                            <input type="checkbox" id="authPrivacy" />
+                            <input type="checkbox" id="authPrivacy" aria-describedby="authPrivacyError" />
                             J'accepte la <a href="#" class="link" onclick="navigateTo('privacy'); return false;">politique de confidentialité</a> et <a href="#" class="link" onclick="navigateTo('terms'); return false;">Conditions d'utilisation</a> de l'application.
                         </label>
+                        <small class="auth-field-error hidden" id="authPrivacyError" aria-live="polite"></small>
                     </div>
                     
                     <button type="submit" class="btn-primary w-full auth-submit-btn">
@@ -79,6 +84,42 @@ function renderAuth(container) {
     const passwordHint = container.querySelector('.auth-password-hint');
     const usernameHint = container.querySelector('.auth-username-hint');
     const rememberMeInput = container.querySelector('#authRememberMe');
+    const registrationFields = {
+        username: authEmailInput,
+        accountType: container.querySelector('#authAccountType'),
+        password: container.querySelector('#authPassword'),
+        confirmPassword: container.querySelector('#authConfirmPassword'),
+        privacy: container.querySelector('#authPrivacy')
+    };
+
+    const setRegistrationError = (fieldName, message) => {
+        const field = registrationFields[fieldName];
+        const error = container.querySelector(`#auth${fieldName[0].toUpperCase()}${fieldName.slice(1)}Error`);
+        if (!field || !error) return;
+        error.textContent = message;
+        error.classList.toggle('hidden', !message);
+        field.setAttribute('aria-invalid', message ? 'true' : 'false');
+    };
+
+    const clearRegistrationErrors = () => {
+        Object.keys(registrationFields).forEach(fieldName => setRegistrationError(fieldName, ''));
+    };
+
+    const focusRegistrationError = (fieldName) => {
+        if (registrationFields[fieldName]) registrationFields[fieldName].focus();
+    };
+
+    const getRegistrationErrorField = (message) => {
+        const error = String(message || '').toLocaleLowerCase();
+        if (error.includes('pseudo') || error.includes('nom d’utilisateur') || error.includes("nom d'utilisateur")) return 'username';
+        if (error.includes('mot de passe')) return 'password';
+        return null;
+    };
+
+    Object.entries(registrationFields).forEach(([fieldName, field]) => {
+        field.addEventListener('input', () => setRegistrationError(fieldName, ''));
+        field.addEventListener('change', () => setRegistrationError(fieldName, ''));
+    });
 
     const generateUsernameWithSuffix = () => {
         const rawValue = authEmailInput.value.trim();
@@ -94,6 +135,7 @@ function renderAuth(container) {
 
     const setMode = (mode) => {
         authForm.dataset.mode = mode;
+        clearRegistrationErrors();
         modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
         const isRegister = mode === 'register';
         registerFields.forEach(field => field.classList.toggle('hidden', !isRegister));
@@ -106,6 +148,7 @@ function renderAuth(container) {
         if (isRegister && authEmailInput.value.trim()) {
             generateUsernameWithSuffix();
         }
+        container.querySelector('#authPassword').autocomplete = isRegister ? 'new-password' : 'current-password';
         submitBtn.innerHTML = isRegister ? '<i class="fas fa-user-plus"></i> Créer mon compte' : '<i class="fas fa-sign-in-alt"></i> Se connecter';
         authEmailLabel.textContent = 'Nom d\'utilisateur';
         authEmailInput.placeholder = isRegister ? 'Entrez votre nom d\'utilisateur' : 'Entrez votre nom d\'utilisateur';
@@ -131,8 +174,14 @@ function renderAuth(container) {
         const password = container.querySelector('#authPassword').value;
         const rememberMe = rememberMeInput ? rememberMeInput.checked : false;
 
-        if (!identifier || !password) {
-            showToast('Veuillez remplir tous les champs obligatoires.', 'warning');
+        if (mode === 'login' && !identifier) {
+            showToast('Veuillez saisir votre nom d’utilisateur.', 'warning');
+            authEmailInput.focus();
+            return;
+        }
+        if (mode === 'login' && !password) {
+            showToast('Veuillez saisir votre mot de passe.', 'warning');
+            container.querySelector('#authPassword').focus();
             return;
         }
 
@@ -144,7 +193,7 @@ function renderAuth(container) {
                 localStorage.removeItem('onboarding_done');
                 applyStoredUser(user);
                 updateHeaderActionsVisibility();
-                showToast('Bienvenue, ' + user.username + ' !', 'success');
+                showToast('Connexion réussie. Bienvenue, ' + user.username + ' !', 'success');
                 navigateTo('feed');
             } catch (error) {
                 // showToast already handled in apiCall
@@ -156,28 +205,51 @@ function renderAuth(container) {
         const confirmPassword = container.querySelector('#authConfirmPassword').value;
         const accountType = container.querySelector('#authAccountType').value;
         const privacyAccepted = container.querySelector('#authPrivacy').checked;
+        const registrationErrors = [];
 
         if (!username) {
-            showToast('Merci de renseigner un nom d\'utilisateur.', 'warning');
-            return;
+            registrationErrors.push(['username', 'Saisissez un pseudo.']);
+        } else if (username.length < 5 || username.length > 20 || !/^[A-Za-zÀ-ÖØ-öø-ÿ_][A-Za-zÀ-ÖØ-öø-ÿ0-9_]*[0-9]{2,}$/u.test(username)) {
+            registrationErrors.push(['username', 'Le pseudo doit contenir 5 à 20 caractères, commencer par une lettre ou _ et finir par au moins 2 chiffres.']);
         }
 
-        if (password.length < 12) {
-            showToast('Le mot de passe doit contenir au moins 12 caractères.', 'warning');
-            return;
+        if (!password) {
+            registrationErrors.push(['password', 'Saisissez un mot de passe.']);
+        } else if (password.length < 12) {
+            registrationErrors.push(['password', 'Le mot de passe doit contenir au moins 12 caractères.']);
+        } else {
+            const missingPasswordRules = [];
+            if (!/[a-z]/.test(password)) missingPasswordRules.push('une minuscule');
+            if (!/[A-Z]/.test(password)) missingPasswordRules.push('une majuscule');
+            if (!/\d/.test(password)) missingPasswordRules.push('un chiffre');
+            if (!/[^A-Za-z0-9]/.test(password)) missingPasswordRules.push('un caractère spécial');
+            if (missingPasswordRules.length) {
+                registrationErrors.push(['password', `Ajoutez au mot de passe : ${missingPasswordRules.join(', ')}.`]);
+            }
         }
 
-        if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
-            showToast('Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial.', 'warning');
-            return;
+        if (password && password === username) {
+            registrationErrors.push(['password', 'Le mot de passe ne doit pas être identique au pseudo.']);
         }
 
-        if (password !== confirmPassword) {
-            showToast('Les mots de passe ne correspondent pas.', 'warning');
-            return;
+        if (!confirmPassword) {
+            registrationErrors.push(['confirmPassword', 'Confirmez votre mot de passe.']);
+        } else if (password !== confirmPassword) {
+            registrationErrors.push(['confirmPassword', 'La confirmation ne correspond pas au mot de passe saisi.']);
         }
+
+        if (!['buyer', 'seller'].includes(accountType)) {
+            registrationErrors.push(['accountType', 'Sélectionnez un type de compte valide.']);
+        }
+
         if (!privacyAccepted) {
-            showToast('Tu dois accepter la politique de confidentialité.', 'warning');
+            registrationErrors.push(['privacy', 'Cochez cette case pour accepter la politique de confidentialité et les conditions d’utilisation.']);
+        }
+
+        if (registrationErrors.length) {
+            registrationErrors.forEach(([fieldName, message]) => setRegistrationError(fieldName, message));
+            showToast(registrationErrors.map(([, message]) => message).join(' '), 'warning');
+            focusRegistrationError(registrationErrors[0][0]);
             return;
         }
 
@@ -188,7 +260,7 @@ function renderAuth(container) {
             localStorage.removeItem('onboarding_done');
             applyStoredUser(user);
             updateHeaderActionsVisibility();
-            showToast('Compte créé avec succès !', 'success');
+            showToast('Compte créé et connexion réussie. Bienvenue, ' + user.username + ' !', 'success');
 
             if (shouldShowOnboardingForUser(user.id)) {
                 renderOnboarding();
@@ -201,7 +273,11 @@ function renderAuth(container) {
 
             navigateTo('feed');
         } catch (error) {
-            // showToast already handled in apiCall
+            const errorField = getRegistrationErrorField(error.message);
+            if (errorField) {
+                setRegistrationError(errorField, error.message);
+                focusRegistrationError(errorField);
+            }
         }
     });
 }

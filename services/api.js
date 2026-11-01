@@ -36,20 +36,29 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 
         if (!response.ok) {
             if (response.status === 401) {
-                let msg = `Session expirée (${response.status})`;
+                let msg = `Erreur d'authentification (${response.status})`;
                 if (contentType.includes('application/json')) {
                     try {
                         const errJson = JSON.parse(text);
                         msg = errJson.error || errJson.message || msg;
                     } catch (e) {
-                        // ignore
+                        // Keep the status-specific message when the response is invalid JSON.
                     }
                 }
-                if (typeof window !== 'undefined') {
+                const isAuthRequest = endpoint.split('?')[0] === 'auth.php';
+                let hasStoredUser = false;
+                try {
+                    const storedUser = JSON.parse(localStorage.getItem('ag7_current_user') || 'null');
+                    hasStoredUser = !!(storedUser && storedUser.id);
+                } catch (e) {
+                    localStorage.removeItem('ag7_current_user');
+                }
+
+                if (!isAuthRequest && hasStoredUser && typeof window !== 'undefined') {
                     if (!window.sessionClearingInProgress) {
                         window.sessionClearingInProgress = true;
                         if (typeof window.clearClientSession === 'function') {
-                            showToast('Session expirée, veuillez vous connecter.', 'warning');
+                            showToast('Votre session a expiré. Reconnectez-vous pour continuer.', 'warning');
                             window.clearClientSession();
                         } else {
                             try {
@@ -93,6 +102,9 @@ async function apiCall(endpoint, method = 'GET', data = null) {
         // avoid showing additional toasts that confuse the user.
         if (typeof window !== 'undefined' && window.sessionClearingInProgress) {
             return Promise.reject(error);
+        }
+        if (error && error.message === 'Unauthorized' && !localStorage.getItem('ag7_current_user')) {
+            throw error;
         }
         showToast(error.message || 'Erreur de connexion', 'error');
         throw error;
