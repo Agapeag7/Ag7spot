@@ -845,8 +845,12 @@ body {
     font-size: 13px;
     line-height: 1.45;
 }
-.auth-form [aria-invalid="true"] {
+.auth-form [aria-invalid="true"],
+.auth-form [aria-invalid="true"]:focus {
     border-color: var(--danger);
+}
+.auth-form [aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
 }
 .form-row {
     display: grid;

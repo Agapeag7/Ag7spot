@@ -70,7 +70,7 @@ La navigation basse est masquée lorsque l'utilisateur n'est pas connecté.
 | Champ | Fonction et règles |
 |---|---|
 | Nom d'utilisateur | Identifiant utilisé pour la connexion et l'inscription. En inscription, le nom peut recevoir automatiquement un suffixe numérique pour respecter l'unicité. |
-| Mot de passe | Mot de passe du compte. À l'inscription, il doit contenir au moins 12 caractères, une minuscule, une majuscule, un chiffre et un caractère spécial. |
+| Mot de passe | Mot de passe du compte. À l'inscription, il doit contenir au moins 7 caractères, une minuscule, une majuscule, un chiffre et un caractère spécial. |
 | Confirmer le mot de passe | Vérifie que le mot de passe d'inscription a été saisi correctement une deuxième fois. |
 | Type de compte | Sélection entre `Acheteur` et `Vendeur`. |
 | Se souvenir de moi | Conserve la session utilisateur selon le comportement prévu par l'authentification. Cette case est cochée par défaut. |

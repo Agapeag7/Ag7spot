@@ -39,7 +39,7 @@ function renderAuth(container) {
                         <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="authPasswordError" required />
                         <small class="auth-field-error hidden" id="authPasswordError" aria-live="polite"></small>
                         
-                        <small class="auth-password-hint hidden" style="color: var(--danger)">Le mot de passe doit contenir au moins 12 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
+                        <small class="auth-password-hint hidden" style="color: var(--danger)">Le mot de passe doit contenir au moins 7 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
@@ -215,8 +215,8 @@ function renderAuth(container) {
 
         if (!password) {
             registrationErrors.push(['password', 'Saisissez un mot de passe.']);
-        } else if (password.length < 12) {
-            registrationErrors.push(['password', 'Le mot de passe doit contenir au moins 12 caractères.']);
+        } else if (password.length < 7) {
+            registrationErrors.push(['password', 'Le mot de passe doit contenir au moins 7 caractères.']);
         } else {
             const missingPasswordRules = [];
             if (!/[a-z]/.test(password)) missingPasswordRules.push('une minuscule');

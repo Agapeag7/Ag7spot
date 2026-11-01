@@ -14,11 +14,26 @@ class EmptyDatabase {
 $users = new SpotUsers(new EmptyDatabase());
 
 try {
-    $users->validatePassword('WeakPass');
-    fwrite(STDERR, "FATAL: password should be rejected when it is too short or lacks required complexity\n");
+    $users->validatePassword('Aa1!xy');
+    fwrite(STDERR, "FATAL: password shorter than 7 characters should be rejected\n");
     exit(1);
 } catch (InvalidArgumentException $e) {
     // expected
+}
+
+try {
+    $users->validatePassword('WeakPass');
+    fwrite(STDERR, "FATAL: password lacking required complexity should be rejected\n");
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+
+try {
+    $users->validatePassword('Aa1!xyz');
+} catch (InvalidArgumentException $e) {
+    fwrite(STDERR, "FATAL: valid 7-character password was rejected\n");
+    exit(1);
 }
 
 try {
