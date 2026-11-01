@@ -114,12 +114,6 @@ async function renderProfile(container) {
 
                 <div class="settings-card">
                     <h4><i class="fas fa-cog"></i> Paramètres</h4>
-                    <div class="settings-item" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-                        <span>Notifications push</span>
-                        <button class="btn-outline btn-sm" type="button" onclick="registerPushNotifications(true)">
-                            <span id="pushStatusLabel">Non configurées</span>
-                        </button>
-                    </div>
                     <div class="settings-item">
                         <span>Mode sombre</span>
                         <span class="settings-value">Désactivé</span>
@@ -139,17 +133,6 @@ async function renderProfile(container) {
 
         Object.assign(CURRENT_USER || window.CURRENT_USER || {}, user);
         localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
-
-        const pushStatusLabel = document.getElementById('pushStatusLabel');
-        if (pushStatusLabel) {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                pushStatusLabel.textContent = 'Activées';
-            } else if ('Notification' in window && Notification.permission === 'denied') {
-                pushStatusLabel.textContent = 'Désactivées';
-            } else {
-                pushStatusLabel.textContent = 'Non configurées';
-            }
-        }
 
         // init seller products pagination if seller
         if (user.role === 'seller' && myShop) {
@@ -612,4 +595,3 @@ function preloadOfflineMap() {
         }, 2000);
     });
 }
-

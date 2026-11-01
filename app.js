@@ -39,17 +39,6 @@ function refreshNotificationBadge() {
         .catch(() => {});
 }
 
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = atob(base64);
-    const output = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        output[i] = rawData.charCodeAt(i);
-    }
-    return output;
-}
-
 function handleNotificationRoute(notification) {
     if (!notification) return;
 
@@ -124,52 +113,6 @@ async function toggleFeedFollow(shopId, isFollowed = false, button = null) {
         showToast(isFollowed ? 'Boutique retirée des suivis' : 'Boutique suivie', 'success');
     } catch (error) {
         showToast(error.message || 'Impossible de suivre cette boutique.', 'error');
-    }
-}
-
-async function registerPushNotifications(force = false) {
-    if (!CURRENT_USER || !CURRENT_USER.id) return false;
-    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return false;
-
-    const statusLabel = document.getElementById('pushStatusLabel');
-    const permission = Notification.permission;
-    if (permission === 'denied' && !force) {
-        if (statusLabel) statusLabel.textContent = 'Désactivées';
-        return false;
-    }
-
-    if (permission === 'default') {
-        const nextPermission = await Notification.requestPermission();
-        if (nextPermission !== 'granted') {
-            if (statusLabel) statusLabel.textContent = 'Désactivées';
-            return false;
-        }
-    }
-
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        const vapidPublicKey = 'BBXArKH2xkGAIWVZQ7lX-EtgOsHPXJue8T_isko4XpDbrmOmgzaBVCnKo8oYDzcVONFuyib-B8VLolWRd6vH9Z8';
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
-        });
-
-        const result = await subscribePushNotifications({
-            endpoint: subscription.endpoint,
-            keys: {
-                p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
-                auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth'))))
-            }
-        });
-
-        if (statusLabel) {
-            statusLabel.textContent = result && result.success ? 'Activées' : 'Non configurées';
-        }
-        return !!(result && result.success);
-    } catch (error) {
-        console.warn('Push registration failed:', error);
-        if (statusLabel) statusLabel.textContent = 'Non configurées';
-        return false;
     }
 }
 
@@ -522,9 +465,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         navigator.serviceWorker.register('sw.js')
             .then(() => {
                 console.log('SW enregistré');
-                if (CURRENT_USER && CURRENT_USER.id) {
-                    registerPushNotifications(false).catch(() => {});
-                }
             })
             .catch(err => {
                 console.info('SW non enregistré en mode local sans certificat valide.');

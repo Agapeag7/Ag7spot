@@ -122,7 +122,6 @@ function renderHelp(container) {
                     <summary><span class="help-step-number">8</span><i class="fas fa-user"></i> Utiliser ton profil et les réglages</summary>
                     <ul>
                         <li>L'avatar identifie le compte; le rôle indique <strong>Acheteur</strong> ou <strong>Vendeur</strong>. Les statistiques affichent les abonnements et les points; les vendeurs voient aussi le nombre de produits.</li>
-                        <li><i class="fas fa-bell"></i> <strong>Notifications push :</strong> touche le bouton d'état pour demander l'autorisation du navigateur ou de l'appareil. Si tu as refusé, réactive-la dans les réglages du navigateur. Il faut un navigateur compatible et une connexion sécurisée pour les notifications push.</li>
                         <li><i class="fas fa-circle-question"></i> <strong>Aide et assistance :</strong> ouvre ce guide. La flèche <i class="fas fa-arrow-left"></i> en haut ramène au profil.</li>
                         <li><i class="fas fa-right-from-bracket"></i> <strong>Se déconnecter :</strong> ferme ta session sur cet appareil.</li>
                     </ul>
