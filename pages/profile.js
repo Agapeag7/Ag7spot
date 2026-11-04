@@ -113,6 +113,14 @@ async function renderProfile(container) {
                 ` : ''}
 
                 <div class="settings-card">
+                    <h4><i class="fas fa-bell"></i> Notifications sur ce téléphone</h4>
+                    <p id="pushNotificationStatus">Vérification des notifications...</p>
+                    <button id="pushNotificationButton" class="btn-outline w-full" type="button" onclick="togglePushNotifications(this)" disabled>
+                        Activer sur ce téléphone
+                    </button>
+                </div>
+
+                <div class="settings-card">
                     <h4><i class="fas fa-cog"></i> Paramètres</h4>
                     <div class="settings-item">
                         <span>Mode sombre</span>
@@ -133,6 +141,7 @@ async function renderProfile(container) {
 
         Object.assign(CURRENT_USER || window.CURRENT_USER || {}, user);
         localStorage.setItem('ag7_current_user', JSON.stringify(CURRENT_USER || window.CURRENT_USER));
+        initializePushNotifications();
 
         // init seller products pagination if seller
         if (user.role === 'seller' && myShop) {

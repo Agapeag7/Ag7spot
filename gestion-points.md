@@ -38,32 +38,27 @@ L'abonnement est aussi le declencheur naturel de notifications: les actions comm
 
 ## 4. Notifications
 
-### Etat constate
+### Fonctionnement et configuration Web Push
 
-`index.php` affiche l'icone `#notifIcon`. Aucun gestionnaire d'evenement ne lui est attache. Dans `pages/profile.js`, le texte `Notifications push - Activees` est statique. Le service worker `sw.js` gere seulement son cycle de vie et transmet les requetes reseau; il n'utilise ni `pushManager`, ni `showNotification`, ni permission navigateur.
+Les notifications applicatives sont conservees dans `notifications`. Pour les afficher dans la barre Android lorsque le site est en arriere-plan ou ferme, le navigateur doit en plus s'abonner au push depuis le profil. Le service worker `sw.js` affiche les alertes et ouvre leur destination au toucher. Les abonnements sont lies a la session utilisateur et supprimes lors de la deconnexion.
 
-Il n'existe ni table `notifications`, ni endpoint, ni compteur non lu, ni action de marquage comme lu. Les messages, produits, flash deals, changements de statut et abonnements ne generent donc aucune notification dans l'etat actuel.
+Le serveur doit etre accessible en HTTPS (sauf localhost), disposer de PHP avec Composer et installer la dependance du projet:
 
-### Architecture recommandee
-
-Ajouter une table `notifications` contenant au minimum:
-
-```text
-id, user_id, type, title, body, data_json, read_at, created_at
+```sh
+composer install
 ```
 
-Flux de creation:
+Generer une paire VAPID avec `Minishlink\WebPush\VAPID::createVapidKeys()` puis configurer cote serveur, sans committer les secrets:
 
-1. un evenement metier est valide, par exemple un nouveau produit ou un flash deal;
-2. le serveur trouve les utilisateurs qui suivent la boutique;
-3. il cree une notification par destinataire;
-4. le front charge les notifications de l'utilisateur courant;
-5. le clic sur l'icone ouvre la liste et affiche le nombre non lu;
-6. l'utilisateur marque une notification comme lue avec un endpoint authentifie.
+```text
+VAPID_PUBLIC_KEY=<cle publique base64url>
+VAPID_PRIVATE_KEY=<cle privee>
+VAPID_SUBJECT=mailto:admin@votre-domaine.tld
+```
 
-Les notifications persistantes en base et les notifications push sont deux choses differentes. La base garantit l'historique et la recuperation apres deconnexion. Le push est une livraison optionnelle qui necessite permission navigateur, abonnement Push API, cle VAPID, traitement `push` dans `sw.js` et gestion du clic. Le libelle du profil ne doit afficher `Activees` que si la permission et l'abonnement ont reellement ete etablis.
+Apres deploiement, ouvrir le site dans Chrome sur Android, se connecter, puis choisir « Activer sur ce téléphone » dans Profil > Notifications. L'utilisateur doit accepter la demande du navigateur. Les alertes ne peuvent pas etre forcees si la permission est refusee ou si les notifications du site sont bloquees dans Android.
 
-Les messages doivent etre generes cote serveur, avec des donnees minimales et echappees par le front. Toutes les lectures, suppressions et mises a jour doivent utiliser la session, jamais un `user_id` fourni par le navigateur.
+`backend/api/push.php` enregistre uniquement les abonnements authentifies et `SpotNotifications` relaie les evenements metier a ces abonnements. Si les cles ou la dependance manquent, l'activation est signalee comme indisponible; les notifications restent conservees dans l'application.
 
 ## 5. Corrections prioritaires
 
@@ -155,4 +150,3 @@ id, user_id, amount, type, reference_type, reference_id, created_at
 6. valider la transaction.
 
 Le check-in devrait recevoir et valider cote serveur la position, la precision et la distance calculee depuis les coordonnees de `shops`. La contrainte anti-duplicata doit etre imposee en base ou dans une transaction, pas seulement dans le JavaScript.
-

@@ -5,6 +5,7 @@ USE `ag7spot`;
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `collection_shops`;
 DROP TABLE IF EXISTS `messages`;
+DROP TABLE IF EXISTS `push_subscriptions`;
 DROP TABLE IF EXISTS `notifications`;
 DROP TABLE IF EXISTS `shop_follows`;
 DROP TABLE IF EXISTS `checkins`;
@@ -128,6 +129,21 @@ CREATE TABLE `notifications` (
   CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `push_subscriptions` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` INT UNSIGNED NOT NULL,
+  `endpoint` TEXT NOT NULL,
+  `endpoint_hash` CHAR(64) NOT NULL,
+  `public_key` VARCHAR(255) NOT NULL,
+  `auth_token` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_push_subscriptions_endpoint` (`endpoint_hash`),
+  KEY `idx_push_subscriptions_user` (`user_id`),
+  CONSTRAINT `fk_push_subscriptions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `messages` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `sender_id` INT UNSIGNED NOT NULL,
@@ -173,4 +189,3 @@ CREATE TABLE `messages` (
 -- INSERT INTO `collections` (`id`, `name`, `description`, `creator`) VALUES
 --   (1, 'Mode Vintage à Lyon', 'Les meilleures adresses pour du vintage', 1),
 --   (2, 'Petit-déjeuner gourmand', 'Boulangeries et café de quartier', 2);
-

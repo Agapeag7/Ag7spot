@@ -159,6 +159,20 @@ class Spot {
             KEY idx_notifications_user_read (user_id, read_at),
             CONSTRAINT fk_runtime_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+        $connection->exec('CREATE TABLE IF NOT EXISTS push_subscriptions (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id INT UNSIGNED NOT NULL,
+            endpoint TEXT NOT NULL,
+            endpoint_hash CHAR(64) NOT NULL,
+            public_key VARCHAR(255) NOT NULL,
+            auth_token VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uk_push_subscriptions_endpoint (endpoint_hash),
+            KEY idx_push_subscriptions_user (user_id),
+            CONSTRAINT fk_runtime_push_subscriptions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
         $connection->exec('CREATE TABLE IF NOT EXISTS messages (
             id INT UNSIGNED NOT NULL AUTO_INCREMENT,
             sender_id INT UNSIGNED NOT NULL,
@@ -227,6 +241,7 @@ class SpotNotifications {
             foreach ($stmt->fetchAll() as $follower) {
                 $userId = intval($follower['user_id']);
                 $insert->execute([$userId, trim($type), trim($title), trim($body), json_encode($data)]);
+                $this->sendPushToUser($userId, $type, $title, $body, $data);
             }
         } catch (PDOException $e) {
             if ($e->getCode() !== '42S02') throw $e;
@@ -235,7 +250,91 @@ class SpotNotifications {
 
     public function notifyUser($userId, $type, $title, $body, array $data = []) {
         $stmt = $this->db->prepare('INSERT INTO notifications (user_id, type, title, body, data_json) VALUES (?, ?, ?, ?, ?)');
-        return $stmt->execute([intval($userId), trim($type), trim($title), trim($body), json_encode($data)]);
+        $saved = $stmt->execute([intval($userId), trim($type), trim($title), trim($body), json_encode($data)]);
+        if ($saved) {
+            $this->sendPushToUser($userId, $type, $title, $body, $data);
+        }
+        return $saved;
+    }
+
+    public function getPushSubscriptionsForUser($userId) {
+        $stmt = $this->db->prepare('SELECT endpoint, public_key, auth_token FROM push_subscriptions WHERE user_id = ?');
+        $stmt->execute([intval($userId)]);
+        return $stmt->fetchAll();
+    }
+
+    public function hasPushSubscription($userId, $endpoint) {
+        $stmt = $this->db->prepare('SELECT id FROM push_subscriptions WHERE user_id = ? AND endpoint_hash = ? LIMIT 1');
+        $stmt->execute([intval($userId), hash('sha256', $endpoint)]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function savePushSubscription($userId, $endpoint, $publicKey, $authToken) {
+        $stmt = $this->db->prepare('INSERT INTO push_subscriptions (user_id, endpoint, endpoint_hash, public_key, auth_token)
+            VALUES (?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE user_id = VALUES(user_id), endpoint = VALUES(endpoint), public_key = VALUES(public_key), auth_token = VALUES(auth_token)');
+        return $stmt->execute([intval($userId), $endpoint, hash('sha256', $endpoint), $publicKey, $authToken]);
+    }
+
+    public function removePushSubscription($userId, $endpoint) {
+        $stmt = $this->db->prepare('DELETE FROM push_subscriptions WHERE user_id = ? AND endpoint_hash = ?');
+        return $stmt->execute([intval($userId), hash('sha256', $endpoint)]);
+    }
+
+    private function sendPushToUser($userId, $type, $title, $body, array $data) {
+        $publicKey = getenv('VAPID_PUBLIC_KEY');
+        $privateKey = getenv('VAPID_PRIVATE_KEY');
+        $subject = getenv('VAPID_SUBJECT');
+        $autoload = dirname(__DIR__) . '/vendor/autoload.php';
+
+        if (!$publicKey || !$privateKey || !$subject || !is_file($autoload)) {
+            return;
+        }
+
+        try {
+            require_once $autoload;
+            if (!class_exists(\Minishlink\WebPush\WebPush::class) || !class_exists(\Minishlink\WebPush\Subscription::class)) {
+                throw new RuntimeException('The minishlink/web-push package is not installed.');
+            }
+
+            $payload = json_encode([
+                'title' => trim($title),
+                'body' => trim($body),
+                'type' => trim($type),
+                'data' => $data,
+                'url' => './',
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($payload === false) {
+                throw new RuntimeException('Could not encode the push notification payload.');
+            }
+
+            $webPush = new \Minishlink\WebPush\WebPush([
+                'VAPID' => [
+                    'subject' => $subject,
+                    'publicKey' => $publicKey,
+                    'privateKey' => $privateKey,
+                ],
+            ]);
+
+            foreach ($this->getPushSubscriptionsForUser($userId) as $subscriptionRow) {
+                $subscription = \Minishlink\WebPush\Subscription::create([
+                    'endpoint' => $subscriptionRow['endpoint'],
+                    'publicKey' => $subscriptionRow['public_key'],
+                    'authToken' => $subscriptionRow['auth_token'],
+                ]);
+                $report = $webPush->sendOneNotification($subscription, $payload);
+                if (!$report->isSuccess()) {
+                    $statusCode = $report->getResponse() ? $report->getResponse()->getStatusCode() : 0;
+                    if ($statusCode === 404 || $statusCode === 410) {
+                        $this->removePushSubscription($userId, $subscriptionRow['endpoint']);
+                    } else {
+                        error_log('Web Push delivery failed: ' . $report->getReason());
+                    }
+                }
+            }
+        } catch (Throwable $error) {
+            error_log('Web Push delivery error: ' . $error->getMessage());
+        }
     }
 }
 

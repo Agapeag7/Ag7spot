@@ -227,6 +227,19 @@ function markNotificationRead(notificationId = null) {
     return apiCall('notifications.php', 'PUT', notificationId ? { notification_id: notificationId } : {});
 }
 
+function getPushConfiguration(endpoint = '') {
+    const params = endpoint ? `?endpoint=${encodeURIComponent(endpoint)}` : '';
+    return apiCall(`push.php${params}`);
+}
+
+function savePushSubscription(subscription) {
+    return apiCall('push.php', 'POST', { subscription });
+}
+
+function deletePushSubscription(endpoint) {
+    return apiCall('push.php', 'DELETE', { endpoint });
+}
+
 // Mock fallback pour le développement (si l'API n'est pas prête)
 function useMockData() {
     return localStorage.getItem('use_mock') === 'true';

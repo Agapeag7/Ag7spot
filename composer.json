@@ -1,7 +1,5 @@
 {
-    "config": {
-        "allow-plugins": {
-            "php-http/discovery": true
-        }
+    "require": {
+        "minishlink/web-push": "^8.0"
     }
 }

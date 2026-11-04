@@ -39,6 +39,105 @@ function refreshNotificationBadge() {
         .catch(() => {});
 }
 
+function decodePushPublicKey(value) {
+    const padding = '='.repeat((4 - value.length % 4) % 4);
+    const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    return Uint8Array.from(raw, character => character.charCodeAt(0));
+}
+
+async function initializePushNotifications() {
+    const status = document.getElementById('pushNotificationStatus');
+    const button = document.getElementById('pushNotificationButton');
+    if (!status || !button) return;
+
+    if (!window.isSecureContext || !('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        status.textContent = !window.isSecureContext
+            ? 'Les notifications push nécessitent une connexion HTTPS.'
+            : 'Les notifications push ne sont pas prises en charge par ce navigateur.';
+        button.hidden = true;
+        return;
+    }
+
+    try {
+        let configuration = await getPushConfiguration();
+        if (!configuration.available) {
+            status.textContent = 'Notifications indisponibles : le serveur doit configurer les clés Web Push.';
+            button.hidden = true;
+            return;
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+            configuration = await getPushConfiguration(subscription.endpoint);
+        }
+        const enabled = !!(subscription && configuration.subscribed);
+        button.dataset.pushEnabled = enabled ? 'true' : 'false';
+        button.textContent = enabled ? 'Désactiver sur ce téléphone' : 'Activer sur ce téléphone';
+        status.textContent = enabled
+            ? 'Les notifications push sont activées sur ce téléphone.'
+            : Notification.permission === 'denied'
+                ? 'Les notifications sont bloquées dans les paramètres du navigateur.'
+                : 'Recevez les alertes même lorsque le site est fermé.';
+        button.hidden = false;
+        button.disabled = false;
+    } catch (error) {
+        status.textContent = 'Impossible de vérifier les notifications : ' + (error.message || 'erreur inconnue.');
+        button.hidden = true;
+    }
+}
+
+async function togglePushNotifications(button) {
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    try {
+        let permission = Notification.permission;
+        if (button.dataset.pushEnabled !== 'true' && permission === 'default') {
+            permission = await Notification.requestPermission();
+        }
+
+        const configuration = await getPushConfiguration();
+        if (!configuration.available) {
+            throw new Error('Le serveur Web Push n’est pas encore configuré.');
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+        let existingSubscription = await registration.pushManager.getSubscription();
+        if (existingSubscription) {
+            const subscriptionStatus = await getPushConfiguration(existingSubscription.endpoint);
+            if (!subscriptionStatus.subscribed) {
+                await savePushSubscription(existingSubscription.toJSON());
+                showToast('Notifications activées sur ce téléphone.', 'success');
+                return;
+            }
+            await deletePushSubscription(existingSubscription.endpoint);
+            await existingSubscription.unsubscribe();
+            showToast('Notifications désactivées sur ce téléphone.', 'success');
+        } else {
+            if (permission !== 'granted') {
+                throw new Error('Autorisez les notifications dans votre navigateur pour les recevoir.');
+            }
+
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: decodePushPublicKey(configuration.public_key)
+            });
+            try {
+                await savePushSubscription(subscription.toJSON());
+            } catch (error) {
+                await subscription.unsubscribe();
+                throw error;
+            }
+            showToast('Notifications activées sur ce téléphone.', 'success');
+        }
+    } catch (error) {
+        showToast(error.message || 'Impossible de modifier les notifications.', 'error');
+    } finally {
+        await initializePushNotifications();
+    }
+}
+
 function handleNotificationRoute(notification) {
     if (!notification) return;
 
@@ -444,7 +543,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const notificationLaunch = new URLSearchParams(window.location.search).get('notification');
     if (notificationLaunch) {
         try {
-            const parsed = JSON.parse(decodeURIComponent(notificationLaunch));
+            const parsed = JSON.parse(notificationLaunch);
             if (parsed && parsed.type) {
                 setTimeout(() => handleNotificationRoute({ type: parsed.type, data: parsed.data || {}, title: parsed.title || '', body: parsed.body || '' }), 500);
             }
@@ -475,6 +574,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function logout() {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+            if (subscription) {
+                await deletePushSubscription(subscription.endpoint);
+                await subscription.unsubscribe();
+            }
+        } catch (error) {
+            console.warn('Push subscription cleanup failed during logout:', error.message);
+        }
+    }
+
     try {
         await logoutApi();
     } catch (error) {
