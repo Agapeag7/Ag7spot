@@ -1905,6 +1905,9 @@ body {
     color: var(--text-gray);
     font-weight: 400;
 }
+#pushNotificationStatus {
+    margin-bottom: 20px;
+}
 
 .help-guide-content {
     border-left: 4px solid var(--primary);
