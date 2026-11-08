@@ -129,6 +129,12 @@ async function renderShopOrProduct(container) {
                                         <input type="number" class="product-price" placeholder="49.99" min="0.01" step="0.01" required />
                                     </div>
                                     <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" class="product-show-price" checked />
+                                            <span>Afficher le prix aux clients</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Description (facultatif)</label>
                                         <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
                                     </div>
@@ -154,6 +160,12 @@ async function renderShopOrProduct(container) {
                                 <input type="number" id="sharedProductPrice" placeholder="15.00" min="0.01" step="0.01" required />
                             </div>
                             <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sharedProductShowPrice" checked />
+                                    <span>Afficher le prix aux clients</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
                                 <label for="sharedProductDescription">Description (facultatif)</label>
                                 <textarea id="sharedProductDescription" placeholder="Taille, matière, couleur..."></textarea>
                             </div>
@@ -166,12 +178,6 @@ async function renderShopOrProduct(container) {
                                     <input type="file" id="sharedProductImages" accept="image/*" multiple />
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="productShowPrice" checked />
-                                <span>Afficher le prix aux clients</span>
-                            </label>
                         </div>
                         <div class="form-group">
                             <label>Ma boutique</label>
@@ -363,6 +369,12 @@ function setupProductForm() {
                 <input type="number" class="product-price" placeholder="49.99" min="0.01" step="0.01" required />
             </div>
             <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="product-show-price" checked />
+                    <span>Afficher le prix aux clients</span>
+                </label>
+            </div>
+            <div class="form-group">
                 <label>Description (facultatif)</label>
                 <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
             </div>
@@ -470,14 +482,16 @@ function setupProductForm() {
                 imageFile,
                 name: document.getElementById('sharedProductName').value.trim(),
                 price: parseFloat(document.getElementById('sharedProductPrice').value),
-                description: document.getElementById('sharedProductDescription').value.trim()
+                description: document.getElementById('sharedProductDescription').value.trim(),
+                showPrice: document.getElementById('sharedProductShowPrice').checked
             }))
             : entries.map(entry => ({
                 entry,
                 imageFile: entry.querySelector('.product-image-input').files[0] || null,
                 name: entry.querySelector('.product-name').value.trim(),
                 price: parseFloat(entry.querySelector('.product-price').value),
-                description: entry.querySelector('.product-description').value.trim()
+                description: entry.querySelector('.product-description').value.trim(),
+                showPrice: entry.querySelector('.product-show-price').checked
             }));
         let shopId = parseInt(document.getElementById('productShop').value, 10);
         if (!Number.isFinite(shopId)) {
@@ -485,7 +499,6 @@ function setupProductForm() {
             shopId = (CURRENT_USER && CURRENT_USER.shopId) ? CURRENT_USER.shopId : (ownedShopsLocal[0] ? ownedShopsLocal[0].id : 0);
         }
         const stock = 0;
-        const showPrice = document.getElementById('productShowPrice').checked;
 
         if (!productsToAdd.length || productsToAdd.some(product => !product.name || !Number.isFinite(product.price) || product.price <= 0)) {
             showToast(sharedImageMode
@@ -513,7 +526,7 @@ function setupProductForm() {
                 formData.append('price', product.price);
                 formData.append('stock', stock);
                 formData.append('description', product.description);
-                formData.append('show_price', showPrice ? '1' : '0');
+                formData.append('show_price', product.showPrice ? '1' : '0');
                 if (product.imageFile) {
                     formData.append('image', product.imageFile);
                 } else {
@@ -532,7 +545,7 @@ function setupProductForm() {
                         price: product.price,
                         stock,
                         description: product.description,
-                        show_price: showPrice ? 1 : 0,
+                        show_price: product.showPrice ? 1 : 0,
                         image: imageUrl,
                         distance: 0
                     });

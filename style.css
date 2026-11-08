@@ -1735,14 +1735,21 @@ body {
     padding: 14px;
     border: 1px solid var(--border);
     border-radius: 14px;
+    background: var(--primary);
+    color: var(--primary-light);
+    margin-top: -20px;
 }
 .product-image-mode legend {
+    position: relative;
+    top: 35px;
+    margin-bottom: 25px;
     padding: 0 6px;
     font-weight: 700;
 }
 .product-image-mode .checkbox-label {
     display: flex;
     white-space: normal;
+    color: var(--primary-light);
 }
 .product-image-mode input[type="radio"] {
     width: 18px;
