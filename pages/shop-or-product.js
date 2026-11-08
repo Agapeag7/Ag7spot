@@ -94,31 +94,76 @@ async function renderShopOrProduct(container) {
                 <h2 class="section-title"><i class="fas fa-shopping-bag"></i> Ajouter un produit</h2>
                 <div class="form-card">
                     <form id="addProductForm">
-                        <div class="product-list-header">
-                            <strong>Produits à publier</strong>
-                            <button type="button" class="btn-outline btn-sm" id="addProductEntry">
-                                <i class="fas fa-plus"></i> Ajouter un produit
-                            </button>
+                        <fieldset class="product-image-mode">
+                            <legend>Comment veux-tu ajouter les produits ?</legend>
+                            <label class="checkbox-label">
+                                <input type="radio" name="productImageMode" value="individual" checked />
+                                <span>Une fiche et une image par produit</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="radio" name="productImageMode" value="shared" />
+                                <span>Plusieurs images avec le même nom, prix et description</span>
+                            </label>
+                        </fieldset>
+                        <div id="individualProducts">
+                            <div class="product-list-header">
+                                <strong>Produits à publier</strong>
+                                <button type="button" class="btn-outline btn-sm" id="addProductEntry">
+                                    <i class="fas fa-plus"></i> Ajouter un produit
+                                </button>
+                            </div>
+                            <div id="productEntries" class="product-entries">
+                                <div class="product-entry" data-product-entry>
+                                    <div class="product-entry-heading">
+                                        <strong>Produit 1</strong>
+                                        <button type="button" class="product-entry-remove" data-remove-product aria-label="Supprimer ce produit" title="Supprimer ce produit">
+                                            <i class="fas fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nom du produit</label>
+                                        <input type="text" class="product-name" placeholder="Ex: Sweat à capuche oversize" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Prix ($)</label>
+                                        <input type="number" class="product-price" placeholder="49.99" min="0.01" step="0.01" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description (facultatif)</label>
+                                        <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
+                                    </div>
+                                    <div class="form-group product-image-field">
+                                        <label>Image de ce produit (facultatif)</label>
+                                        <div class="image-upload">
+                                            <img class="preview-img" alt="Aperçu de l'image du produit" />
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <span data-image-label>Cliquez pour choisir une image</span>
+                                            <input type="file" class="product-image-input" accept="image/*" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="productEntries" class="product-entries">
-                            <div class="product-entry" data-product-entry>
-                                <div class="product-entry-heading">
-                                    <strong>Produit 1</strong>
-                                    <button type="button" class="product-entry-remove" data-remove-product aria-label="Supprimer ce produit" title="Supprimer ce produit">
-                                        <i class="fas fa-trash" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <div class="form-group">
-                                    <label>Nom du produit</label>
-                                    <input type="text" class="product-name" placeholder="Ex: Sweat à capuche oversize" required />
-                                </div>
-                                <div class="form-group">
-                                    <label>Prix ($)</label>
-                                    <input type="number" class="product-price" placeholder="49.99" min="0.01" step="0.01" required />
-                                </div>
-                                <div class="form-group">
-                                    <label>Description (facultatif)</label>
-                                    <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
+                        <div id="sharedProducts" hidden>
+                            <div class="form-group">
+                                <label for="sharedProductName">Nom du produit</label>
+                                <input type="text" id="sharedProductName" placeholder="Ex: T-shirt coton" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="sharedProductPrice">Prix ($)</label>
+                                <input type="number" id="sharedProductPrice" placeholder="15.00" min="0.01" step="0.01" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="sharedProductDescription">Description (facultatif)</label>
+                                <textarea id="sharedProductDescription" placeholder="Taille, matière, couleur..."></textarea>
+                            </div>
+                            <div class="form-group product-image-field">
+                                <label>Images du produit (sélectionne une ou plusieurs images)</label>
+                                <div class="image-upload">
+                                    <img class="preview-img" alt="Aperçu des images sélectionnées" />
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span data-image-label>Cliquez pour choisir plusieurs images</span>
+                                    <input type="file" id="sharedProductImages" accept="image/*" multiple />
                                 </div>
                             </div>
                         </div>
@@ -133,14 +178,6 @@ async function renderShopOrProduct(container) {
                             <select id="productShop">
                                 ${ownedShops.map(shop => `<option value="${shop.id}">${shop.name}</option>`).join('')}
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Photo des produits (facultatif, commune à tous)</label>
-                            <div class="image-upload" id="imageUploadArea">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <span>Cliquez pour importer une image</span>
-                                <input type="file" id="fileInput" accept="image/*" />
-                            </div>
                         </div>
                         <button type="submit" class="btn-primary w-full" id="addProductsSubmit">
                             <i class="fas fa-plus-circle"></i> Publier le produit
@@ -263,13 +300,32 @@ async function deleteProductAction(productId) {
 }
 
 function setupProductForm() {
-    const uploadArea = document.getElementById('imageUploadArea');
-    const fileInput = document.getElementById('fileInput');
+    const form = document.getElementById('addProductForm');
+    const individualProducts = document.getElementById('individualProducts');
+    const sharedProducts = document.getElementById('sharedProducts');
+    const sharedProductImages = document.getElementById('sharedProductImages');
     const productEntries = document.getElementById('productEntries');
     const submitButton = document.getElementById('addProductsSubmit');
     const addProductEntryButton = document.getElementById('addProductEntry');
     const initialSubmitLabel = submitButton.innerHTML;
     let productFormSubmitting = false;
+    let sharedImageMode = false;
+
+    const updateImageMode = () => {
+        sharedImageMode = form.querySelector('input[name="productImageMode"]:checked').value === 'shared';
+        form.querySelectorAll('input[name="productImageMode"]').forEach(input => {
+            input.disabled = productFormSubmitting;
+        });
+        individualProducts.hidden = sharedImageMode;
+        sharedProducts.hidden = !sharedImageMode;
+        individualProducts.querySelectorAll('input, textarea, button').forEach(control => {
+            control.disabled = sharedImageMode || productFormSubmitting;
+        });
+        sharedProducts.querySelectorAll('input, textarea').forEach(control => {
+            control.disabled = !sharedImageMode || productFormSubmitting;
+        });
+        addProductEntryButton.disabled = sharedImageMode || productFormSubmitting;
+    };
 
     const updateProductEntryLabels = () => {
         const entries = productEntries.querySelectorAll('[data-product-entry]');
@@ -277,8 +333,15 @@ function setupProductForm() {
             entry.querySelector('.product-entry-heading strong').textContent = `Produit ${index + 1}`;
             entry.querySelector('[data-remove-product]').disabled = productFormSubmitting || entries.length === 1;
         });
-        addProductEntryButton.disabled = productFormSubmitting;
+        addProductEntryButton.disabled = sharedImageMode || productFormSubmitting;
     };
+
+    form.querySelectorAll('input[name="productImageMode"]').forEach(input => {
+        input.addEventListener('change', () => {
+            updateImageMode();
+            updateProductEntryLabels();
+        });
+    });
 
     addProductEntryButton.addEventListener('click', () => {
         const entry = document.createElement('div');
@@ -302,6 +365,15 @@ function setupProductForm() {
             <div class="form-group">
                 <label>Description (facultatif)</label>
                 <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
+            </div>
+            <div class="form-group product-image-field">
+                <label>Image de ce produit (facultatif)</label>
+                <div class="image-upload">
+                    <img class="preview-img" alt="Aperçu de l'image du produit" />
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span data-image-label>Cliquez pour choisir une image</span>
+                    <input type="file" class="product-image-input" accept="image/*" />
+                </div>
             </div>
         `;
         productEntries.appendChild(entry);
@@ -348,30 +420,65 @@ function setupProductForm() {
         productShopSelect.innerHTML = `<option value="">-- Aucune boutique trouvée --</option>`;
     })();
 
-    uploadArea.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const file = this.files[0];
-            uploadArea.classList.add('has-image');
-            const previewUrl = URL.createObjectURL(file);
-            uploadArea.innerHTML = `
-                <img src="${previewUrl}" alt="preview" class="preview-img" />
-                <span>${file.name}</span>
-            `;
+    updateImageMode();
+
+    const updateImagePreview = input => {
+        const uploadArea = input.closest('.image-upload');
+        const preview = uploadArea.querySelector('.preview-img');
+        const label = uploadArea.querySelector('[data-image-label]');
+        const files = Array.from(input.files || []);
+        const previousPreviewUrl = uploadArea.dataset.previewUrl;
+        if (previousPreviewUrl) URL.revokeObjectURL(previousPreviewUrl);
+
+        uploadArea.classList.toggle('has-image', files.length > 0);
+        if (!files.length) {
+            preview.removeAttribute('src');
+            uploadArea.dataset.previewUrl = '';
+            label.textContent = input.multiple ? 'Cliquez pour choisir plusieurs images' : 'Cliquez pour choisir une image';
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(files[0]);
+        uploadArea.dataset.previewUrl = previewUrl;
+        preview.src = previewUrl;
+        label.textContent = input.multiple
+            ? `${files.length} image${files.length > 1 ? 's' : ''} sélectionnée${files.length > 1 ? 's' : ''}`
+            : files[0].name;
+    };
+
+    form.addEventListener('click', event => {
+        const uploadArea = event.target.closest('.image-upload');
+        if (uploadArea && !event.target.matches('input[type="file"]')) {
+            uploadArea.querySelector('input[type="file"]').click();
+        }
+    });
+    form.addEventListener('change', event => {
+        if (event.target.matches('.product-image-input, #sharedProductImages')) {
+            updateImagePreview(event.target);
         }
     });
 
-    document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         if (submitButton.disabled) return;
 
         const entries = Array.from(productEntries.querySelectorAll('[data-product-entry]'));
-        const productsToAdd = entries.map(entry => ({
-            entry,
-            name: entry.querySelector('.product-name').value.trim(),
-            price: parseFloat(entry.querySelector('.product-price').value),
-            description: entry.querySelector('.product-description').value.trim()
-        }));
+        const sharedFiles = Array.from(sharedProductImages.files || []);
+        const productsToAdd = sharedImageMode
+            ? sharedFiles.map(imageFile => ({
+                entry: null,
+                imageFile,
+                name: document.getElementById('sharedProductName').value.trim(),
+                price: parseFloat(document.getElementById('sharedProductPrice').value),
+                description: document.getElementById('sharedProductDescription').value.trim()
+            }))
+            : entries.map(entry => ({
+                entry,
+                imageFile: entry.querySelector('.product-image-input').files[0] || null,
+                name: entry.querySelector('.product-name').value.trim(),
+                price: parseFloat(entry.querySelector('.product-price').value),
+                description: entry.querySelector('.product-description').value.trim()
+            }));
         let shopId = parseInt(document.getElementById('productShop').value, 10);
         if (!Number.isFinite(shopId)) {
             // fallback to CURRENT_USER.shopId or first owned shop
@@ -381,15 +488,19 @@ function setupProductForm() {
         const showPrice = document.getElementById('productShowPrice').checked;
 
         if (!productsToAdd.length || productsToAdd.some(product => !product.name || !Number.isFinite(product.price) || product.price <= 0)) {
-            showToast('Indiquez un nom et un prix supérieur à zéro pour chaque produit.', 'warning');
+            showToast(sharedImageMode
+                ? 'Indiquez un nom, un prix supérieur à zéro et au moins une image.'
+                : 'Indiquez un nom et un prix supérieur à zéro pour chaque produit.', 'warning');
             return;
         }
 
-        const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
         const savedEntries = [];
+        const savedFiles = [];
+        const failedProducts = [];
+        let savedCount = 0;
         let failedCount = 0;
-        let sharedImageUrl = '';
         productFormSubmitting = true;
+        updateImageMode();
         updateProductEntryLabels();
         submitButton.disabled = true;
         submitButton.setAttribute('aria-busy', 'true');
@@ -403,11 +514,10 @@ function setupProductForm() {
                 formData.append('stock', stock);
                 formData.append('description', product.description);
                 formData.append('show_price', showPrice ? '1' : '0');
-                if (file && !sharedImageUrl) {
-                    formData.append('image', file);
+                if (product.imageFile) {
+                    formData.append('image', product.imageFile);
                 } else {
-                    const imageUrl = sharedImageUrl || `https://picsum.photos/seed/${Date.now()}-${index}/400/400`;
-                    formData.append('image', imageUrl);
+                    formData.append('image', `https://picsum.photos/seed/${Date.now()}-${index}/400/400`);
                 }
 
                 try {
@@ -415,7 +525,6 @@ function setupProductForm() {
                     const productId = res && res.product_id ? res.product_id : null;
                     if (!productId) throw new Error('Erreur création produit');
                     const imageUrl = (res && (res.image_url || res.image)) || formData.get('image') || '';
-                    if (file && !sharedImageUrl) sharedImageUrl = imageUrl;
                     PRODUCTS.push({
                         id: productId,
                         shopId,
@@ -427,21 +536,30 @@ function setupProductForm() {
                         image: imageUrl,
                         distance: 0
                     });
-                    savedEntries.push(product.entry);
+                    savedCount++;
+                    if (product.entry) savedEntries.push(product.entry);
+                    if (product.imageFile) savedFiles.push(product.imageFile);
                 } catch (error) {
                     if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
                     failedCount++;
+                    failedProducts.push(product);
                     console.error('Erreur lors de la publication d’un produit.', error);
                 }
             }
 
             if (failedCount === 0) {
-                showToast(`${savedEntries.length} produit${savedEntries.length > 1 ? 's' : ''} ajouté${savedEntries.length > 1 ? 's' : ''} avec succès !`, 'success');
+                showToast(`${savedCount} produit${savedCount > 1 ? 's' : ''} ajouté${savedCount > 1 ? 's' : ''} avec succès !`, 'success');
                 renderShopOrProduct(document.getElementById('pageContainer'));
             } else {
                 savedEntries.forEach(entry => entry.remove());
+                if (sharedImageMode && savedFiles.length) {
+                    const retryFiles = new DataTransfer();
+                    failedProducts.forEach(product => retryFiles.items.add(product.imageFile));
+                    sharedProductImages.files = retryFiles.files;
+                    updateImagePreview(sharedProductImages);
+                }
                 updateProductEntryLabels();
-                showToast(`${savedEntries.length} produit${savedEntries.length > 1 ? 's' : ''} ajouté${savedEntries.length > 1 ? 's' : ''} ; ${failedCount} échec${failedCount > 1 ? 's' : ''}. Vérifie les produits restants et réessaie.`, 'error');
+                showToast(`${savedCount} produit${savedCount > 1 ? 's' : ''} ajouté${savedCount > 1 ? 's' : ''} ; ${failedCount} échec${failedCount > 1 ? 's' : ''}. Vérifie les produits restants et réessaie.`, 'error');
             }
         } catch (error) {
             if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
@@ -451,6 +569,7 @@ function setupProductForm() {
             showToast('Erreur lors de la publication des produits. Vérifie les produits restants et réessaie.', 'error');
         } finally {
             productFormSubmitting = false;
+            updateImageMode();
             updateProductEntryLabels();
             submitButton.disabled = false;
             submitButton.removeAttribute('aria-busy');

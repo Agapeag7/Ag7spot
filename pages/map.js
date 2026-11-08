@@ -55,13 +55,13 @@ function createLeafletBaseLayers(map) {
 
     const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri',
-        maxNativeZoom: 18,
+        maxNativeZoom: 17,
         maxZoom: 19
     });
 
     const satelliteLabelLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Labels &copy; Esri',
-        maxNativeZoom: 18,
+        maxNativeZoom: 17,
         maxZoom: 19,
         opacity: 0.7
     });
