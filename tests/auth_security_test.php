@@ -11,6 +11,60 @@ class EmptyDatabase {
     }
 }
 
+class AuthTestDatabase {
+    private $users;
+
+    public function __construct($users) {
+        $this->users = $users;
+    }
+
+    public function prepare($sql) {
+        $database = $this;
+        return new class($database, $sql) {
+            private $database;
+            private $sql;
+            private $rows = [];
+
+            public function __construct($database, $sql) {
+                $this->database = $database;
+                $this->sql = $sql;
+            }
+
+            public function execute($params = []) {
+                $this->rows = $this->database->findUsers($this->sql, $params);
+                return true;
+            }
+
+            public function fetch() {
+                return $this->rows[0] ?? false;
+            }
+
+            public function fetchAll() {
+                return $this->rows;
+            }
+        };
+    }
+
+    public function findUsers($sql, $params) {
+        if (strpos($sql, 'WHERE username = ?') !== false) {
+            return array_values(array_filter($this->users, function ($user) use ($params) {
+                return $user['username'] === trim($params[0]);
+            }));
+        }
+
+        if (strpos($sql, 'RIGHT(username, 4)') !== false) {
+            return array_values(array_filter($this->users, function ($user) use ($params) {
+                $username = $user['username'];
+                return strlen($username) >= 4
+                    && preg_match('/^[0-9]{4}$/', substr($username, -4))
+                    && substr($username, 0, -4) === trim($params[0]);
+            }));
+        }
+
+        return [];
+    }
+}
+
 $users = new SpotUsers(new EmptyDatabase());
 
 try {
@@ -117,6 +171,41 @@ try {
     exit(1);
 } catch (InvalidArgumentException $e) {
     // expected
+}
+
+$storedUser = [
+    'id' => 42,
+    'username' => 'alice5831',
+    'password' => password_hash('StrongPass!2026', PASSWORD_DEFAULT),
+];
+$loginUsers = new SpotUsers(new AuthTestDatabase([$storedUser]));
+if (($loginUsers->verifyCredentials('alice', 'StrongPass!2026')['id'] ?? null) !== 42) {
+    fwrite(STDERR, "FATAL: login without the generated four-digit suffix should succeed\n");
+    exit(1);
+}
+if ($loginUsers->verifyCredentials('alice', 'WrongPass!2026') !== null) {
+    fwrite(STDERR, "FATAL: login with an incorrect password should fail when using the base username\n");
+    exit(1);
+}
+if (!$loginUsers->usernameExistsForLogin('alice')) {
+    fwrite(STDERR, "FATAL: generated-suffix username should be recognized for login errors\n");
+    exit(1);
+}
+if ($loginUsers->verifyCredentials('alice5831', 'StrongPass!2026')['id'] !== 42) {
+    fwrite(STDERR, "FATAL: login with the full username should continue to succeed\n");
+    exit(1);
+}
+$ambiguousUsers = new SpotUsers(new AuthTestDatabase([
+    $storedUser,
+    [
+        'id' => 43,
+        'username' => 'alice9274',
+        'password' => $storedUser['password'],
+    ],
+]));
+if ($ambiguousUsers->verifyCredentials('alice', 'StrongPass!2026') !== null) {
+    fwrite(STDERR, "FATAL: ambiguous base username should not authenticate multiple accounts\n");
+    exit(1);
 }
 
 echo "OK\n";

@@ -361,6 +361,20 @@ class SpotUsers {
         return $stmt->fetch();
     }
 
+    private function getUsersByGeneratedUsernameSuffix($username) {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE RIGHT(username, 4) REGEXP '^[0-9]{4}$' AND LEFT(username, CHAR_LENGTH(username) - 4) = ?");
+        $stmt->execute([trim($username)]);
+        return $stmt->fetchAll();
+    }
+
+    public function usernameExistsForLogin($username) {
+        if ($this->getUserByUsername($username)) {
+            return true;
+        }
+
+        return count($this->getUsersByGeneratedUsernameSuffix($username)) > 0;
+    }
+
     public function validatePassword($password) {
         $password = is_string($password) ? trim($password) : '';
 
@@ -405,24 +419,30 @@ class SpotUsers {
     }
 
     public function verifyCredentials($username, $password) {
+        $username = trim((string) $username);
         $user = $this->getUserByUsername($username);
-        if (!$user) {
+        $users = $user ? [$user] : $this->getUsersByGeneratedUsernameSuffix($username);
+        $matchingUsers = [];
+
+        foreach ($users as $candidate) {
+            $storedPassword = (string) $candidate['password'];
+            if (password_verify($password, $storedPassword)) {
+                $matchingUsers[] = ['user' => $candidate, 'legacy_password' => false];
+            } elseif (hash_equals($storedPassword, (string) $password)) {
+                $matchingUsers[] = ['user' => $candidate, 'legacy_password' => true];
+            }
+        }
+
+        if (count($matchingUsers) !== 1) {
             return null;
         }
 
-        if (password_verify($password, $user['password'])) {
-            if (password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
-                $this->updatePasswordHash($user['id'], password_hash($password, PASSWORD_DEFAULT));
-            }
-            return $user;
-        }
-
-        if (hash_equals((string) $user['password'], (string) $password)) {
+        $user = $matchingUsers[0]['user'];
+        if ($matchingUsers[0]['legacy_password'] || password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
             $this->updatePasswordHash($user['id'], password_hash($password, PASSWORD_DEFAULT));
-            return $user;
         }
 
-        return null;
+        return $user;
     }
 
     public function generateSessionToken() {

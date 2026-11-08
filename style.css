@@ -809,6 +809,10 @@ body {
     background: linear-gradient(135deg, rgba(74,108,247,0.12), rgba(245,158,11,0.14));
     border-color: rgba(74, 108, 247, 0.5);
 }
+.auth-mode-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 .checkbox-label {
     display: inline-flex;
     align-items: center;
@@ -906,6 +910,31 @@ body {
     color: var(--text-main);
     font-size: 15px;
     transition: border-color var(--transition), box-shadow var(--transition);
+}
+.auth-password-input {
+    position: relative;
+}
+.auth-password-input input {
+    padding-right: 52px;
+}
+.auth-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--text-gray);
+    cursor: pointer;
+}
+.auth-password-toggle:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+    border-radius: 8px;
 }
 .form-group input:focus {
     outline: none;
@@ -1160,6 +1189,14 @@ body {
 .btn-outline:hover {
     background: var(--primary);
     color: white;
+}
+.btn-outline:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.btn-outline:disabled:hover {
+    background: white;
+    color: var(--text-gray);
 }
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -1675,6 +1712,44 @@ body {
     border-radius: var(--radius-lg);
     padding: 20px;
     box-shadow: var(--shadow);
+}
+.product-list-header,
+.product-entry-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.product-list-header {
+    margin-bottom: 14px;
+}
+.product-entries {
+    display: grid;
+    gap: 12px;
+}
+.product-entry {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+}
+.product-entry-heading {
+    margin-bottom: 12px;
+}
+.product-entry-remove {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    cursor: pointer;
+}
+.product-entry-remove:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 .form-group {
     margin-bottom: 5px;

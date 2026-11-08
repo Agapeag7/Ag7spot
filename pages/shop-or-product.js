@@ -94,13 +94,33 @@ async function renderShopOrProduct(container) {
                 <h2 class="section-title"><i class="fas fa-shopping-bag"></i> Ajouter un produit</h2>
                 <div class="form-card">
                     <form id="addProductForm">
-                        <div class="form-group">
-                            <label>Nom du produit</label>
-                            <input type="text" id="productName" placeholder="Ex: Sweat à capuche oversize" required />
+                        <div class="product-list-header">
+                            <strong>Produits à publier</strong>
+                            <button type="button" class="btn-outline btn-sm" id="addProductEntry">
+                                <i class="fas fa-plus"></i> Ajouter un produit
+                            </button>
                         </div>
-                        <div class="form-group">
-                            <label>Prix ($)</label>
-                            <input type="number" id="productPrice" placeholder="49.99" step="0.01" required />
+                        <div id="productEntries" class="product-entries">
+                            <div class="product-entry" data-product-entry>
+                                <div class="product-entry-heading">
+                                    <strong>Produit 1</strong>
+                                    <button type="button" class="product-entry-remove" data-remove-product aria-label="Supprimer ce produit" title="Supprimer ce produit">
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom du produit</label>
+                                    <input type="text" class="product-name" placeholder="Ex: Sweat à capuche oversize" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Prix ($)</label>
+                                    <input type="number" class="product-price" placeholder="49.99" min="0.01" step="0.01" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Description (facultatif)</label>
+                                    <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="checkbox-label">
@@ -115,18 +135,14 @@ async function renderShopOrProduct(container) {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="productDesc" placeholder="Taille, matière, couleur..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Photo du produit</label>
+                            <label>Photo des produits (facultatif, commune à tous)</label>
                             <div class="image-upload" id="imageUploadArea">
                                 <i class="fas fa-cloud-upload-alt"></i>
                                 <span>Cliquez pour importer une image</span>
                                 <input type="file" id="fileInput" accept="image/*" />
                             </div>
                         </div>
-                        <button type="submit" class="btn-primary w-full">
+                        <button type="submit" class="btn-primary w-full" id="addProductsSubmit">
                             <i class="fas fa-plus-circle"></i> Publier le produit
                         </button>
                     </form>
@@ -249,6 +265,57 @@ async function deleteProductAction(productId) {
 function setupProductForm() {
     const uploadArea = document.getElementById('imageUploadArea');
     const fileInput = document.getElementById('fileInput');
+    const productEntries = document.getElementById('productEntries');
+    const submitButton = document.getElementById('addProductsSubmit');
+    const addProductEntryButton = document.getElementById('addProductEntry');
+    const initialSubmitLabel = submitButton.innerHTML;
+    let productFormSubmitting = false;
+
+    const updateProductEntryLabels = () => {
+        const entries = productEntries.querySelectorAll('[data-product-entry]');
+        entries.forEach((entry, index) => {
+            entry.querySelector('.product-entry-heading strong').textContent = `Produit ${index + 1}`;
+            entry.querySelector('[data-remove-product]').disabled = productFormSubmitting || entries.length === 1;
+        });
+        addProductEntryButton.disabled = productFormSubmitting;
+    };
+
+    addProductEntryButton.addEventListener('click', () => {
+        const entry = document.createElement('div');
+        entry.className = 'product-entry';
+        entry.dataset.productEntry = '';
+        entry.innerHTML = `
+            <div class="product-entry-heading">
+                <strong></strong>
+                <button type="button" class="product-entry-remove" data-remove-product aria-label="Supprimer ce produit" title="Supprimer ce produit">
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Nom du produit</label>
+                <input type="text" class="product-name" placeholder="Ex: Sweat à capuche oversize" required />
+            </div>
+            <div class="form-group">
+                <label>Prix ($)</label>
+                <input type="number" class="product-price" placeholder="49.99" min="0.01" step="0.01" required />
+            </div>
+            <div class="form-group">
+                <label>Description (facultatif)</label>
+                <textarea class="product-description" placeholder="Taille, matière, couleur..."></textarea>
+            </div>
+        `;
+        productEntries.appendChild(entry);
+        updateProductEntryLabels();
+        entry.querySelector('.product-name').focus();
+    });
+
+    productEntries.addEventListener('click', event => {
+        const removeButton = event.target.closest('[data-remove-product]');
+        if (!removeButton || productEntries.querySelectorAll('[data-product-entry]').length === 1) return;
+        removeButton.closest('[data-product-entry]').remove();
+        updateProductEntryLabels();
+    });
+    updateProductEntryLabels();
 
     // Compute owned shops locally from global SHOPS to avoid referencing outer-scope var
     const ownedShopsLocal = (Array.isArray(window.SHOPS) ? window.SHOPS : []).filter(shop => shop.ownerId === (CURRENT_USER && CURRENT_USER.id));
@@ -296,71 +363,98 @@ function setupProductForm() {
 
     document.getElementById('addProductForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (submitButton.disabled) return;
 
-        const name = document.getElementById('productName').value.trim();
-        const price = parseFloat(document.getElementById('productPrice').value);
+        const entries = Array.from(productEntries.querySelectorAll('[data-product-entry]'));
+        const productsToAdd = entries.map(entry => ({
+            entry,
+            name: entry.querySelector('.product-name').value.trim(),
+            price: parseFloat(entry.querySelector('.product-price').value),
+            description: entry.querySelector('.product-description').value.trim()
+        }));
         let shopId = parseInt(document.getElementById('productShop').value, 10);
         if (!Number.isFinite(shopId)) {
             // fallback to CURRENT_USER.shopId or first owned shop
             shopId = (CURRENT_USER && CURRENT_USER.shopId) ? CURRENT_USER.shopId : (ownedShopsLocal[0] ? ownedShopsLocal[0].id : 0);
         }
         const stock = 0;
-        const description = document.getElementById('productDesc').value.trim();
         const showPrice = document.getElementById('productShowPrice').checked;
 
-        if (!name || !price || Number.isNaN(price)) {
-            showToast('Veuillez remplir tous les champs correctement.', 'warning');
+        if (!productsToAdd.length || productsToAdd.some(product => !product.name || !Number.isFinite(product.price) || product.price <= 0)) {
+            showToast('Indiquez un nom et un prix supérieur à zéro pour chaque produit.', 'warning');
             return;
         }
 
-        // Préparer l'upload : utiliser FormData si une image est sélectionnée
         const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
-        const formData = new FormData();
-        formData.append('shop_id', shopId);
-        formData.append('name', name);
-        formData.append('price', price);
-        formData.append('stock', stock);
-        formData.append('description', description);
-        formData.append('show_price', showPrice ? '1' : '0');
-        if (file) {
-            formData.append('image', file);
-        } else {
-            const fallbackImage = 'https://picsum.photos/seed/' + Date.now() + '/400/400';
-            formData.append('image', fallbackImage);
-        }
-
+        const savedEntries = [];
+        let failedCount = 0;
+        let sharedImageUrl = '';
+        productFormSubmitting = true;
+        updateProductEntryLabels();
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-busy', 'true');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Publication en cours...';
         try {
-            // Debug: log FormData entries to help diagnose missing fields server-side
-            // console.debug('submitProduct: values', { name, price, shopId, stock, description, file });
-            // if (formData instanceof FormData) {
-            //     for (const pair of formData.entries()) {
-            //         console.debug('formData', pair[0], pair[1]);
-            //     }
-            // }
-            
-            const res = await addProduct(formData);
-            const productId = res && res.product_id ? res.product_id : null;
-            const imageUrl = (res && (res.image_url || res.image)) || (formData.get('image') || '');
-            if (productId) {
-                PRODUCTS.push({
-                    id: productId,
-                    shopId,
-                    name,
-                    price,
-                    stock: 0,
-                    description,
-                    show_price: showPrice ? 1 : 0,
-                    image: imageUrl,
-                    distance: 0
-                });
-                showToast('Produit ajouté avec succès !', 'success');
+            for (const [index, product] of productsToAdd.entries()) {
+                const formData = new FormData();
+                formData.append('shop_id', shopId);
+                formData.append('name', product.name);
+                formData.append('price', product.price);
+                formData.append('stock', stock);
+                formData.append('description', product.description);
+                formData.append('show_price', showPrice ? '1' : '0');
+                if (file && !sharedImageUrl) {
+                    formData.append('image', file);
+                } else {
+                    const imageUrl = sharedImageUrl || `https://picsum.photos/seed/${Date.now()}-${index}/400/400`;
+                    formData.append('image', imageUrl);
+                }
+
+                try {
+                    const res = await addProduct(formData);
+                    const productId = res && res.product_id ? res.product_id : null;
+                    if (!productId) throw new Error('Erreur création produit');
+                    const imageUrl = (res && (res.image_url || res.image)) || formData.get('image') || '';
+                    if (file && !sharedImageUrl) sharedImageUrl = imageUrl;
+                    PRODUCTS.push({
+                        id: productId,
+                        shopId,
+                        name: product.name,
+                        price: product.price,
+                        stock,
+                        description: product.description,
+                        show_price: showPrice ? 1 : 0,
+                        image: imageUrl,
+                        distance: 0
+                    });
+                    savedEntries.push(product.entry);
+                } catch (error) {
+                    if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
+                    failedCount++;
+                    console.error('Erreur lors de la publication d’un produit.', error);
+                }
+            }
+
+            if (failedCount === 0) {
+                showToast(`${savedEntries.length} produit${savedEntries.length > 1 ? 's' : ''} ajouté${savedEntries.length > 1 ? 's' : ''} avec succès !`, 'success');
                 renderShopOrProduct(document.getElementById('pageContainer'));
             } else {
-                throw new Error('Erreur création produit');
+                savedEntries.forEach(entry => entry.remove());
+                updateProductEntryLabels();
+                showToast(`${savedEntries.length} produit${savedEntries.length > 1 ? 's' : ''} ajouté${savedEntries.length > 1 ? 's' : ''} ; ${failedCount} échec${failedCount > 1 ? 's' : ''}. Vérifie les produits restants et réessaie.`, 'error');
             }
         } catch (error) {
             if (typeof window !== 'undefined' && window.sessionClearingInProgress) return;
-            showToast('Erreur lors de l\'ajout du produit.', 'error');
+            console.error('Erreur inattendue lors de la publication des produits.', error);
+            savedEntries.forEach(entry => entry.remove());
+            updateProductEntryLabels();
+            showToast('Erreur lors de la publication des produits. Vérifie les produits restants et réessaie.', 'error');
+        } finally {
+            productFormSubmitting = false;
+            updateProductEntryLabels();
+            submitButton.disabled = false;
+            submitButton.removeAttribute('aria-busy');
+            submitButton.innerHTML = initialSubmitLabel;
         }
     });
 }

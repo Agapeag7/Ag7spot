@@ -54,7 +54,7 @@ async function initializePushNotifications() {
     if (!window.isSecureContext || !('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
         status.textContent = !window.isSecureContext
             ? 'Les notifications push nécessitent une connexion HTTPS.'
-            : 'Les notifications push ne sont pas prises en charge par ce navigateur.';
+            : 'Les notifications push ne sont pas prises en charge.';
         button.hidden = true;
         return;
     }

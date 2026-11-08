@@ -47,7 +47,7 @@ if ($action === 'login') {
     try {
         $user = $spot->users->verifyCredentials($username, $password);
         if (!$user) {
-            $knownUser = $spot->users->getUserByUsername($username);
+            $knownUser = $spot->users->usernameExistsForLogin($username);
             http_response_code(401);
             $message = $knownUser
                 ? 'Mot de passe incorrect. Vérifiez votre saisie.'

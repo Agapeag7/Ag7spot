@@ -24,7 +24,7 @@ function renderAuth(container) {
                         <label id="authEmailLabel">Nom d'utilisateur</label>
                         <input type="text" id="authEmail" name="username" autocomplete="username" placeholder="Entrez votre nom d\'utilisateur" aria-describedby="authUsernameError" required />
                         <small class="auth-field-error hidden" id="authUsernameError" aria-live="polite"></small>
-                        <small class="auth-username-hint hidden" style="color: var(--text-gray)">Le pseudo doit contenir entre 5 et 20 caractères, sans espace, et finir par au moins 2 chiffres (ajoutés automatiquement si nécessaire).</small>
+                        <small class="auth-username-hint hidden" style="color: var(--danger)">Le pseudo doit contenir entre 5 et 20 caractères, sans espace.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Type de compte</label>
@@ -36,14 +36,24 @@ function renderAuth(container) {
                     </div>
                     <div class="form-group">
                         <label>Mot de passe</label>
-                        <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="authPasswordError" required />
+                        <div class="auth-password-input">
+                            <input type="password" id="authPassword" name="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="authPasswordError" required />
+                            <button type="button" class="auth-password-toggle" aria-label="Afficher le mot de passe" data-show-label="Afficher le mot de passe" data-hide-label="Masquer le mot de passe" aria-pressed="false" aria-controls="authPassword">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
                         <small class="auth-field-error hidden" id="authPasswordError" aria-live="polite"></small>
                         
                         <small class="auth-password-hint hidden" style="color: var(--danger)">Le mot de passe doit contenir au moins 7 caractères, incluant une minuscule, une majuscule, un chiffre et un caractère spécial.</small>
                     </div>
                     <div class="form-group auth-register-field hidden">
                         <label>Confirmer le mot de passe</label>
-                        <input type="password" id="authConfirmPassword" name="new-password" autocomplete="new-password" aria-describedby="authConfirmPasswordError" placeholder="••••••••" />
+                        <div class="auth-password-input">
+                            <input type="password" id="authConfirmPassword" name="new-password" autocomplete="new-password" aria-describedby="authConfirmPasswordError" placeholder="••••••••" />
+                            <button type="button" class="auth-password-toggle" aria-label="Afficher la confirmation du mot de passe" data-show-label="Afficher la confirmation du mot de passe" data-hide-label="Masquer la confirmation du mot de passe" aria-pressed="false" aria-controls="authConfirmPassword">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
                         <small class="auth-field-error hidden" id="authConfirmPasswordError" aria-live="polite"></small>
                     </div>
                     <div class="form-group auth-register-field hidden privacy-group">
@@ -65,7 +75,7 @@ function renderAuth(container) {
                         </label>
                     </div>
                     <div class="auth-footer">
-                        <p class="auth-note-login">Tu dois déjà posséder un compte pour te connecter.</p>
+                        <p class="auth-note-login">Tu dois déjà posséder un compte pour te connecter. Tu peux saisir ton nom sans les 4 chiffres ajoutés lors de la création du compte.</p>
                         <p class="auth-note-register hidden">En créant un compte, tu acceptes la politique de confidentialité et les conditions d'utilisation.</p>
                     </div>
                 </form>
@@ -91,6 +101,32 @@ function renderAuth(container) {
         confirmPassword: container.querySelector('#authConfirmPassword'),
         privacy: container.querySelector('#authPrivacy')
     };
+    const setAuthLoading = (isLoading) => {
+        const isRegister = authForm.dataset.mode === 'register';
+        submitBtn.disabled = isLoading;
+        submitBtn.setAttribute('aria-busy', String(isLoading));
+        modeButtons.forEach(button => {
+            button.disabled = isLoading;
+        });
+        submitBtn.innerHTML = isLoading
+            ? `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> ${isRegister ? 'Création du compte...' : 'Connexion en cours...'}`
+            : isRegister
+                ? '<i class="fas fa-user-plus"></i> Créer mon compte'
+                : '<i class="fas fa-sign-in-alt"></i> Se connecter';
+    };
+
+    container.querySelectorAll('.auth-password-toggle').forEach(button => {
+        const passwordInput = container.querySelector(`#${button.getAttribute('aria-controls')}`);
+        const icon = button.querySelector('i');
+        button.addEventListener('click', () => {
+            const isVisible = passwordInput.type === 'password';
+            passwordInput.type = isVisible ? 'text' : 'password';
+            button.setAttribute('aria-pressed', String(isVisible));
+            button.setAttribute('aria-label', isVisible ? button.dataset.hideLabel : button.dataset.showLabel);
+            icon.classList.toggle('fa-eye', !isVisible);
+            icon.classList.toggle('fa-eye-slash', isVisible);
+        });
+    });
 
     const setRegistrationError = (fieldName, message) => {
         const field = registrationFields[fieldName];
@@ -134,6 +170,7 @@ function renderAuth(container) {
     };
 
     const setMode = (mode) => {
+        if (submitBtn.disabled) return;
         authForm.dataset.mode = mode;
         clearRegistrationErrors();
         modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
@@ -165,6 +202,7 @@ function renderAuth(container) {
 
     authForm?.addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (submitBtn.disabled) return;
 
         const mode = authForm.dataset.mode;
         if (mode === 'register') {
@@ -186,6 +224,7 @@ function renderAuth(container) {
         }
 
         if (mode === 'login') {
+            setAuthLoading(true);
             try {
                 const response = await login(identifier, password, rememberMe);
                 const user = response.user;
@@ -197,6 +236,8 @@ function renderAuth(container) {
                 navigateTo('feed');
             } catch (error) {
                 // showToast already handled in apiCall
+            } finally {
+                setAuthLoading(false);
             }
             return;
         }
@@ -253,6 +294,7 @@ function renderAuth(container) {
             return;
         }
 
+        setAuthLoading(true);
         try {
             const response = await register(username, password, accountType, rememberMe);
             const user = response.user;
@@ -278,6 +320,8 @@ function renderAuth(container) {
                 setRegistrationError(errorField, error.message);
                 focusRegistrationError(errorField);
             }
+        } finally {
+            setAuthLoading(false);
         }
     });
 }
